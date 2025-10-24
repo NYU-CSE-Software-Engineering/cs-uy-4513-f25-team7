@@ -2,6 +2,9 @@ source "https://rubygems.org"
 
 ruby "3.4.6"
 
+# Fix for Windows psych gem compilation issues
+gem "psych", "~> 3.3.0"
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.5", ">= 7.1.5.2"
 
@@ -9,7 +12,7 @@ gem "rails", "~> 7.1.5", ">= 7.1.5.2"
 gem "sprockets-rails"
 
 # Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 1.4"
+# gem "sqlite3", "~> 2.7"  # Temporarily disabled for testing
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
@@ -71,4 +74,5 @@ group :test do
   gem "cucumber-rails"
   gem "capybara"
   gem "selenium-webdriver"
+  gem "database_cleaner-active_record"
 end
