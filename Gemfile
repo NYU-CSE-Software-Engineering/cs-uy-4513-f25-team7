@@ -84,3 +84,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+  gem "selenium-webdriver"              # optional, for JS/real browser
+  gem "database_cleaner-active_record"  # <- needed by features/support/env.rb
+end
