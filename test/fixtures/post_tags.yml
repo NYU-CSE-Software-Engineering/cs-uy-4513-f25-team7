@@ -1,0 +1,11 @@
+one:
+  post: one
+  tag: ruby
+
+two:
+  post: one
+  tag: rails
+
+three:
+  post: two
+  tag: javascript
