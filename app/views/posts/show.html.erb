@@ -1,0 +1,43 @@
+<div class="forum-container">
+  <div class="post-detail">
+    <div class="post-voting" data-controller="voting" data-voting-post-id-value="<%= @post.id %>">
+      <%= form_with url: upvote_post_path(@post), method: :post, local: false, class: 'vote-form' do |form| %>
+        <%= form.submit '▲', class: 'vote-btn upvote-btn', data: { action: 'click->voting#upvote' } %>
+      <% end %>
+      
+      <span class="vote-score" data-voting-target="score" data-post-id="<%= @post.id %>">
+        <%= @post.vote_score %>
+      </span>
+      
+      <%= form_with url: downvote_post_path(@post), method: :post, local: false, class: 'vote-form' do |form| %>
+        <%= form.submit '▼', class: 'vote-btn downvote-btn', data: { action: 'click->voting#downvote' } %>
+      <% end %>
+    </div>
+    
+    <div class="post-content">
+      <h1 class="post-title"><%= @post.title %></h1>
+      
+      <div class="post-meta">
+        <div class="post-tags">
+          <% @post.tags.each do |tag| %>
+            <span class="tag"><%= tag.name %></span>
+          <% end %>
+        </div>
+        <div class="post-info">
+          <span class="post-date">Posted on <%= @post.created_at.strftime('%B %d, %Y at %I:%M %p') %></span>
+        </div>
+      </div>
+      
+      <div class="post-body">
+        <%= simple_format(@post.content) %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="post-actions">
+    <%= link_to 'Edit', edit_post_path(@post), class: 'btn btn-secondary' %>
+    <%= link_to 'Delete', post_path(@post), method: :delete, 
+                confirm: 'Are you sure?', class: 'btn btn-danger' %>
+    <%= link_to 'Back to Forum', posts_path, class: 'btn btn-outline' %>
+  </div>
+</div>
