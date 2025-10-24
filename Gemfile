@@ -2,6 +2,17 @@ source "https://rubygems.org"
 
 ruby "3.3.8"
 
+group :test do
+  gem 'cucumber-rails', require: false
+  gem 'capybara'
+  gem 'database_cleaner'
+  gem 'rspec-rails'
+end
+
+  gem 'database_cleaner-active_record'
+end
+
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.5", ">= 7.1.5.2"
 
@@ -47,22 +58,29 @@ gem "bootsnap", require: false
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+  gem "capybara"
+  gem "rspec-expectations"
+  gem "rotp", "~> 6.3"
+  gem "bcrypt", "~> 3.1"
+  gem "omniauth"
+  gem "omniauth-google-oauth2"
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-
+  
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
-  # gem "spring"
+  gem "spring"
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "cucumber-rails", require: false
+  gem "database_cleaner-active_record", "~> 2.0"
   gem "capybara"
   gem "selenium-webdriver"              # optional, for JS/real browser
   gem "database_cleaner-active_record"  # <- needed by features/support/env.rb
