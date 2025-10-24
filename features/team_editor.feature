@@ -4,8 +4,7 @@ Feature: Team Editor (Build & Share Competitive Teams)
   So that I can share them for feedback, discuss strategy, and use them in forum tournaments
 
   Background:
-    Given I am a signed-in user
-    And I am on the Team Editor page for a new team
+    Given I am on the Team Editor page for a new team
 
   # --- AC1: Create, Edit, and Save a Team (1–6 Pokémon) ---
 
