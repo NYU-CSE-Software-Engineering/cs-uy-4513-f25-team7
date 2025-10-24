@@ -1,0 +1,11 @@
+one:
+  title: "Ruby on Rails"
+  content: "Learn Ruby on Rails"
+
+two:
+  title: "JavaScript Guide"
+  content: "Learn JavaScript"
+
+three:
+  title: "Python Tutorial"
+  content: "Learn Python"
