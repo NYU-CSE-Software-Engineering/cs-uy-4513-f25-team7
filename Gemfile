@@ -62,7 +62,8 @@ end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "cucumber-rails"
+  gem "cucumber-rails", require: false
   gem "capybara"
-  gem "selenium-webdriver"
+  gem "selenium-webdriver"              # optional, for JS/real browser
+  gem "database_cleaner-active_record"  # <- needed by features/support/env.rb
 end
