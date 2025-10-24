@@ -3,6 +3,12 @@ source "https://rubygems.org"
 ruby "3.3.8"
 
 group :test do
+  gem 'cucumber-rails', require: false
+  gem 'capybara'
+  gem 'database_cleaner'
+  gem 'rspec-rails'
+end
+
   gem 'database_cleaner-active_record'
 end
 
