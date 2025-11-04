@@ -1,0 +1,13 @@
+<h1>Your Teams</h1>
+<p><%= link_to "New Team", new_team_path %></p>
+
+<% @teams.each do |team| %>
+  <div>
+    <% if team.draft? %>
+      <%= link_to(team.name.presence || "Untitled Team", edit_team_path(team)) %>
+    <% else %>
+      <%= link_to(team.name.presence || "Untitled Team", team_path(team)) %>
+    <% end %>
+    • <%= team.status %> • Updated <%= time_ago_in_words(team.updated_at) %> ago
+  </div>
+<% end %>

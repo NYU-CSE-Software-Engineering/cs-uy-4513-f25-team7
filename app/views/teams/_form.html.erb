@@ -1,0 +1,55 @@
+<!-- app/views/teams/_form.html.erb -->
+<% if team.errors.any? %>
+  <div style="background:#fee2e2;color:#991b1b;padding:8px;border-radius:6px;margin:8px 0">
+    <strong>Couldn’t save:</strong>
+    <ul style="margin:6px 0 0 16px">
+      <% team.errors.full_messages.each do |m| %>
+        <li><%= m %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<h1><%= team.persisted? ? "Edit Team" : "Team Editor" %></h1>
+
+<%= form_with model: team, local: true, data: { turbo: false } do |f| %>
+  <div class="team-header">
+    <%= f.text_field :name, placeholder: "Team name" %>
+    <%= f.collection_select :format_id, Format.all, :id, :name %>
+    <%= f.select :visibility, Team.visibilities.keys.map { |k| [k.sub('_vis','').humanize, k] } %>
+
+    <% if team.respond_to?(:legality_state) %>
+      <span class="legality-badge"><%= (team.legality_state || "unknown").capitalize %></span>
+    <% end %>
+  </div>
+
+  <div class="slots">
+    <%= f.fields_for :team_slots do |slot| %>
+      <%= render "team_slot_card", f: slot, team: team %>
+    <% end %>
+  </div>
+
+  <div class="toolbar">
+    <%= f.submit "Save", class: "btn" %>
+
+    <% if team.persisted? %>
+      <%= button_tag "Validate",
+                     type: :submit,
+                     formaction: validate_team_path(team),
+                     formmethod: :post,
+                     class: "btn",
+                     data: { turbo: true } %>
+
+      <% if team.legality_state == "valid" %>
+        <%= button_tag "Publish",
+                       type: :submit,
+                       formaction: publish_team_path(team),
+                       formmethod: :patch,
+                       class: "btn",
+                       data: { turbo: true } %>
+      <% else %>
+        <button class="btn" disabled>Publish</button>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

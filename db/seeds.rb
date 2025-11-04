@@ -7,3 +7,10 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+# db/seeds.rb
+Format.find_or_create_by!(key: "sv", name: "Scarlet/Violet", default: true)
+
+# If you have a User model (Devise or custom):
+if defined?(User) && !User.exists?
+  User.create!(email: "test@example.com", password: "password", password_confirmation: "password")
+end

@@ -1,0 +1,18 @@
+<h1><%= @team.name %> <span class="badge">Legal</span></h1>
+<p><%= @team.format.name %> • <%= @team.visibility %></p>
+<div class="slots">
+  <% @team.team_slots.order(:position).each do |s| %>
+    <div class="slot">
+      <strong><%= DexSpecies.find_by(id: s.species_id)&.name || "(empty)" %></strong>
+      <ul>
+        <li>Ability: <%= DexAbility.find_by(id: s.ability_id)&.name %></li>
+        <li>Item: <%= DexItem.find_by(id: s.item_id)&.name %></li>
+        <li>Nature: <%= s.nature_id %> | Tera: <%= s.tera_type %></li>
+        <li>EVs: <%= [s.ev_hp,s.ev_atk,s.ev_def,s.ev_spa,s.ev_spd,s.ev_spe].join("/") %></li>
+        <li>Moves:
+          <%= s.move_slots.order(:index).map { |m| DexMove.find_by(id: m.move_id)&.name }.compact.join(", ") %>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+</div>

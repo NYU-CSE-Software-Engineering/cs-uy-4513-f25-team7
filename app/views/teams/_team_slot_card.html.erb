@@ -1,0 +1,88 @@
+<!-- app/views/teams/_team_slot_card.html.erb -->
+
+<div class="slot-card"
+     id="slot-<%= f.object.position %>"
+     data-controller="slot"
+     data-slot-position-value="<%= f.object.position %>">
+
+  <div class="slot-header">
+    <span>Slot <%= f.object.position %></span>
+    <% team = f.object.team %>
+    <% if team.respond_to?(:legality_issues) && team.persisted? &&
+          team.legality_issues.where(team_slot_id: f.object.id).exists? %>
+      <span class="badge badge--illegal">Illegal</span>
+    <% end %>
+  </div>
+
+  <!-- Species -->
+  <div class="row">
+    <%= f.hidden_field :species_id, data: { slot_target: "speciesId" } %>
+    <input type="text"
+           placeholder="Species"
+           list="species-options-<%= f.object.position %>"
+           data-slot-target="speciesName"
+           data-action="input->slot#searchSpecies change->slot#commitSpecies"
+           value="<%= (defined?(DexSpecies) && f.object.species_id) ? DexSpecies.find_by(id: f.object.species_id)&.name : '' %>">
+    <datalist id="species-options-<%= f.object.position %>" data-slot-target="speciesOptions"></datalist>
+  </div>
+
+  <!-- Ability -->
+  <div class="row">
+    <%= f.hidden_field :ability_id, data: { slot_target: "abilityId" } %>
+    <input type="text"
+           placeholder="Ability"
+           list="ability-options-<%= f.object.position %>"
+           data-slot-target="abilityName"
+           data-action="input->slot#searchAbilities change->slot#commitAbility">
+    <datalist id="ability-options-<%= f.object.position %>" data-slot-target="abilityOptions"></datalist>
+  </div>
+
+  <!-- Item -->
+  <div class="row">
+    <%= f.hidden_field :item_id, data: { slot_target: "itemId" } %>
+    <input type="text"
+           placeholder="Item"
+           list="item-options-<%= f.object.position %>"
+           data-slot-target="itemName"
+           data-action="input->slot#searchItems change->slot#commitItem">
+    <datalist id="item-options-<%= f.object.position %>" data-slot-target="itemOptions"></datalist>
+  </div>
+
+  <div class="row">
+    <%= f.select :nature_id, DexLookup.natures.map { |n| [n[:name], n[:name]] }, include_blank: true %>
+    <%= f.select :tera_type, TeamSlot.tera_types.keys.map { |k| [k, k] }, include_blank: true %>
+  </div>
+
+  <div class="eviv">
+    <!-- EVs -->
+    <%= f.number_field :ev_hp,  min:0, max:252, placeholder:"EV HP" %>
+    <%= f.number_field :ev_atk, min:0, max:252, placeholder:"EV Atk" %>
+    <%= f.number_field :ev_def, min:0, max:252, placeholder:"EV Def" %>
+    <%= f.number_field :ev_spa, min:0, max:252, placeholder:"EV SpA" %>
+    <%= f.number_field :ev_spd, min:0, max:252, placeholder:"EV SpD" %>
+    <%= f.number_field :ev_spe, min:0, max:252, placeholder:"EV Spe" %>
+
+    <!-- IVs -->
+    <%= f.number_field :iv_hp,  min:0, max:31, placeholder:"IV HP" %>
+    <%= f.number_field :iv_atk, min:0, max:31, placeholder:"IV Atk" %>
+    <%= f.number_field :iv_def, min:0, max:31, placeholder:"IV Def" %>
+    <%= f.number_field :iv_spa, min:0, max:31, placeholder:"IV SpA" %>
+    <%= f.number_field :iv_spd, min:0, max:31, placeholder:"IV SpD" %>
+    <%= f.number_field :iv_spe, min:0, max:31, placeholder:"IV Spe" %>
+  </div>
+
+  <div class="moves">
+    <%= f.fields_for :move_slots do |mf| %>
+      <div class="move-row">
+        <%= mf.hidden_field :move_id, data: { slot_target: "moveId" } %>
+        <input type="text"
+               placeholder="Move"
+               list="move-options-<%= f.object.position %>-<%= mf.object.index || 0 %>"
+               data-slot-target="moveName"
+               data-action="input->slot#searchMoves change->slot#commitMove">
+        <datalist id="move-options-<%= f.object.position %>-<%= mf.object.index || 0 %>"></datalist>
+        <%= mf.hidden_field :index %>
+      </div>
+    <% end %>
+  </div>
+</div>

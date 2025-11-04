@@ -1,10 +1,35 @@
+# config/routes.rb
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  devise_for :users
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  authenticated :user do
+    root to: "teams#index", as: :authenticated_root
+  end
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  unauthenticated do
+    devise_scope :user do
+      root to: "devise/sessions#new", as: :unauthenticated_root
+    end
+  end
+
+  resources :teams, only: [:index, :show, :new, :create, :edit, :update] do
+    member do
+      post  :validate    # adds validate_team_path(@team)
+      patch :publish     # adds publish_team_path(@team)
+      patch :unpublish   # adds unpublish_team_path(@team)
+    end
+  end
+
+  # (Optional) legacy autocomplete route you added
+  get "/dex/species", to: "dex_autocomplete#species"
+
+  # API lookups for autocomplete
+  namespace :api do
+    get "lookup/species",   to: "lookup#species"
+    get "lookup/moves",     to: "lookup#moves"
+    get "lookup/items",     to: "lookup#items"
+    get "lookup/abilities", to: "lookup#abilities"
+    get "lookup/natures",   to: "lookup#natures"
+    get "lookup/learnset",  to: "lookup#learnset"
+  end
 end

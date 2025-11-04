@@ -11,6 +11,28 @@
   </head>
 
   <body>
-    <%= yield %>
+  <header style="padding:10px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;">
+    <div>
+      <%= link_to "Home", (user_signed_in? ? authenticated_root_path : unauthenticated_root_path) %>
+    </div>
+
+    <div>
+      <% if user_signed_in? %>
+        Signed in as <strong><%= current_user.email %></strong>
+        |
+        <%= link_to "My Teams", teams_path %> |
+        <%= link_to "New Team", new_team_path %> |
+        <%= button_to "Sign out", destroy_user_session_path, method: :delete, form: { data: { turbo: "false" } } %>
+      <% else %>
+        <%= link_to "Sign in", new_user_session_path %> |
+        <%= link_to "Sign up", new_user_registration_path %>
+      <% end %>
+    </div>
+  </header>
+
+  <% if notice %><p class="notice"><%= notice %></p><% end %>
+  <% if alert %><p class="alert"><%= alert %></p><% end %>
+
+  <%= yield %>
   </body>
 </html>
