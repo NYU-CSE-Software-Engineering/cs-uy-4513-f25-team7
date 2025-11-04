@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_04_015156) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_04_025614) do
   create_table "comments", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "post_id", null: false
@@ -126,7 +126,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_04_015156) do
 
   create_table "teams", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.integer "format_id", null: false
+    t.integer "format_id"
     t.string "name"
     t.integer "status"
     t.integer "visibility"

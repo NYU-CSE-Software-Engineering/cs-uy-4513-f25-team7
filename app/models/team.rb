@@ -1,19 +1,15 @@
 # app/models/team.rb
 class Team < ApplicationRecord
   belongs_to :user
-  belongs_to :format
+  belongs_to :format, optional: true   # <-- make format not required
 
   has_many :team_slots, -> { order(:position) }, dependent: :destroy, inverse_of: :team
-  # app/models/team.rb
   has_many :legality_issues, dependent: :destroy
-
 
   enum status: { draft: 0, published: 1 }, _default: :draft
   enum visibility: { private_vis: 0, unlisted: 1, public_vis: 2 }, _prefix: :visibility
 
-  accepts_nested_attributes_for :team_slots,
-                                allow_destroy: true,
-                                reject_if: :all_blank   # <-- THIS LINE
+  accepts_nested_attributes_for :team_slots, allow_destroy: true, reject_if: :all_blank
 
   validate :max_six_slots
   def max_six_slots
