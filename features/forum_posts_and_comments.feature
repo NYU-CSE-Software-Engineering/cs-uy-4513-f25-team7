@@ -4,8 +4,7 @@ Feature: Forum posts, meta posts, and comments
   So that I can share updates and discuss strategies with the community
 
   Background:
-    Given I am a registered user
-    And I am signed in
+    Given I am signed in
 
   @happy
   Scenario: Create a standard post successfully

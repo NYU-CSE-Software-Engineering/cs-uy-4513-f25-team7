@@ -14,6 +14,8 @@
   <header style="padding:10px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;">
     <div>
       <%= link_to "Home", (user_signed_in? ? authenticated_root_path : unauthenticated_root_path) %>
+      |
+      <%= link_to "Forum", posts_path %>
     </div>
 
     <div>

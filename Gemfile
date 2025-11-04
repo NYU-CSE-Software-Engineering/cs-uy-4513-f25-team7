@@ -39,4 +39,5 @@ group :test do
   gem "cucumber-rails", require: false
   gem "selenium-webdriver"
   gem "database_cleaner-active_record", "~> 2.0"
+  gem "shoulda-matchers", "~> 6.0"
 end

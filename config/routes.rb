@@ -14,10 +14,14 @@ Rails.application.routes.draw do
 
   resources :teams, only: [:index, :show, :new, :create, :edit, :update] do
     member do
-      post  :validate    # adds validate_team_path(@team)
-      patch :publish     # adds publish_team_path(@team)
-      patch :unpublish   # adds unpublish_team_path(@team)
+      post  :validate
+      patch :publish
+      patch :unpublish
     end
+  end
+
+  resources :posts do
+    resources :comments, only: [:create]
   end
 
   # (Optional) legacy autocomplete route you added

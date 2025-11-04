@@ -1,0 +1,27 @@
+<div class="container">
+  <h1>Forum Posts</h1>
+  
+  <% if user_signed_in? %>
+    <%= link_to "New Post", new_post_path, class: "btn-primary" %>
+  <% end %>
+
+  <div class="posts-list">
+    <% @posts.each do |post| %>
+      <div class="post-card">
+        <% if post.meta? %>
+          <span class="meta-badge">META</span>
+        <% end %>
+        
+        <h2><%= link_to post.title, post_path(post) %></h2>
+        <p class="post-meta">
+          Posted by <%= post.user.email %> • <%= time_ago_in_words(post.created_at) %> ago
+        </p>
+        <p class="post-body"><%= truncate(post.body, length: 200) %></p>
+        <p class="post-actions">
+          <%= link_to "View", post_path(post) %>
+          • <%= pluralize(post.comments.count, 'comment') %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div>

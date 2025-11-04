@@ -1,0 +1,45 @@
+<div class="container">
+  <div class="post-show" data-test-id="post-show">
+    <% if @post.meta? %>
+      <span class="meta-badge" data-test-id="post-badge-meta">META</span>
+    <% end %>
+    
+    <h1><%= @post.title %></h1>
+    <p class="post-meta">
+      Posted by <%= @post.user.email %> • <%= time_ago_in_words(@post.created_at) %> ago
+    </p>
+    
+    <div class="post-body">
+      <%= simple_format(@post.body) %>
+    </div>
+    
+    <%= link_to "Back to Forum", posts_path, class: "btn-secondary" %>
+  </div>
+
+  <div class="comments-section">
+    <h2>Comments (<%= @post.comments.count %>)</h2>
+    
+    <div class="comments-list">
+      <% @post.comments.order(created_at: :asc).each do |comment| %>
+        <div class="comment">
+          <p class="comment-meta">
+            <strong><%= comment.user.email %></strong> • <%= time_ago_in_words(comment.created_at) %> ago
+          </p>
+          <p class="comment-body"><%= simple_format(comment.body) %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <% if user_signed_in? %>
+      <div class="comment-form">
+        <h3>Add a comment</h3>
+        <%= form_with(model: [@post, @comment], local: true, html: { id: 'new_comment' }) do |form| %>
+          <%= form.text_area :body, placeholder: "Add a comment", rows: 3, class: "form-textarea" %>
+          <%= form.submit "Post Comment", class: "btn-primary" %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="sign-in-prompt">Please sign in to comment.</p>
+    <% end %>
+  </div>
+</div>
