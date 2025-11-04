@@ -12,24 +12,25 @@ class TeamsController < ApplicationController
 
   # GET /teams/new
   def new
-    default_format = Format.find_by(default: true) || Format.first
-    @team = current_user.teams.build(format: default_format, name: "Untitled Team")
-    build_placeholders(@team)   # ensure 6 cards + 4 move inputs each
+    # No default_format assignment — format is optional now
+    @team = current_user.teams.build(name: "Untitled Team")
+    fill_missing_slots(@team)   # ensure 6 visible cards + 4 move inputs each
   end
 
   # GET /teams/:id/edit
   def edit
-    build_placeholders(@team)   # show empty cards up to 6
+    fill_missing_slots(@team)   # show empty cards up to 6; no duplicates
   end
 
   # POST /teams
   def create
     @team = current_user.teams.build(team_params)
     @team.status ||= :draft
+
     if @team.save
       redirect_to teams_path, notice: "Saved draft: #{@team.name.presence || 'Untitled Team'}", status: :see_other
     else
-      build_placeholders(@team)  # keep 6 visible on failed save
+      fill_missing_slots(@team)  # keep 6 visible on failed save
       render :new, status: :unprocessable_entity
     end
   end
@@ -39,7 +40,7 @@ class TeamsController < ApplicationController
     if @team.update(team_params)
       redirect_to teams_path, notice: "Saved: #{@team.name.presence || 'Untitled Team'}", status: :see_other
     else
-      build_placeholders(@team)  # keep 6 visible on failed save
+      fill_missing_slots(@team)  # keep 6 visible on failed save
       render :edit, status: :unprocessable_entity
     end
   end
@@ -83,16 +84,22 @@ class TeamsController < ApplicationController
     redirect_to authenticated_root_path, alert: "Not authorized" unless @team.user == current_user
   end
 
-  # Ensure 6 visible cards and 4 move inputs for each card
-  def build_placeholders(team)
+  # Ensure 6 visible cards and 4 move inputs per card without creating duplicates
+  def fill_missing_slots(team)
+    # Ensure association is loaded so we can edit its target array
+    team.team_slots.load
+
+    # 1) Hide and clean up bad (nil-position) slots
+    bad = team.team_slots.select { |s| s.position.blank? }
+    bad.each { |s| s.mark_for_destruction }        # will be deleted on next save
+    team.team_slots.target.reject! { |s| s.position.blank? }  # don't render them
+
+    # 2) Build missing positions 1..6
     (1..6).each do |pos|
       slot = team.team_slots.find { |s| s.position == pos } || team.team_slots.build(position: pos)
 
-      # make sure 4 move inputs render
-      target = 4
-      (slot.move_slots.size...target).each do |i|
-        slot.move_slots.build(index: i)
-      end
+      # Ensure exactly 4 move inputs (only build missing ones)
+      (slot.move_slots.size...4).each { |i| slot.move_slots.build(index: i) }
     end
   end
 
