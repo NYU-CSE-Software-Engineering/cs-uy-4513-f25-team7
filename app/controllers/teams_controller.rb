@@ -86,32 +86,33 @@ class TeamsController < ApplicationController
 
   # Ensure 6 visible cards and 4 move inputs per card without creating duplicates
   def fill_missing_slots(team)
-    # Ensure association is loaded so we can edit its target array
+    # Load the association so we can edit its in-memory target array
     team.team_slots.load
 
-    # 1) Hide and clean up bad (nil-position) slots
-    bad = team.team_slots.select { |s| s.position.blank? }
-    bad.each { |s| s.mark_for_destruction }        # will be deleted on next save
-    team.team_slots.target.reject! { |s| s.position.blank? }  # don't render them
+    # 1) Do NOT render or keep any bad/nil-position slots
+    team.team_slots.target.reject! { |s| s.position.blank? }      # hide them in the view
+    team.team_slots.each { |s| s.mark_for_destruction if s.position.blank? } # will be deleted on next save
 
-    # 2) Build missing positions 1..6
+    # 2) Ensure positions 1..6 exist exactly once
     (1..6).each do |pos|
-      slot = team.team_slots.find { |s| s.position == pos } || team.team_slots.build(position: pos)
+      slot = team.team_slots.detect { |s| s.position == pos } ||
+             team.team_slots.build(position: pos)
 
-      # Ensure exactly 4 move inputs (only build missing ones)
+      # 3) Ensure exactly 4 move inputs (build only the missing ones)
       (slot.move_slots.size...4).each { |i| slot.move_slots.build(index: i) }
     end
   end
-
   def team_params
     params.require(:team).permit(
       :name, :format_id, :visibility, :status,
       team_slots_attributes: [
-        :id, :position, :species_id, :nickname, :ability_id, :item_id, :nature_id, :tera_type,
+        :id, :position, :species_id, :species_name,  # 👈 add this
+        :nickname, :ability_id, :item_id, :nature_id, :tera_type,
         :ev_hp, :ev_atk, :ev_def, :ev_spa, :ev_spd, :ev_spe,
         :iv_hp, :iv_atk, :iv_def, :iv_spa, :iv_spd, :iv_spe, :_destroy,
-        move_slots_attributes: [:id, :move_id, :index, :_destroy]
+        { move_slots_attributes: [:id, :move_id, :index, :_destroy] }
       ]
     )
   end
+
 end

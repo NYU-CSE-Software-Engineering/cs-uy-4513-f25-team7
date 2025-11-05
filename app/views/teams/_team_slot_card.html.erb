@@ -1,7 +1,13 @@
+<!-- app/views/teams/_team_slot_card.html.erb -->
 <div class="slot-card"
      id="slot-<%= f.object.position || 'x' %>"
      data-controller="slot"
+     data-action="submit@document->slot#onSubmit"
      data-slot-position-value="<%= f.object.position || '' %>">
+    <%= f.hidden_field :id %>
+    <%= f.hidden_field :position %>
+
+
 
   <div class="slot-header">
     <span>Slot <%= f.object.position || '–' %></span>
@@ -15,16 +21,28 @@
   </div>
 
   <!-- Species -->
-  <div class="row">
+  <div class="row" style="align-items:center;gap:8px">
     <%= f.hidden_field :species_id, data: { slot_target: "speciesId" } %>
+
+    <!-- NEW: shadow name field that Rails will receive -->
+    <%= f.hidden_field :species_name, data: { slot_target: "speciesNameShadow" } %>
+
     <input type="text"
            placeholder="Species"
            list="species-options-<%= f.object.position || 'x' %>"
            data-slot-target="speciesName"
            data-action="input->slot#searchSpecies change->slot#commitSpecies"
            value="<%= (defined?(DexSpecies) && f.object.species_id) ? DexSpecies.find_by(id: f.object.species_id)&.name : '' %>">
+
     <datalist id="species-options-<%= f.object.position || 'x' %>" data-slot-target="speciesOptions"></datalist>
+
+    <% pokeapi_id = DexSpecies.find_by(id: f.object.species_id)&.pokeapi_id %>
+    <img data-slot-target="sprite"
+         alt="sprite"
+         style="width:72px;height:72px;image-rendering:pixelated;object-fit:contain"
+         src="<%= pokeapi_id ? "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/#{pokeapi_id}.png" : "" %>">
   </div>
+
 
   <!-- Ability -->
   <div class="row">

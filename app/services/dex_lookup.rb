@@ -13,8 +13,8 @@ class DexLookup
     return [] if q.blank?
     DexSpecies.where(*ci_match("name", q))
               .order(:name).limit(20)
-              .pluck(:id, :name)
-              .map { |id, n| { id: id, name: n } }
+              .pluck(:id, :name, :pokeapi_id)
+              .map { |id, n, pid| { id: id, name: n, pokeapi_id: pid } }
   end
 
   def self.autocomplete_moves(q)
