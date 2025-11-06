@@ -34,12 +34,12 @@ Feature: Follow a Pokémon species to personalize the feed
     When I visit my home feed
     Then the first 5 posts in the feed should be from "Pelipper, Iron Hands"
 
-#  @ui
-#  Scenario: Show follower count on species page
-#    Given "Iron Hands" has 3 followers
-#    When I am on the "Iron Hands" species page
-#    Then I should see a follower count of 3
-#
+  @ui
+  Scenario: Show follower count on species page
+    Given "Iron Hands" has 3 followers
+    When I am on the "Iron Hands" species page
+    Then I should see a follower count of 3
+
 #  @ui
 #  Scenario: Show a "Following" badge next to species I follow
 #    Given I already follow "Pelipper"
