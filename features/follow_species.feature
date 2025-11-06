@@ -17,15 +17,15 @@ Feature: Follow a Pokémon species to personalize the feed
     Then I should see the button change to "Unfollow"
     And I should see the follower count increase by 1
 
-#
-#  @ui
-#  Scenario: Unfollow a species
-#    Given I already follow "Pelipper"
-#    And I am on the "Pelipper" species page
-#    When I click the unfollow button
-#    Then I should see the button change to "Follow"
-#    And I should see the follower count decrease by 1
-#
+
+  @ui
+  Scenario: Unfollow a species
+    Given I already follow "Pelipper"
+    And I am on the "Pelipper" species page
+    When I click the unfollow button
+    Then I should see the button change to "Follow"
+    And I should see the follower count decrease by 1
+
 #  @ui
 #  Scenario: Home feed prioritizes posts from followed species
 #    Given I already follow "Pelipper" and "Iron Hands"
