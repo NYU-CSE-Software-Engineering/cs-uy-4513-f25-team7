@@ -32,6 +32,12 @@ module Identity
       end
     end
 
+    def record_successful_login(email)
+      @failed_attempts.delete(email)
+      @locked_until.delete(email)
+      true
+    end
+
     private
 
     def current_time
