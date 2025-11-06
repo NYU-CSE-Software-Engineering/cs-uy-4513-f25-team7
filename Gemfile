@@ -9,10 +9,6 @@ group :test do
   gem 'rspec-rails'
 end
 
-  gem 'database_cleaner-active_record'
-end
-
-
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.5", ">= 7.1.5.2"
 
@@ -83,7 +79,4 @@ group :test do
   gem "database_cleaner-active_record", "~> 2.0"
   gem "capybara"
   gem "selenium-webdriver"
-end
-  gem "selenium-webdriver"              # optional, for JS/real browser
-  gem "database_cleaner-active_record"  # <- needed by features/support/env.rb
 end
