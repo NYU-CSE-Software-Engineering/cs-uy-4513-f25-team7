@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      RAILS_ENV: test
+      # If your app needs credentials on boot, add this secret:
+      # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'      # match your Ruby (3.3.8 is fine)
+          bundler-cache: true      # runs bundle install + caches gems
+
+      # If you plan to run JS/system features, install Chrome:
+      # - name: Install Chrome
+      #   uses: browser-actions/setup-chrome@v1
+
+      - name: Prepare database
+        run: |
+          bin/rails db:prepare
+
+      - name: Run RSpec
+        run: bundle exec rspec
+
+      - name: Run Cucumber
+        run: bundle exec cucumber
