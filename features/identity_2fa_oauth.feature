@@ -17,3 +17,9 @@ Feature: Identity management with 2FA and Google SSO
     When I sign up with email "brock@poke.example" and password "differentpass"
     Then I should see an error "Email has already been taken"
     And my account should not be created
+
+  Scenario: Login without 2FA (existing user without 2FA enabled)
+    Given a user exists with email "gary@poke.example" and password "eevee123"
+    When I log in with email "gary@poke.example" and password "eevee123"
+    Then I should be on the forum home page
+    And I should see a greeting "Hello, gary@poke.example"
