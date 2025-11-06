@@ -14,6 +14,15 @@ RSpec.describe Identity::LockoutTracker do
     end
   end
 
+  describe "#record_successful_login" do
+    it "clears prior failures so the next attempt starts fresh" do
+      4.times { tracker.record_failed_attempt(email) }
+      tracker.record_successful_login(email)
+
+      4.times { expect(tracker.record_failed_attempt(email)).to be false }
+    end
+  end
+
   describe "#locked?" do
     it "is true after the threshold until the lockout period expires" do
       freeze_time do
