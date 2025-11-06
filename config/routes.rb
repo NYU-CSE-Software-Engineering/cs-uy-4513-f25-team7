@@ -11,6 +11,9 @@ Rails.application.routes.draw do
 
   get "/feed", to: "feed#show", as: :feed
 
+  get "/species", to: "species#index", as: :species_index
+
+
   root "species#index"
   # Defines the root path route ("/")
   # root "posts#index"

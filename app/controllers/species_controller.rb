@@ -3,7 +3,8 @@ class SpeciesController < ApplicationController
   layout false
 
   def index
-    @species = []
+    query = params[:q].to_s.strip
+    @species = query.present? ? [query] : []
   end
 
   def show

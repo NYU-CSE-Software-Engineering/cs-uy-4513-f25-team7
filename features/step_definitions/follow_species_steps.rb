@@ -157,3 +157,8 @@ Given("{string} has {int} followers") do |name, count|
   # Seed follower count only (don’t toggle following state)
   FollowsController.seed_followers(name, count)
 end
+
+When("I search for species {string}") do |name|
+  visit routes.species_index_path(q: name)
+  expect(page).to have_content(name)
+end
