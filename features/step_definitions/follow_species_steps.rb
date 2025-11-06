@@ -114,3 +114,16 @@ Then("I should see a {string} badge next to {string}") do |badge_text, species_n
     expect(page).to have_css(FOLLOWING_BADGE_SELECTOR, text: badge_text)
   end
 end
+
+Given("I already follow {string}") do |name|
+  FakeSpeciesRegistry.add(name) unless FakeSpeciesRegistry.include?(name)
+  # Seed the in-memory controller so the page renders "Unfollow" and a nonzero count.
+  FollowsController.seed_follow(name, count: 1)
+end
+
+Given("I already follow {string} and {string}") do |a, b|
+  steps %Q{
+    Given I already follow "#{a}"
+    And I already follow "#{b}"
+  }
+end

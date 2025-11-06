@@ -24,4 +24,15 @@ class FollowsController < ApplicationController
   # helpers for views
   def self.following_for(name) = @@state[name]
   def self.count_for(name)     = @@counts[name]
+
+  def self.reset!
+    @@state  = Hash.new(false)
+    @@counts = Hash.new(0)
+  end
+
+  def self.seed_follow(name, count: 1)
+    @@state[name]  = true
+    @@counts[name] = count
+  end
+
 end
