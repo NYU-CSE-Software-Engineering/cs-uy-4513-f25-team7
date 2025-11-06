@@ -308,9 +308,22 @@ GEM
       io-console (~> 0.5)
     rexml (3.4.4)
     rotp (6.3.0)
+    rspec-core (3.13.6)
+      rspec-support (~> 3.13.0)
     rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.7)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-rails (7.1.1)
+      actionpack (>= 7.0)
+      activesupport (>= 7.0)
+      railties (>= 7.0)
+      rspec-core (~> 3.13)
+      rspec-expectations (~> 3.13)
+      rspec-mocks (~> 3.13)
+      rspec-support (~> 3.13)
     rspec-support (3.13.6)
     rubyzip (3.2.0)
     securerandom (0.4.1)
@@ -389,9 +402,8 @@ PLATFORMS
 DEPENDENCIES
   bcrypt (~> 3.1)
   bootsnap
-  capybara
+  capybara (~> 3.40)
   cucumber-rails
-  database_cleaner-active_record
   database_cleaner-active_record (~> 2.0)
   debug
   importmap-rails
@@ -402,6 +414,7 @@ DEPENDENCIES
   rails (~> 7.1.5, >= 7.1.5.2)
   rotp (~> 6.3)
   rspec-expectations
+  rspec-rails (~> 7.1)
   selenium-webdriver
   spring
   sprockets-rails
