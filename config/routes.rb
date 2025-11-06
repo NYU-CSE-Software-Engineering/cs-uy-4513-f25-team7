@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   post   "/species/:name/follow",  to: "follows#create",  as: :species_follow
   delete "/species/:name/follow",  to: "follows#destroy"
 
+  get "/feed", to: "feed#show", as: :feed
+
   root "species#index"
   # Defines the root path route ("/")
   # root "posts#index"

@@ -1,6 +1,5 @@
 class FollowsController < ApplicationController
-  # in-memory follow state, keyed by species name
-  @@state = Hash.new(false)
+  @@state  = Hash.new(false)
   @@counts = Hash.new(0)
 
   def create
@@ -21,10 +20,16 @@ class FollowsController < ApplicationController
     redirect_to species_path(name: name)
   end
 
-  # helpers for views
+  # ===== helpers used by views/steps/specs =====
   def self.following_for(name) = @@state[name]
   def self.count_for(name)     = @@counts[name]
 
+  # >>> add this method <<<
+  def self.followed_species
+    @@state.select { |_, v| v }.keys
+  end
+
+  # ===== test seed helpers =====
   def self.reset!
     @@state  = Hash.new(false)
     @@counts = Hash.new(0)
@@ -34,5 +39,4 @@ class FollowsController < ApplicationController
     @@state[name]  = true
     @@counts[name] = count
   end
-
 end

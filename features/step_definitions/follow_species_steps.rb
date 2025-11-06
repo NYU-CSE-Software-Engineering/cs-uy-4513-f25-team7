@@ -127,3 +127,26 @@ Given("I already follow {string} and {string}") do |a, b|
     And I already follow "#{b}"
   }
 end
+
+Given("there are {int} recent posts tagged with any of {string}") do |n, names|
+  species_list = names.split(",").map(&:strip)
+  FakePostStore.reset! if FakePostStore.all.empty?
+
+  n.times do |i|
+    sp = species_list[i % species_list.size]
+    title = "Followed Post #{i + 1} (#{sp})"
+    FakePostStore.add(title: title, species: sp)
+  end
+end
+
+Given("there are {int} recent posts without any followed species") do |n|
+  n.times do |i|
+    title = "General Post #{i + 1}"
+    FakePostStore.add(title: title, species: nil)
+  end
+end
+
+When("I visit my home feed") do
+  visit routes.feed_path
+  expect(page).to have_css(HOME_FEED_SELECTOR)
+end
