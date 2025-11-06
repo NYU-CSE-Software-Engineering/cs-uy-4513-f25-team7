@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Identity::LockoutTracker do
+  include ActiveSupport::Testing::TimeHelpers
+
   subject(:tracker) { described_class.new(max_attempts: 5, lockout_period: 15.minutes) }
 
   let(:email) { "may@poke.example" }
@@ -9,6 +11,21 @@ RSpec.describe Identity::LockoutTracker do
     it "returns false until the max attempts are reached, then true" do
       4.times { expect(tracker.record_failed_attempt(email)).to be false }
       expect(tracker.record_failed_attempt(email)).to be true
+    end
+  end
+
+  describe "#locked?" do
+    it "is true after the threshold until the lockout period expires" do
+      freeze_time do
+        5.times { tracker.record_failed_attempt(email) }
+        expect(tracker.locked?(email)).to be true
+
+        travel 14.minutes
+        expect(tracker.locked?(email)).to be true
+
+        travel 1.minute
+        expect(tracker.locked?(email)).to be false
+      end
     end
   end
 end
