@@ -6,10 +6,12 @@
 
 <p>Enter authentication code</p>
 
-<%= form_with url: two_factor_verify_path, method: :post do |f| %>
+<%= form_with url: two_factor_verify_path, method: :post, data: { turbo: false } do %>
   <div>
     <%= label_tag :code, "Authentication code" %><br>
     <%= text_field_tag :code %>
   </div>
-  <%= submit_tag "Verify" %>
+
+  <!-- Make the submit a real <button>, so Capybara's click_button can find it -->
+  <button type="submit">Submit</button>
 <% end %>
