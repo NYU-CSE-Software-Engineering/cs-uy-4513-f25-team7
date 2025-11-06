@@ -39,4 +39,9 @@ class FollowsController < ApplicationController
     @@state[name]  = true
     @@counts[name] = count
   end
+
+  def self.seed_followers(name, count)
+    @@counts[name] = count
+  end
+
 end

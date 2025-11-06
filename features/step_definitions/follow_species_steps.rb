@@ -150,3 +150,10 @@ When("I visit my home feed") do
   visit routes.feed_path
   expect(page).to have_css(HOME_FEED_SELECTOR)
 end
+
+Given("{string} has {int} followers") do |name, count|
+  # Ensure this species exists in our in-memory registry
+  FakeSpeciesRegistry.add(name) unless FakeSpeciesRegistry.include?(name)
+  # Seed follower count only (don’t toggle following state)
+  FollowsController.seed_followers(name, count)
+end
