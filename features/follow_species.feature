@@ -40,8 +40,8 @@ Feature: Follow a Pokémon species to personalize the feed
     When I am on the "Iron Hands" species page
     Then I should see a follower count of 3
 
-#  @ui
-#  Scenario: Show a "Following" badge next to species I follow
-#    Given I already follow "Pelipper"
-#    When I search for species "Pelipper"
-#    Then I should see a "Following" badge next to "Pelipper"
+  @ui
+  Scenario: Show a "Following" badge next to species I follow
+    Given I already follow "Pelipper"
+    When I search for species "Pelipper"
+    Then I should see a "Following" badge next to "Pelipper"
