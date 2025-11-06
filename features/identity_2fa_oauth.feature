@@ -33,3 +33,11 @@ Feature: Identity management with 2FA and Google SSO
     When I enter a valid authentication code from my authenticator
     Then I should see a message "Two-factor authentication enabled"
     And 2FA should be active on my account
+
+  Scenario: Enable two-factor authentication with incorrect code (sad path)
+    Given I log in with email "ash@poke.example" and password "pikachu123"
+    And I navigate to my account settings
+    When I enable two-factor authentication
+    And I enter an invalid authentication code
+    Then I should see an error "Incorrect code. Please try again."
+    And 2FA should not be enabled on my account
