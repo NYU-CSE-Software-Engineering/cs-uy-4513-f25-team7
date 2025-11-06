@@ -21,7 +21,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3'      # match your Ruby (3.3.8 is fine)
+          ruby-version: '3.3.8'      # match your Ruby (3.3.8 is fine)
           bundler-cache: true      # runs bundle install + caches gems
 
       # If you plan to run JS/system features, install Chrome:
