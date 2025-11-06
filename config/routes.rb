@@ -18,4 +18,8 @@ Rails.application.routes.draw do
   get  "/two_factor/verify", to: "two_factor#prompt",      as: :two_factor_verify
   post "/two_factor/verify", to: "two_factor#verify_login"
 
+  get  "/auth/google_oauth2/callback", to: "sessions#google",  as: :google_oauth2_callback
+  get  "/auth/failure",                to: "sessions#failure"
+  get "/auth/:provider/callback", to: "sessions#google"
+  get "/auth/failure",            to: "sessions#failure"
 end

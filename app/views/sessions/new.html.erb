@@ -18,4 +18,10 @@
   <div>
     <%= submit_tag "Log in" %>
   </div>
+
+  <!-- link to google sign in for scen6 -->
+  <div class="oauth-providers">
+    <%= link_to "Sign in with Google", "/auth/google_oauth2", id: "google-login-link", data: { turbo: false } %>
+  </div>
+
 <% end %>
