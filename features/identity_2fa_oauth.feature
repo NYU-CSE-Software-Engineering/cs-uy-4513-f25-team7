@@ -41,3 +41,11 @@ Feature: Identity management with 2FA and Google SSO
     And I enter an invalid authentication code
     Then I should see an error "Incorrect code. Please try again."
     And 2FA should not be enabled on my account
+
+  Scenario: Login with 2FA enabled but wrong code (sad path)
+    Given a user exists with email "ash@poke.example" and password "pikachu123" and 2FA enabled
+    When I log in with email "ash@poke.example" and password "pikachu123"
+    Then I should be prompted for my 2FA code
+    When I enter an invalid authentication code
+    Then I should see an error "Invalid two-factor code"
+    And I should be returned to the 2FA code prompt (not logged in)
