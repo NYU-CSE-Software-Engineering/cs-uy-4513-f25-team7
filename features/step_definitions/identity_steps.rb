@@ -1,6 +1,8 @@
 # features/step_definitions/identity_steps.rb
-require 'omniauth'
-require 'rotp'
+require "omniauth"
+require "rotp"
+require "active_support/core_ext/numeric/time"
+require "identity/lockout_tracker"
 
 Before do
   @users = {}
@@ -18,6 +20,7 @@ Before do
   @pending_2fa_enrollment = nil
   @current_user_email = nil
   @visible_profile_identifier = nil
+  @lockout_tracker = Identity::LockoutTracker.new(max_attempts: 5, lockout_period: 15.minutes)
 end
 
 def create_user(email, password, otp_enabled: false, otp_secret: nil)
@@ -36,6 +39,7 @@ def set_logged_in_user(email)
   @session[:pending_user] = nil
   @current_user_email = email
   @visible_profile_identifier = email
+  @lockout_tracker&.record_successful_login(email)
 end
 
 def totp_valid?(secret, code)
@@ -67,6 +71,15 @@ def handle_two_factor_login(code)
     @session[:awaiting_2fa] = true
     @current_page = :two_factor_prompt
   end
+end
+
+def lock_account(email)
+  @messages << "Your account is locked for 15 minutes."
+  @session[:logged_in] = false
+  @session[:awaiting_2fa] = false
+  @session[:pending_user] = nil
+  @current_page = :login
+  @current_user_email = email
 end
 
 Given("a user exists with email {string} and password {string}") do |email, password|
@@ -104,10 +117,20 @@ When("I sign up with email {string} and password {string}") do |email, password|
 end
 
 When("I log in with email {string} and password {string}") do |email, password|
-  user = @users[email]
   @current_user_email = email
+
+  if @lockout_tracker.locked?(email)
+    lock_account(email)
+    next
+  end
+
+  user = @users[email]
   if user.nil? || user[:password] != password
-    @messages << "Invalid email or password"
+    if @lockout_tracker.record_failed_attempt(email)
+      lock_account(email)
+    else
+      @messages << "Invalid email or password"
+    end
     @session[:logged_in] = false
     @session[:awaiting_2fa] = false
     @session[:pending_user] = nil
@@ -276,4 +299,9 @@ end
 Then("I should remain on the login page not logged in") do
   expect(@session[:logged_in]).to be false
   expect(@current_page).to eq(:login)
+end
+
+# Add this one for TDD Assignment
+When("I attempt to log in with email {string} and password {string}") do |email, password|
+  step %{I log in with email "#{email}" and password "#{password}"}
 end
