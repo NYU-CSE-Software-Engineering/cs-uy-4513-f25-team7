@@ -40,25 +40,21 @@ end
 
 # ------- Given -------
 Given("a user exists with email {string} and password {string}") do |email, password|
-  User.create!(email: email, password: password, password_confirmation: password)
+  User.find_or_create_by!(email: email) do |u|
+    u.password = password
+    u.password_confirmation = password
+  end
 end
 
 Given("a user exists with email {string} and password {string} and 2FA enabled") do |email, password|
-  user = User.create!(email: email, password: password, password_confirmation: password)
+  user = User.find_or_create_by!(email: email) do |u|
+    u.password = password
+    u.password_confirmation = password
+  end
+
+  # enable 2FA for this user
   secret = ROTP::Base32.random_base32
-  if user.respond_to?(:otp_secret)
-    user.update!(otp_secret: secret)
-  else
-    raise "User model needs an :otp_secret column (string) to store 2FA secret"
-  end
-  # Mark 2FA enabled depending on your schema
-  if user.respond_to?(:otp_enabled)
-    user.update!(otp_enabled: true)
-  elsif user.respond_to?(:otp_required_for_login)
-    user.update!(otp_required_for_login: true)
-  else
-    raise "User model needs a boolean flag (:otp_enabled or :otp_required_for_login) to mark 2FA active"
-  end
+  user.update!(otp_enabled: true, otp_secret: secret)
 end
 
 Given("I am on the registration page") do

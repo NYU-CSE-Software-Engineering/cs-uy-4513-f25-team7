@@ -1,6 +1,5 @@
 class TwoFactorController < ApplicationController
-  before_action :require_login
-
+  before_action :require_login, only: [:new, :create]
   def new
     # Ensure user has a secret for enrollment
     unless current_user.otp_secret.present?
@@ -34,4 +33,31 @@ class TwoFactorController < ApplicationController
       redirect_to edit_user_registration_path, alert: "Incorrect code. Please try again."
     end
   end
+
+  def prompt
+    @pending_user = User.find_by(id: session[:pending_user_id])
+    unless @pending_user&.otp_enabled
+      redirect_to new_user_session_path, alert: "No pending 2FA login" and return
+    end
+    # Render prompt form
+  end
+
+  def verify_login
+    user = User.find_by(id: session[:pending_user_id])
+    unless user&.otp_enabled
+      redirect_to new_user_session_path, alert: "No pending 2FA login" and return
+    end
+
+    code = params[:code].to_s.strip
+    if ROTP::TOTP.new(user.otp_secret).verify(code, drift_ahead: 1, drift_behind: 1)
+      session[:pending_user_id] = nil
+      session[:user_id] = user.id
+      redirect_to root_path, notice: "Signed in"
+    else
+      flash.now[:alert] = "Invalid two-factor code"
+      @pending_user = user
+      render :prompt, status: :unauthorized
+    end
+  end
+
 end
