@@ -5,11 +5,11 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  resources :dex_species, only: [:index, :show] do
-    resource :follow, only: [:create, :destroy]  # POST/DELETE /dex_species/:id/follow
-  end
-  root "feed#show"
+  get    "/species/:name",         to: "species#show",    as: :species
+  post   "/species/:name/follow",  to: "follows#create",  as: :species_follow
+  delete "/species/:name/follow",  to: "follows#destroy"
 
+  root "species#index"
   # Defines the root path route ("/")
   # root "posts#index"
 end
