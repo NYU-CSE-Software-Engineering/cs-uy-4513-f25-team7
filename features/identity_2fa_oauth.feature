@@ -23,3 +23,13 @@ Feature: Identity management with 2FA and Google SSO
     When I log in with email "gary@poke.example" and password "eevee123"
     Then I should be on the forum home page
     And I should see a greeting "Hello, gary@poke.example"
+
+  Scenario: Enable two-factor authentication (happy path setup)
+    Given I log in with email "ash@poke.example" and password "pikachu123"
+    And I navigate to my account settings
+    When I enable two-factor authentication
+    Then I should see a QR code for 2FA setup
+    And I should see instructions to scan the code with an authenticator app
+    When I enter a valid authentication code from my authenticator
+    Then I should see a message "Two-factor authentication enabled"
+    And 2FA should be active on my account
