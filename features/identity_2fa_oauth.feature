@@ -55,3 +55,9 @@ Feature: Identity management with 2FA and Google SSO
     When I click "Sign in with Google" and approve access
     Then I should be logged in via Google OAuth
     And I should see a welcome message with my Google email
+
+  Scenario: Google OAuth login denied (sad path)
+    Given I am on the login page
+    When I click "Sign in with Google" and deny the authorization
+    Then I should see an error "Google sign-in failed or was canceled"
+    And I should remain on the login page not logged in
