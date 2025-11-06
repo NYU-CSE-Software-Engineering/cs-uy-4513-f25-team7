@@ -45,3 +45,5 @@ group :development do
   gem "web-console"
   gem "spring"  # optional; safe to keep, CI won’t load it
 end
+
+gem "devise", "~> 4.9"
