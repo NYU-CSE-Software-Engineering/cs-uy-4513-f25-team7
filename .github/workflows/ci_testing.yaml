@@ -8,7 +8,7 @@ on:
 
 jobs:
   rspec:
-    name: RSpec (required)
+    name: RSpec
     runs-on: ubuntu-latest
     env:
       RAILS_ENV: test
@@ -29,7 +29,14 @@ jobs:
         run: bin/rails db:prepare
 
       - name: Run RSpec
-        run: bundle exec rspec
+        env:
+          TERM: xterm-256color
+          FORCE_COLOR: "1"
+          CLICOLOR_FORCE: "1"
+        run: |
+            echo "::group::RSpec"
+            bundle exec rspec --color
+            echo "::endgroup::"
 
   cucumber:
     name: Cucumber
@@ -54,4 +61,11 @@ jobs:
         run: bin/rails db:prepare
 
       - name: Run Cucumber
-        run: bundle exec cucumber
+        env:
+          TERM: xterm-256color
+          FORCE_COLOR: "1"
+          CLICOLOR_FORCE: "1"
+        run: |
+            echo "::group::Cucumber"
+            bundle exec cucumber --color
+            echo "::endgroup::"
