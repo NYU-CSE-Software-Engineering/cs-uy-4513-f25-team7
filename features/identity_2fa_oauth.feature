@@ -49,3 +49,9 @@ Feature: Identity management with 2FA and Google SSO
     When I enter an invalid authentication code
     Then I should see an error "Invalid two-factor code"
     And I should be returned to the 2FA code prompt (not logged in)
+
+  Scenario: Google OAuth login success (happy path)
+    Given I am on the login page
+    When I click "Sign in with Google" and approve access
+    Then I should be logged in via Google OAuth
+    And I should see a welcome message with my Google email
