@@ -277,3 +277,8 @@ Then("I should remain on the login page not logged in") do
   expect(@session[:logged_in]).to be false
   expect(@current_page).to eq(:login)
 end
+
+# Add this one for TDD Assignment
+When("I attempt to log in with email {string} and password {string}") do |email, password|
+  step %{I log in with email "#{email}" and password "#{password}"}
+end
