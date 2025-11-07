@@ -2,14 +2,6 @@ Given("I am a registered user") do
     @user ||= User.create!(email: "test@example.com", password: "password123")
   end
   
-  Given("I am signed in") do
-    visit new_user_session_path
-    fill_in "Email", with: @user.email
-    fill_in "Password", with: "password123"
-    click_button "Log in"
-    expect(page).to have_content("Signed in")
-  end
-  
   When("I go to the new post page") do
     visit new_post_path
     expect(page).to have_selector("form#new_post")

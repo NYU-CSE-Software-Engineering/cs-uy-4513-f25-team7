@@ -1,0 +1,12 @@
+<h1>Species</h1>
+
+<div>
+  <% @species.each do |name| %>
+    <div data-test="species-row">
+      <span class="species-name"><%= name %></span>
+      <% if FollowsController.following_for(name) %>
+        <span data-test="following-badge">Following</span>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -32,14 +32,6 @@ Given("I am a registered user") do
   @me = create_user!(email: "me@example.com")
 end
 
-Given("I am signed in") do
-  @me ||= create_user!(email: "me@example.com")
-  visit new_user_session_path
-  fill_in "Email", with: @me.email
-  fill_in "Password", with: "password"
-  click_button "Log in"
-end
-
 Given('there exists another user named {string}') do |name|
   @other = create_user!(name: name)
 end
@@ -71,11 +63,6 @@ end
 Then("I should see {int} follower on Misty's profile") do |count|
   # Accept singular/plural
   expect(page).to have_content("#{count} follower").or have_content("#{count} followers")
-end
-
-Given('I already follow {string}') do |name|
-  @other = user_by_name(name)
-  Follow.find_or_create_by!(follower: @me, followee: @other)
 end
 
 Then('I should still see {int} follower on Misty\'s profile') do |count|
