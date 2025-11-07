@@ -46,17 +46,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Show any .feature files on disk
-        shell: bash
-        run: |
-          echo "[find] any *.feature under repo root:"
-          find . -type f -name "*.feature" -print || true
-
-      - name: Collect .feature files (find + jq)
+      - name: Collect .feature files
         id: collect
         shell: bash
         run: |
           set -euo pipefail
+
           mapfile -d '' files < <(
             { find ./features -type f -name "*.feature" -print0 2>/dev/null || true; \
               find ./feature  -type f -name "*.feature" -print0 2>/dev/null || true; } \
@@ -66,23 +61,18 @@ jobs:
           if [ ${#files[@]} -eq 0 ]; then
             json='[]'
           else
-            printf '%s\0' "${files[@]}" \
-              | sed -z 's#^\./##g' \
-              | jq -Rs 'split("\u0000")[:-1]'
+            # Make JSON objects: {path: "features/x.feature", name: "x.feature"}
             json=$(printf '%s\0' "${files[@]}" \
               | sed -z 's#^\./##g' \
-              | jq -Rs 'split("\u0000")[:-1]')
+              | jq -Rs 'split("\u0000")[:-1] | map({path: ., name: ( . | split("/") | last )})')
           fi
 
-          echo "Discovered features JSON: $json"
-          {
-            echo "feature_matrix<<EOF"
-            echo "$json"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          echo "feature_matrix<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$json" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
   
   cucumber:
-    name: Cucumber-${{ matrix.feature }}
+    name: Cucumber-${{ matrix.name }}
     runs-on: ubuntu-latest
     needs: 
       - discover-features
@@ -90,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        feature: ${{ fromJson(needs.discover-features.outputs.feature_matrix) }}
+        include: ${{ fromJson(needs.discover-features.outputs.feature_matrix) }}
     env:
       RAILS_ENV: test
       SECRET_KEY_BASE: "test_only_change_in_prod"
@@ -114,6 +104,6 @@ jobs:
           FORCE_COLOR: "1"
           CLICOLOR_FORCE: "1"
         run: |
-            echo "::group::${{ matrix.feature }}"
-            bundle exec cucumber --color "${{ matrix.feature }}"
+            echo "::group::${{ matrix.name }}"
+            bundle exec cucumber --color "${{ matrix.path }}"
             echo "::endgroup::"
