@@ -41,20 +41,58 @@ module FollowStepsHelpers
   def integer_from_text(text)
     text.to_s.scan(/\d+/).first.to_i
   end
+
+  def follow_species_context_for?(name)
+    @follow_species_context || FakeSpeciesRegistry.include?(name)
+  end
+
+  def seed_species_follow!(name)
+    FakeSpeciesRegistry.add(name)
+    # Seed the in-memory controller so the page renders "Unfollow" and a nonzero count.
+    FollowsController.seed_follow(name, count: 1)
+  end
+
+  def ensure_social_follow!(name)
+    follower = ensure_social_follower!
+    followee = find_social_followee!(name)
+    Follow.find_or_create_by!(follower: follower, followee: followee)
+  end
+
+  def ensure_social_follower!
+    return @me if defined?(@me) && @me.is_a?(User)
+    return @user if defined?(@user) && @user.is_a?(User)
+    return @current_user if defined?(@current_user) && @current_user.is_a?(User)
+
+    if respond_to?(:create_user!)
+      @me = create_user!(email: "me@example.com")
+    else
+      raise "No current user available to create a follow relationship"
+    end
+  end
+
+  def find_social_followee!(name)
+    if respond_to?(:user_by_name)
+      user_by_name(name)
+    elsif defined?(User)
+      if User.column_names.include?("name")
+        User.find_by!(name: name)
+      else
+        User.find_by!(email: "#{name.downcase}@example.com")
+      end
+    else
+      raise "Cannot resolve followee #{name.inspect} for social follow step"
+    end
+  end
 end
 World(FollowStepsHelpers)
 
 # ----------------------------
 # Givens (MODEL-FREE)
 # ----------------------------
-Given("I am signed in") do
-  # Pure fake; we don't need Devise or a User model for Scenario 1.
-  @current_user = :fake
-end
-
 Given("the following species exist:") do |table|
   FakeSpeciesRegistry.reset!
   table.hashes.each { |row| FakeSpeciesRegistry.add(row.fetch("name")) }
+  @follow_species_context = true
 end
 
 # ----------------------------
@@ -116,16 +154,27 @@ Then("I should see a {string} badge next to {string}") do |badge_text, species_n
 end
 
 Given("I already follow {string}") do |name|
-  FakeSpeciesRegistry.add(name) unless FakeSpeciesRegistry.include?(name)
-  # Seed the in-memory controller so the page renders "Unfollow" and a nonzero count.
-  FollowsController.seed_follow(name, count: 1)
+  if follow_species_context_for?(name)
+    seed_species_follow!(name)
+  else
+    ensure_social_follow!(name)
+  end
 end
 
 Given("I already follow {string} and {string}") do |a, b|
-  steps %Q{
-    Given I already follow "#{a}"
-    And I already follow "#{b}"
-  }
+  step %(I already follow "#{a}")
+  step %(I already follow "#{b}")
+end
+
+Given("I already follow the species {string}") do |name|
+  @follow_species_context = true
+  step %(I already follow "#{name}")
+end
+
+Given("I already follow the species {string} and {string}") do |a, b|
+  @follow_species_context = true
+  step %(I already follow "#{a}")
+  step %(I already follow "#{b}")
 end
 
 Given("there are {int} recent posts tagged with any of {string}") do |n, names|
