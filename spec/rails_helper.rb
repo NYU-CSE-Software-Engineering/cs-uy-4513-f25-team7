@@ -57,7 +57,7 @@ RSpec.configure do |config|
   # https://rspec.info/features/7-1/rspec-rails
   #
   # You can also this infer these behaviours automatically by location, e.g.
-  # /spec/models would pull in the same behaviour as `type: :model` but this
+  # /spec/models would pull in the same behaviour as `type: :models` but this
   # behaviour is considered legacy and will be removed in a future version.
   #
   # To enable this behaviour uncomment the line below.

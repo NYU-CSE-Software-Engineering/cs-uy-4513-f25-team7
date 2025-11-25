@@ -17,4 +17,11 @@ Rails.application.routes.draw do
   root "species#index"
   # Defines the root path route ("/")
   # root "posts#index"
+
+  namespace :api do
+    namespace :lookup do
+      get :species, to: "species#index"
+    end
+  end
+
 end
