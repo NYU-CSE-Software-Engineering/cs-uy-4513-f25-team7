@@ -3,6 +3,9 @@ require "rails_helper"
 
 RSpec.describe "Pokémon species lookup API", type: :request do
   describe "GET /api/lookup/species" do
+    # 🔧 Clean slate for each example
+    before { DexSpecies.delete_all }
+
     let!(:pelipper)  { DexSpecies.create!(name: "Pelipper",  pokeapi_id: 279) }
     let!(:ludicolo)  { DexSpecies.create!(name: "Ludicolo",  pokeapi_id: 272) }
     let!(:garchomp)  { DexSpecies.create!(name: "Garchomp",  pokeapi_id: 445) }

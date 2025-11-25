@@ -1,9 +1,28 @@
-<h1>Pokémon Species Lookup (lazy PokeAPI import)</h1>
+<h1>Pokémon Species</h1>
+
+<!-- Existing/spec-driven list, using @species -->
+<div data-test="species-index">
+  <% @species.each do |species| %>
+    <% name = species.respond_to?(:name) ? species.name : species.to_s %>
+
+    <div data-test="species-row">
+      <span><%= name %></span>
+
+      <% if FollowsController.following_for(name) %>
+        <span data-test="following-badge">Following</span>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<hr>
+
+<!-- New search UI powered by /api/lookup/species -->
+<h2>Lookup & Import Species</h2>
 
 <p>
-  Type a full name like <code>pikachu</code> the first time to fetch it from PokeAPI
-  and save it to your Dex. Then try a partial like <code>pik</code> to see it come
-  from your own database.
+  Type a full name like <code>pikachu</code> to fetch it from PokeAPI and save it.
+  Then try a partial like <code>pik</code> to see it come from your Dex.
 </p>
 
 <div style="margin-bottom: 1rem;">
@@ -46,9 +65,7 @@
             data.forEach((row) => {
                 const li = document.createElement("li");
 
-                // Link to your existing species#show page if you want:
                 const link = document.createElement("a");
-                // Adjust this if your species route uses a different param
                 link.href = "/species/" + encodeURIComponent(row.name);
                 link.textContent = `${row.name} (id: ${row.pokeapi_id || row.id})`;
 
@@ -87,7 +104,7 @@
 
             timeoutId = setTimeout(() => {
                 fetchSpecies(query);
-            }, 250); // debounce so we don't hammer the server on every keystroke
+            }, 250);
         });
     })();
 </script>

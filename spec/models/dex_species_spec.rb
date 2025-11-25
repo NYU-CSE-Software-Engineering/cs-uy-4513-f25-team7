@@ -3,6 +3,9 @@ require "rails_helper"
 
 RSpec.describe DexSpecies, type: :model do
   describe ".lookup_query" do
+    # 🔧 Ensure a clean slate so uniqueness validations don't collide with fixtures
+    before { DexSpecies.delete_all }
+
     let!(:pelipper) { DexSpecies.create!(name: "Pelipper", pokeapi_id: 279) }
     let!(:ludicolo) { DexSpecies.create!(name: "Ludicolo", pokeapi_id: 272) }
     let!(:garchomp) { DexSpecies.create!(name: "Garchomp", pokeapi_id: 445) }
