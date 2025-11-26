@@ -37,7 +37,7 @@ Feature: Team Editor (Build & Share Competitive Teams)
   Scenario: Attempting to add a 7th Pokémon is rejected (non-blocking)
     Given I have already added 6 Pokémon to the team
     When I try to add a 7th Pokémon
-    Then I should see "A team can have at most 6 Pokémon"
+    Then I should see in the Team Editor "A team can have at most 6 Pokémon"
     And the team should still show exactly 6 Pokémon slots
 
   Scenario: Inline legality validation marks illegal selections

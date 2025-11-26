@@ -1,6 +1,6 @@
 <h1>Team Editor</h1>
 
-<%# Show “Saved draft: Rain Balance” via flash after successful save %>
+<%# Show “Saved draft: Rain Balance” via flash after successful save (AC1) %>
 <% if flash[:notice].present? %>
   <p class="flash notice"><%= flash[:notice] %></p>
 <% end %>
@@ -94,7 +94,7 @@
           <%= number_field_tag "slot_#{i}_spe_ivs" %>
         </fieldset>
 
-        <!-- This label is what the step “the field ‘Moves’…” looks for -->
+        <!-- This label is what the steps look for when they say "the field 'Moves'" -->
         <div>
           <%= label_tag "slot_#{i}_moves_group", "Moves" %>
         </div>
@@ -114,6 +114,16 @@
         </fieldset>
       </div>
     <% end %>
+  </div>
+
+  <%# AC2: Attempting to add a 7th Pokémon is rejected (non-blocking) %>
+  <div class="slot-controls">
+    <button type="button" id="add-pokemon-slot" disabled>
+      Add Pokémon
+    </button>
+    <p class="slot-limit-help">
+      A team can have at most 6 Pokémon
+    </p>
   </div>
 
   <div>
