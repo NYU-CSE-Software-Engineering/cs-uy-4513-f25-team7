@@ -30,7 +30,7 @@ Feature: Team Editor (Build & Share Competitive Teams)
       | Tera Type | Water |
     And I add Pokémon slots 3 through 6 with valid configurations
     And I press "Save"
-    Then I should see "Saved draft: Rain Balance"
+    Then I should see in the Team Editor "Saved draft: Rain Balance"
     And the team should be persisted as a draft owned by me
     And I should see a last-saved timestamp
 

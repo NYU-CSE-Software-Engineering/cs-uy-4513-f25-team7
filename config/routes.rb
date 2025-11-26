@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   get "/species", to: "species#index", as: :species_index
 
+  resources :teams, only: [:new, :create, :show]
 
   root "species#index"
   # Defines the root path route ("/")

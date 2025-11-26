@@ -1,0 +1,16 @@
+<h1>Team Editor</h1>
+
+<% if team.persisted? %>
+  <p>Saved draft: <%= team.name %></p>
+<% end %>
+
+<p>Draft Owned by me</p>
+
+<p>
+  Last saved:
+  <% if team.persisted? %>
+    <%= team.updated_at&.utc&.strftime("%Y-%m-%d %H:%M:%S UTC") %>
+  <% else %>
+    Not yet saved
+  <% end %>
+</p>

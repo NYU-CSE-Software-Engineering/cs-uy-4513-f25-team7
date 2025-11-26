@@ -55,14 +55,27 @@ When(/^I press "([^"]*)"$/) do |button_text|
   click_button button_text
 end
 
-Then(/^I should see "([^"]*)"$/) do |text|
-  expect(page).to have_content(text)
+# Then(/^I should see "([^"]*)"$/) do |text|
+#   expect(page).to have_content(text)
+# end
+
+Then(/^I should see in the Team Editor "([^"]*)"$/) do |text|
+  # scope to the team editor area if you have a wrapper
+  if page.has_css?('.team-editor')
+    within('.team-editor') do
+      expect(page).to have_content(text)
+    end
+  else
+    # fallback if you haven't wrapped the page yet
+    expect(page).to have_content(text)
+  end
 end
 
 Then("the team should be persisted as a draft owned by me") do
   expect(page).to have_content("Draft")
-  expect(page).to have_content(@user.email).or have_content("Owned by me")
+  expect(page).to have_content("Owned by me")
 end
+
 
 Then("I should see a last-saved timestamp") do
   expect(page).to have_content("Last saved").or have_css("[data-last-saved]")

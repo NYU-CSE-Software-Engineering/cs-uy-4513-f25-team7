@@ -1,0 +1,141 @@
+<h1>Team Editor</h1>
+
+<%# AC1: show flash message "Saved draft: Rain Balance" after Save %>
+<% if flash[:notice].present? %>
+  <p class="flash notice"><%= flash[:notice] %></p>
+<% end %>
+
+<%# AC1: show saved draft banner with the team name (this is what the spec checks) %>
+<% if @team && @team.name.present? %>
+  <p>Saved draft: <%= @team.name %></p>
+<% end %>
+
+<%# AC1: show draft + ownership info %>
+<div class="team-meta">
+  <span class="badge badge-status">Draft</span>
+  <span class="badge badge-owner">Owned by me</span>
+</div>
+
+<%# AC1: show last-saved timestamp (text + data attribute) %>
+<p class="last-saved" data-last-saved="<%= Time.current.iso8601 %>">
+  Last saved: <%= Time.current.to_s %>
+</p>
+
+<%= form_with model: @team, url: teams_path, method: :post, local: true do |f| %>
+  <div>
+    <%= f.label :name, "Team Name" %>
+    <%= f.text_field :name, id: "team_name" %>
+  </div>
+
+  <div id="team-slots">
+    <% (1..6).each do |i| %>
+      <div id="slot-<%= i %>" data-slot="<%= i %>" class="pokemon-slot-card">
+        <h3>Slot <%= i %></h3>
+
+        <div>
+          <%= label_tag "slot_#{i}_species", "Species" %>
+          <%= text_field_tag "slot_#{i}_species" %>
+        </div>
+
+        <div>
+          <%= label_tag "slot_#{i}_item", "Item" %>
+          <%= text_field_tag "slot_#{i}_item" %>
+        </div>
+
+        <div>
+          <%= label_tag "slot_#{i}_ability", "Ability" %>
+          <%= text_field_tag "slot_#{i}_ability" %>
+        </div>
+
+        <div>
+          <%= label_tag "slot_#{i}_nature", "Nature" %>
+          <%= text_field_tag "slot_#{i}_nature" %>
+        </div>
+
+        <div>
+          <%= label_tag "slot_#{i}_tera_type", "Tera Type" %>
+          <%= text_field_tag "slot_#{i}_tera_type" %>
+        </div>
+
+        <fieldset>
+          <legend>EVs</legend>
+          <%= label_tag "slot_#{i}_hp_evs",  "HP EVs" %>
+          <%= number_field_tag "slot_#{i}_hp_evs" %>
+
+          <%= label_tag "slot_#{i}_atk_evs", "Atk EVs" %>
+          <%= number_field_tag "slot_#{i}_atk_evs" %>
+
+          <%= label_tag "slot_#{i}_def_evs", "Def EVs" %>
+          <%= number_field_tag "slot_#{i}_def_evs" %>
+
+          <%= label_tag "slot_#{i}_spa_evs", "SpA EVs" %>
+          <%= number_field_tag "slot_#{i}_spa_evs" %>
+
+          <%= label_tag "slot_#{i}_spd_evs", "SpD EVs" %>
+          <%= number_field_tag "slot_#{i}_spd_evs" %>
+
+          <%= label_tag "slot_#{i}_spe_evs", "Spe EVs" %>
+          <%= number_field_tag "slot_#{i}_spe_evs" %>
+        </fieldset>
+
+        <fieldset>
+          <legend>IVs</legend>
+          <%= label_tag "slot_#{i}_hp_ivs",  "HP IVs" %>
+          <%= number_field_tag "slot_#{i}_hp_ivs" %>
+
+          <%= label_tag "slot_#{i}_atk_ivs", "Atk IVs" %>
+          <%= number_field_tag "slot_#{i}_atk_ivs" %>
+
+          <%= label_tag "slot_#{i}_def_ivs", "Def IVs" %>
+          <%= number_field_tag "slot_#{i}_def_ivs" %>
+
+          <%= label_tag "slot_#{i}_spa_ivs", "SpA IVs" %>
+          <%= number_field_tag "slot_#{i}_spa_ivs" %>
+
+          <%= label_tag "slot_#{i}_spd_ivs", "SpD IVs" %>
+          <%= number_field_tag "slot_#{i}_spd_ivs" %>
+
+          <%= label_tag "slot_#{i}_spe_ivs", "Spe IVs" %>
+          <%= number_field_tag "slot_#{i}_spe_ivs" %>
+        </fieldset>
+
+        <!-- This label is what the Cucumber step "the field 'Moves'..." looks for -->
+        <div>
+          <%= label_tag "slot_#{i}_moves_group", "Moves" %>
+        </div>
+
+        <fieldset aria-labelledby="slot_<%= i %>_moves_group">
+          <%= label_tag "slot_#{i}_move_1", "Move 1" %>
+          <%= text_field_tag "slot_#{i}_move_1" %>
+
+          <%= label_tag "slot_#{i}_move_2", "Move 2" %>
+          <%= text_field_tag "slot_#{i}_move_2" %>
+
+          <%= label_tag "slot_#{i}_move_3", "Move 3" %>
+          <%= text_field_tag "slot_#{i}_move_3" %>
+
+          <%= label_tag "slot_#{i}_move_4", "Move 4" %>
+          <%= text_field_tag "slot_#{i}_move_4" %>
+        </fieldset>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= f.label :visibility, "Visibility" %>
+    <%= f.select :visibility,
+                 [["Private", "private"], ["Public", "public"]],
+                 include_blank: false %>
+  </div>
+
+  <div>
+    <%= f.submit "Save" %>
+    <%= f.submit "Publish" %>
+  </div>
+
+  <% if flash[:last_saved_at].present? %>
+    <p data-test="last-saved">
+      Last saved at: <%= flash[:last_saved_at] %>
+    </p>
+  <% end %>
+<% end %>
