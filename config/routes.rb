@@ -1,7 +1,18 @@
 Rails.application.routes.draw do
+  # Healthcheck used by main branch CI
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  # Existing species + feed routes from main branch
+  get    "/species/:name",         to: "species#show",    as: :species
+  post   "/species/:name/follow",  to: "follows#create",  as: :species_follow
+  delete "/species/:name/follow",  to: "follows#destroy"
+  get "/feed", to: "feed#show", as: :feed
+  get "/species", to: "species#index", as: :species_index
+
+  # Root now points to the user home/dashboard but species index still available above
   root "home#index"
 
-  # Registration (we aliased path name so your steps work)
+  # Registration (aliased path name so cucumber steps work)
   get  "/register", to: "users#new",    as: :new_user_registration
   post "/users",    to: "users#create", as: :users
 
@@ -21,5 +32,4 @@ Rails.application.routes.draw do
   get  "/auth/google_oauth2/callback", to: "sessions#google",  as: :google_oauth2_callback
   get  "/auth/failure",                to: "sessions#failure"
   get "/auth/:provider/callback", to: "sessions#google"
-  get "/auth/failure",            to: "sessions#failure"
 end
