@@ -263,3 +263,8 @@ end
 Then("I should remain on the login page not logged in") do
   expect(page).to have_current_path(new_user_session_path, ignore_query: true)
 end
+
+# Used by lockout feature to reuse the standard login form interactions
+When("I attempt to log in with email {string} and password {string}") do |email, password|
+  step %(I log in with email "#{email}" and password "#{password}")
+end
