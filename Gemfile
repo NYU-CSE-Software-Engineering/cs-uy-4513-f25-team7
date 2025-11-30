@@ -14,11 +14,12 @@ gem "jbuilder"
 gem "tzinfo-data", platforms: %i[windows jruby]
 gem "bootsnap", require: false
 
-# Auth/2FA (from your file; keep in default group so they’re present in all envs)
+# Auth/2FA and OAuth
 gem "bcrypt", "~> 3.1"
 gem "rotp", "~> 6.3"
 gem "omniauth"
 gem "omniauth-google-oauth2"
+gem "devise", "~> 4.9"
 
 group :development, :test do
   # Test frameworks
@@ -45,5 +46,3 @@ group :development do
   gem "web-console"
   gem "spring"  # optional; safe to keep, CI won’t load it
 end
-
-gem "devise", "~> 4.9"

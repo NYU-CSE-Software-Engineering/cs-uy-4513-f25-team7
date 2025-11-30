@@ -1,10 +1,22 @@
 class SessionsController < ApplicationController
+  require "identity/lockout_tracker"
+
+  LOCKOUT_TRACKER = Identity::LockoutTracker.new(max_attempts: 5, lockout_period: 15.minutes)
+
   def new; end
 
   def create
-    user = User.find_by(email: params[:email])
+    email    = params[:email].to_s
+    password = params[:password].to_s
+    user     = User.find_by(email: email)
 
-    if user&.authenticate(params[:password])
+    if locked_out?(email)
+      render_locked and return
+    end
+
+    if user&.authenticate(password)
+      LOCKOUT_TRACKER.record_successful_login(email)
+
       if user.otp_enabled
         # defer final sign-in until code verification
         session[:pending_user_id] = user.id
@@ -14,7 +26,8 @@ class SessionsController < ApplicationController
         redirect_to root_path, notice: "Signed in"
       end
     else
-      flash.now[:alert] = "Invalid email or password"
+      lock = LOCKOUT_TRACKER.record_failed_attempt(email)
+      flash.now[:alert] = lock ? "Your account is locked for 15 minutes." : "Invalid email or password"
       render :new, status: :unauthorized
     end
   end
@@ -43,6 +56,17 @@ class SessionsController < ApplicationController
   def failure
     flash[:alert] = "Google sign-in failed or was canceled"
     redirect_to new_user_session_path
+  end
+
+  private
+
+  def locked_out?(email)
+    LOCKOUT_TRACKER.locked?(email)
+  end
+
+  def render_locked
+    flash.now[:alert] = "Your account is locked for 15 minutes."
+    render :new, status: :unauthorized
   end
 
 end

@@ -2,14 +2,14 @@ Rails.application.routes.draw do
   # Healthcheck used by main branch CI
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Existing species + feed routes from main branch
+  # Species/feed routes from main branch
   get    "/species/:name",         to: "species#show",    as: :species
   post   "/species/:name/follow",  to: "follows#create",  as: :species_follow
   delete "/species/:name/follow",  to: "follows#destroy"
   get "/feed", to: "feed#show", as: :feed
   get "/species", to: "species#index", as: :species_index
 
-  # Root now points to the user home/dashboard but species index still available above
+  # Root now points to the user home/dashboard but species index is still available
   root "home#index"
 
   # Registration (aliased path name so cucumber steps work)
