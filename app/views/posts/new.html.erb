@@ -1,0 +1,34 @@
+<h1>New Post</h1>
+
+<%= form_with(model: @post, local: true, id: "new_post") do |form| %>
+  <% if @post.errors.any? %>
+    <div class="alert alert-danger">
+      <h2><%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:</h2>
+      <ul>
+        <% @post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :title, class: 'form-label' %>
+    <%= form.text_field :title, class: 'form-control' %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :post_type, class: 'form-label' %>
+    <%= form.select :post_type, ['Thread', 'Meta', 'Strategy', 'Announcement'], {}, class: 'form-select' %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :body, class: 'form-label' %>
+    <%= form.text_area :body, rows: 10, class: 'form-control' %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.submit 'Create Post', class: 'btn btn-primary' %>
+    <%= link_to 'Cancel', posts_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>

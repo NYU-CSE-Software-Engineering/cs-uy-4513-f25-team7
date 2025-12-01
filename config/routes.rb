@@ -15,6 +15,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :posts do
+    resources :comments, only: [:create, :destroy]
+  end
+
   # Root now points to the user home/dashboard but species index is still available
   root "home#index"
 
