@@ -1,24 +1,22 @@
 class SessionsController < ApplicationController
   require "identity/lockout_tracker"
+  require "securerandom"
 
   LOCKOUT_TRACKER = Identity::LockoutTracker.new(max_attempts: 5, lockout_period: 15.minutes)
 
   def new; end
 
   def create
-    email    = params[:email].to_s
+    email    = params[:email].to_s.downcase
     password = params[:password].to_s
     user     = User.find_by(email: email)
 
-    if locked_out?(email)
-      render_locked and return
-    end
+    return render_locked if LOCKOUT_TRACKER.locked?(email)
 
     if user&.authenticate(password)
       LOCKOUT_TRACKER.record_successful_login(email)
 
       if user.otp_enabled
-        # defer final sign-in until code verification
         session[:pending_user_id] = user.id
         redirect_to two_factor_verify_path, notice: "Enter authentication code"
       else
@@ -26,8 +24,8 @@ class SessionsController < ApplicationController
         redirect_to root_path, notice: "Signed in"
       end
     else
-      lock = LOCKOUT_TRACKER.record_failed_attempt(email)
-      flash.now[:alert] = lock ? "Your account is locked for 15 minutes." : "Invalid email or password"
+      locked = LOCKOUT_TRACKER.record_failed_attempt(email)
+      flash.now[:alert] = locked ? "Your account is locked for 15 minutes." : "Invalid email or password"
       render :new, status: :unauthorized
     end
   end
@@ -37,19 +35,28 @@ class SessionsController < ApplicationController
     redirect_to root_path, notice: "Signed out"
   end
 
-  # google login re-written to fix cucumber scenario7
   def google
-    # OmniAuth middleware (in test mode) populates request.env['omniauth.auth']
     auth  = request.env['omniauth.auth']
     email = auth&.dig('info', 'email')
+    uid   = auth&.dig('uid')
 
-    # TODO in real app: find_or_create user & sign in
-    if email.present?
-      flash[:notice] = "Logged in with Google — Welcome, #{email}"
-    else
-      flash[:notice] = "Logged in with Google"
+    unless email.present?
+      flash[:alert] = "Google sign-in failed or was canceled"
+      return redirect_to new_user_session_path
     end
 
+    user = User.find_or_initialize_by(email: email)
+    user.password = SecureRandom.hex(16) if user.new_record?
+
+    creds = auth['credentials'] || {}
+    user.google_uid = uid
+    user.google_token = creds['token']
+    user.google_refresh_token = creds['refresh_token'] if creds['refresh_token'].present?
+    user.google_token_expires_at = Time.at(creds['expires_at']) if creds['expires_at']
+    user.save!
+
+    session[:user_id] = user.id
+    flash[:notice] = "Logged in with Google — Welcome, #{email}"
     redirect_to root_path
   end
 
@@ -60,13 +67,8 @@ class SessionsController < ApplicationController
 
   private
 
-  def locked_out?(email)
-    LOCKOUT_TRACKER.locked?(email)
-  end
-
   def render_locked
     flash.now[:alert] = "Your account is locked for 15 minutes."
     render :new, status: :unauthorized
   end
-
 end
