@@ -1,6 +1,14 @@
 <div data-test="species-page">
   <h2><%= @name %></h2>
 
+  <% if @sprite_url.present? %>
+    <div data-test="species-sprite" style="margin-bottom: 1rem;">
+      <img src="<%= @sprite_url %>"
+           alt="<%= @name %> sprite"
+           style="image-rendering: pixelated; width: 96px; height: 96px;">
+    </div>
+  <% end %>
+
   <div data-test="follower-count">
     Followers: <span><%= @follower_count %></span>
   </div>

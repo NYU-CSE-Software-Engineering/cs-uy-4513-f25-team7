@@ -9,6 +9,12 @@ Rails.application.routes.draw do
   get "/feed", to: "feed#show", as: :feed
   get "/species", to: "species#index", as: :species_index
 
+  namespace :api do
+    namespace :lookup do
+      get :species, to: "species#index"
+    end
+  end
+
   # Root now points to the user home/dashboard but species index is still available
   root "home#index"
 
