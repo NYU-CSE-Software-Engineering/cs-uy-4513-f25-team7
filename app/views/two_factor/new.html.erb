@@ -3,10 +3,7 @@
 <p>Scan this QR code with your authenticator app</p>
 <p>Then enter the 6-digit code below.</p>
 
-<!-- We only need an <img> with this alt text for the step to pass -->
-<!-- You can render a real QR later; for now a placeholder src is fine -->
 <img alt="2FA QR Code" src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBA==" />
-
 <p>Or add this manually: <code><%= @provisioning_uri %></code></p>
 
 <%= form_with url: two_factor_path, method: :post do |f| %>

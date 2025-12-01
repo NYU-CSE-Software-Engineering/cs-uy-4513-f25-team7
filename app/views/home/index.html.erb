@@ -2,6 +2,7 @@
   <h1>Welcome, <%= current_user.email %></h1>
   <p>Hello, <%= current_user.email %></p>
 
+  <p><%= link_to "Account Settings", edit_user_registration_path %></p>
   <%= button_to "Log out", destroy_user_session_path, method: :delete %>
 <% else %>
   <h1>Welcome to PokéForum!</h1>
