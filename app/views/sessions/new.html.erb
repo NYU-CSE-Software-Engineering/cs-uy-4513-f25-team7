@@ -1,0 +1,27 @@
+<h1>Login</h1>
+
+<% if flash[:alert].present? %>
+  <p class="alert"><%= flash[:alert] %></p>
+<% end %>
+
+<%= form_with url: user_session_path, method: :post do |f| %>
+  <div>
+    <%= label_tag :email, "Email" %><br>
+    <%= text_field_tag :email %>
+  </div>
+
+  <div>
+    <%= label_tag :password, "Password" %><br>
+    <%= password_field_tag :password %>
+  </div>
+
+  <div>
+    <%= submit_tag "Log in" %>
+  </div>
+
+  <!-- link to google sign in for scen6 -->
+  <div class="oauth-providers">
+    <%= link_to "Sign in with Google", "/auth/google_oauth2", id: "google-login-link", data: { turbo: false } %>
+  </div>
+
+<% end %>

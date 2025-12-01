@@ -1,20 +1,35 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Healthcheck used by main branch CI
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Species/feed routes from main branch
   get    "/species/:name",         to: "species#show",    as: :species
   post   "/species/:name/follow",  to: "follows#create",  as: :species_follow
   delete "/species/:name/follow",  to: "follows#destroy"
-
   get "/feed", to: "feed#show", as: :feed
-
   get "/species", to: "species#index", as: :species_index
 
+  # Root now points to the user home/dashboard but species index is still available
+  root "home#index"
 
-  root "species#index"
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Registration (aliased path name so cucumber steps work)
+  get  "/register", to: "users#new",    as: :new_user_registration
+  post "/users",    to: "users#create", as: :users
+
+  # Sessions (plural)
+  get    "/login",  to: "sessions#new",     as: :new_user_session
+  post   "/login",  to: "sessions#create",  as: :user_session
+  delete "/logout", to: "sessions#destroy", as: :destroy_user_session
+
+  # For enabling 2 factor
+  get "/settings", to: "accounts#edit", as: :edit_user_registration
+
+  get  "/two_factor/new", to: "two_factor#new",    as: :new_two_factor
+  post "/two_factor",     to: "two_factor#create", as: :two_factor
+  get  "/two_factor/verify", to: "two_factor#prompt",      as: :two_factor_verify
+  post "/two_factor/verify", to: "two_factor#verify_login"
+
+  get  "/auth/google_oauth2/callback", to: "sessions#google",  as: :google_oauth2_callback
+  get  "/auth/failure",                to: "sessions#failure"
+  get "/auth/:provider/callback", to: "sessions#google"
 end
