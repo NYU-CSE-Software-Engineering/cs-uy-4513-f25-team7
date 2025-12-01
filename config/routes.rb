@@ -18,18 +18,6 @@ Rails.application.routes.draw do
   # Root now points to the user home/dashboard but species index is still available
   root "home#index"
 
-<<<<<<< HEAD
-  root "species#index"
-  # Defines the root path route ("/")
-  # root "posts#index"
-
-  namespace :api do
-    namespace :lookup do
-      get :species, to: "species#index"
-    end
-  end
-
-=======
   # Registration (aliased path name so cucumber steps work)
   get  "/register", to: "users#new",    as: :new_user_registration
   post "/users",    to: "users#create", as: :users
@@ -50,5 +38,4 @@ Rails.application.routes.draw do
   get  "/auth/google_oauth2/callback", to: "sessions#google",  as: :google_oauth2_callback
   get  "/auth/failure",                to: "sessions#failure"
   get "/auth/:provider/callback", to: "sessions#google"
->>>>>>> origin/main
 end
