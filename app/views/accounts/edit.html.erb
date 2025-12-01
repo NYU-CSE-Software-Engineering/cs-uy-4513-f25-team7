@@ -1,0 +1,17 @@
+<h1>Account Settings</h1>
+
+<% if user_signed_in? %>
+  <p>Signed in as <strong><%= current_user.email %></strong></p>
+
+  <% if current_user.otp_enabled %>
+    <p>Two-factor authentication: <strong>Enabled</strong></p>
+    <p>You can continue to use your authenticator app to sign in.</p>
+  <% else %>
+    <p>Two-factor authentication: <strong>Disabled</strong></p>
+    <p>Protect your account by adding an authenticator app.</p>
+    <%= button_to "Enable 2FA", new_two_factor_path, method: :get %>
+  <% end %>
+
+<% else %>
+  <p>Please log in.</p>
+<% end %>

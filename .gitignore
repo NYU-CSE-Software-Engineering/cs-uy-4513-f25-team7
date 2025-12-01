@@ -7,6 +7,10 @@
 # Ignore bundler config.
 /.bundle
 
+# IDE and lockfiles (do not track)
+/.idea/
+/Gemfile.lock
+
 # Ignore all environment files (except templates).
 /.env*
 !/.env*.erb
