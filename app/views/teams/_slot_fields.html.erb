@@ -13,9 +13,29 @@
   <%= f.fields_for :team_slots, slot do |sf| %>
     <%= sf.hidden_field :slot_index %>
 
-    <div class="field">
+    <!-- Species + sprite preview -->
+    <div class="field species-field"
+         data-role="species-field"
+         data-slot-index="<%= slot.slot_index %>">
       <%= sf.label :species, "Species" %>
-      <%= sf.text_field :species %>
+      <%= sf.text_field :species,
+            autocomplete: "off",
+            data: {
+              role: "species-input",
+              slot_index: slot.slot_index
+            },
+            list: "species-options-slot-#{slot.slot_index}" %>
+
+      <!-- Autocomplete options for this slot -->
+      <datalist id="species-options-slot-<%= slot.slot_index %>"
+                data-role="species-datalist"></datalist>
+
+      <!-- Sprite preview for this slot -->
+      <div class="species-sprite-preview"
+           data-role="species-sprite"
+           style="margin-top: 0.5rem;">
+        <!-- JS will insert an <img> here -->
+      </div>
     </div>
 
     <div class="field">
