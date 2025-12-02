@@ -44,9 +44,9 @@ When("I visit the Role Management page") do
   visit users_path
 end
 
-Then(/^I should see "([^"]*)"$/) do |text|
-  expect(page).to have_content(text)
-end
+# Then(/^I should see "([^"]*)"$/) do |text|
+#   expect(page).to have_content(text)
+# end
 
 Then("I should not see any {string} or {string} buttons") do |btn1, btn2|
   expect(page).not_to have_button(btn1)

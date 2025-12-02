@@ -56,9 +56,9 @@ When('I click {string}') do |label|
   click_button(label) rescue click_link(label)
 end
 
-Then('I should see {string}') do |text|
-  expect(page).to have_content(text)
-end
+# Then('I should see {string}') do |text|
+#   expect(page).to have_content(text)
+# end
 
 Then("I should see {int} follower on Misty's profile") do |count|
   # Accept singular/plural

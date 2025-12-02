@@ -1,0 +1,133 @@
+<% slot = local_assigns[:slot] %>
+<% f = local_assigns[:f] %>
+
+<div class="team-slot" id="slot-<%= slot.slot_index %>" data-slot="<%= slot.slot_index %>">
+  <h2>Slot <%= slot.slot_index %></h2>
+
+  <% if slot.respond_to?(:illegal?) && slot.illegal? %>
+    <span class="badge badge-illegal">Illegal</span>
+  <% else %>
+    <span class="badge badge-legal">Legal</span>
+  <% end %>
+
+  <%= f.fields_for :team_slots, slot do |sf| %>
+    <%= sf.hidden_field :slot_index %>
+
+    <div class="field">
+      <%= sf.label :species, "Species" %>
+      <%= sf.text_field :species %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :item, "Item" %>
+      <%= sf.text_field :item %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :ability, "Ability" %>
+      <%= sf.text_field :ability %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :nature, "Nature" %>
+      <%= sf.text_field :nature %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :tera_type, "Tera Type" %>
+      <%= sf.text_field :tera_type %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :nickname, "Nickname" %>
+      <%= sf.text_field :nickname %>
+    </div>
+
+    <fieldset class="evs">
+      <legend>EVs</legend>
+
+      <div class="field">
+        <%= sf.label :ev_hp, "HP EVs" %>
+        <%= sf.number_field :ev_hp %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_atk, "Atk EVs" %>
+        <%= sf.number_field :ev_atk %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_def, "Def EVs" %>
+        <%= sf.number_field :ev_def %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_spa, "SpA EVs" %>
+        <%= sf.number_field :ev_spa %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_spd, "SpD EVs" %>
+        <%= sf.number_field :ev_spd %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_spe, "Spe EVs" %>
+        <%= sf.number_field :ev_spe %>
+      </div>
+    </fieldset>
+
+    <fieldset class="ivs">
+      <legend>IVs</legend>
+
+      <div class="field">
+        <%= sf.label :iv_hp, "HP IVs" %>
+        <%= sf.number_field :iv_hp %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_atk, "Atk IVs" %>
+        <%= sf.number_field :iv_atk %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_def, "Def IVs" %>
+        <%= sf.number_field :iv_def %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_spa, "SpA IVs" %>
+        <%= sf.number_field :iv_spa %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_spd, "SpD IVs" %>
+        <%= sf.number_field :iv_spd %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_spe, "Spe IVs" %>
+        <%= sf.number_field :iv_spe %>
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label>Moves</label>
+
+      <div class="moves">
+        <div class="field">
+          <%= sf.label :move_1, "Move 1" %>
+          <%= sf.text_field :move_1 %>
+        </div>
+        <div class="field">
+          <%= sf.label :move_2, "Move 2" %>
+          <%= sf.text_field :move_2 %>
+        </div>
+        <div class="field">
+          <%= sf.label :move_3, "Move 3" %>
+          <%= sf.text_field :move_3 %>
+        </div>
+        <div class="field">
+          <%= sf.label :move_4, "Move 4" %>
+          <%= sf.text_field :move_4 %>
+        </div>
+      </div>
+      
+      <% if slot.respond_to?(:illegal?) && slot.illegal? && slot.respond_to?(:illegality_reason) && slot.illegality_reason.present? %>
+        <div class="field-error">
+          <a href="#slot-<%= slot.slot_index %>-moves"><%= slot.illegality_reason %></a>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
