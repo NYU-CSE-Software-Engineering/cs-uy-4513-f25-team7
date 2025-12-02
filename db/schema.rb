@@ -21,13 +21,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_01_230016) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
-  create_table "dex_species", force: :cascade do |t|
-    t.string "name"
-    t.integer "pokeapi_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "posts", force: :cascade do |t|
     t.string "title"
     t.text "body"
