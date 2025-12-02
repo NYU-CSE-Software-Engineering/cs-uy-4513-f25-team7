@@ -3,9 +3,11 @@
   <p>Hello, <%= current_user.email %></p>
 
   <p><%= link_to "Account Settings", edit_user_registration_path %></p>
+  <p><%= link_to "Forum", posts_path %></p>
   <%= button_to "Log out", destroy_user_session_path, method: :delete %>
 <% else %>
   <h1>Welcome to PokéForum!</h1>
+  <p><%= link_to "Forum", posts_path %></p>
   <%= link_to "Login", new_user_session_path %> |
   <%= link_to "Register", new_user_registration_path %>
 <% end %>
