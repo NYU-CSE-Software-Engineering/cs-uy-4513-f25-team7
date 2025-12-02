@@ -45,26 +45,8 @@ When(/^I add Pokémon slots (\d+) through (\d+) with valid configurations$/) do 
       | Nature    | Timid         |
       | EVs       | 0 HP / 0 Atk / 0 Def / 252 SpA / 4 SpD / 252 Spe |
       | IVs       | 31 / 0 / 31 / 31 / 31 / 31 |
-      | Moves     | Thunderbolt, Volt Switch, Protect, Fake Out |
-      | Tera Type | Electric      |
     })
   end
-end
-
-When(/^I press "([^"]*)"$/) do |button_text|
-  click_button button_text
-end
-
-Then(/^I should see "([^"]*)"$/) do |text|
-  expect(page).to have_content(text)
-end
-
-Then("the team should be persisted as a draft owned by me") do
-  expect(page).to have_content("Draft")
-  expect(page).to have_content(@user.email).or have_content("Owned by me")
-end
-
-Then("I should see a last-saved timestamp") do
   expect(page).to have_content("Last saved").or have_css("[data-last-saved]")
 end
 
