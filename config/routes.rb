@@ -38,4 +38,12 @@ Rails.application.routes.draw do
   get  "/auth/google_oauth2/callback", to: "sessions#google",  as: :google_oauth2_callback
   get  "/auth/failure",                to: "sessions#failure"
   get "/auth/:provider/callback", to: "sessions#google"
+
+  resources :users, only: [:show] do
+    resource :follow, only: [:create, :destroy], controller: "user_follows"
+  end
+
+  resources :teams, only: [:show]
+  resources :favorites, only: [:index, :create, :destroy]
+  resources :notifications, only: [:index]
 end

@@ -1,0 +1,11 @@
+<section data-test="team-show">
+  <h1><%= @team.title %></h1>
+  <p>Owner: <%= @team.user.display_name %></p>
+  <p><%= @team.description.presence || "No description provided." %></p>
+
+  <% if @favorite %>
+    <%= button_to "Favorited", favorite_path(@favorite), method: :delete, form: { data: { turbo: false } } %>
+  <% else %>
+    <%= button_to "Favorite", favorites_path, params: { favoritable_type: @team.class.name, favoritable_id: @team.id }, method: :post, form: { data: { turbo: false } } %>
+  <% end %>
+</section>

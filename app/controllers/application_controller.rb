@@ -13,6 +13,12 @@ class ApplicationController < ActionController::Base
     redirect_to new_user_session_path unless user_signed_in?
   end
 
+  # def require_login
+  #   return if user_signed_in?
+
+  #   redirect_to new_user_session_path, alert: "Please sign in to continue" and return
+  # end
+
   # after “sign up”, send them home
   def after_sign_up_path_for(_resource)
     root_path

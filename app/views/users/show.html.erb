@@ -1,0 +1,20 @@
+<section class="profile" data-test="user-profile">
+  <h1><%= @user.display_name %></h1>
+
+  <p data-test="follower-count">
+    <%= pluralize(@follower_count, "follower") %>
+  </p>
+
+  <% if user_signed_in? %>
+    <% if current_user == @user %>
+      <p>You cannot follow yourself.</p>
+    <% else %>
+      <%= button_to "Follow", user_follow_path(@user), method: :post, form: { data: { turbo: false } } %>
+      <% if @following %>
+        <p>Following</p>
+      <% end %>
+    <% end %>
+  <% else %>
+    <%= button_to "Follow", user_follow_path(@user), method: :post, form: { data: { turbo: false } } %>
+  <% end %>
+</section>

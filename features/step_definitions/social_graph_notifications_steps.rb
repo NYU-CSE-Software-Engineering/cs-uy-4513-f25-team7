@@ -28,8 +28,13 @@ def ensure_team!(title:, owner:)
 end
 
 # ---------- Background / Auth ----------
-Given("I am a registered user") do
-  @me = create_user!(email: "me@example.com")
+Given('I am signed in for social notifications') do
+  @me = create_user!(email: "me@example.com", password: "password")
+  @user = @me
+  visit new_user_session_path
+  fill_in "Email", with: @me.email
+  fill_in "Password", with: "password"
+  click_button "Log in"
 end
 
 Given('there exists another user named {string}') do |name|
@@ -42,6 +47,12 @@ Given('there exists a public team called {string} owned by {string}') do |title,
 end
 
 # ---------- Follow flows ----------
+Given('I already follow the user {string}') do |name|
+  @other = user_by_name(name)
+  Follow.find_or_create_by!(follower: @me, followee: @other)
+  visit user_path(@other)
+end
+
 When('I navigate to the profile page for {string}') do |name|
   @other = user_by_name(name)
   visit user_path(@other)
@@ -56,17 +67,16 @@ When('I click {string}') do |label|
   click_button(label) rescue click_link(label)
 end
 
-Then('I should see {string}') do |text|
+Then('I should see the social message {string}') do |text|
   expect(page).to have_content(text)
 end
 
-Then("I should see {int} follower on Misty's profile") do |count|
-  # Accept singular/plural
-  expect(page).to have_content("#{count} follower").or have_content("#{count} followers")
+Then('I should see {string} on Misty\'s profile') do |text|
+  expect(page).to have_content(text)
 end
 
-Then('I should still see {int} follower on Misty\'s profile') do |count|
-  expect(page).to have_content("#{count} follower").or have_content("#{count} followers")
+Then('I should still see {string} on Misty\'s profile') do |text|
+  expect(page).to have_content(text)
 end
 
 Then('a new notification should exist for {string}') do |recipient_name|
@@ -98,6 +108,14 @@ Then('I should see an error message') do
   expect(page).to have_css(".alert, .error, .flash-alert").or have_content("error")
 end
 
+Then('I should still see {string}') do |text|
+  expect(page).to have_content(text)
+end
+
+Then('I should not see a follow button') do
+  expect(page).not_to have_button("Follow")
+end
+
 # ---------- Notifications page ----------
 Given('I have at least one unread notification') do
   @other ||= create_user!(name: "Misty")
@@ -124,6 +142,11 @@ end
 # ---------- Session helpers ----------
 Given('I sign out') do
   click_link "Sign out" rescue nil
+end
+
+Given('I sign out for social notifications') do
+  page.driver.submit :delete, destroy_user_session_path, {}
+  visit root_path
 end
 
 Then('I should be on the sign in page') do
