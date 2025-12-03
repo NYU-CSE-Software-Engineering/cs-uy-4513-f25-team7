@@ -107,9 +107,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "username"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "email", null: false
     t.string "password_digest", null: false
     t.string "name"
@@ -124,6 +121,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
     t.text "google_token"
     t.text "google_refresh_token"
     t.datetime "google_token_expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
