@@ -18,16 +18,23 @@ Given("I am signed in as {string}") do |email|
 end
 
 Given("I am signed in as a moderator") do
-  moderator = User.find_or_create_by!(email: "mod@poke.com") do |u|
-    u.password = "password123"
-    u.role = "moderator"
-  end
+  # Clean out any bad/old moderator rows first
+  User.where(email: "mod@poke.com").delete_all
 
-  visit new_user_session_path
-  fill_in "Email", with: moderator.email
-  fill_in "Password", with: "password123"
-  click_button "Log in"
+  # Create a fresh moderator WITH a non-null role
+  moderator = User.create!(
+    email: "mod@poke.com",
+    password: "password123",
+    password_confirmation: "password123",
+    role: "moderator"
+  )
+
+  # Reuse your existing generic sign-in step
+  step 'I am signed in as "mod@poke.com"'
 end
+
+
+
 
 Given("I am on the Role Management page") do
   visit users_path
