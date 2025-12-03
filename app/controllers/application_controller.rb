@@ -19,11 +19,12 @@ class ApplicationController < ActionController::Base
 
   # Devise-style shim so controllers can call authenticate_user!
   # (TeamsController is using this)
+  # Alias for compatibility with testing and Devise-style code
   def authenticate_user!
     require_login
   end
 
-  # after “sign up”, send them home
+  # after "sign up", send them home
   def after_sign_up_path_for(_resource)
     root_path
   end

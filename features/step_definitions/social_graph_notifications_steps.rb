@@ -123,7 +123,15 @@ end
 
 # ---------- Session helpers ----------
 Given('I sign out') do
-  click_link "Sign out" rescue nil
+  if page.has_button?("Log out")
+    first(:button, "Log out").click
+  elsif page.has_link?("Log out")
+    first(:link, "Log out").click
+  elsif page.has_link?("Sign out")
+    first(:link, "Sign out").click
+  end
+  # Wait for signed out state - should see Login link
+  expect(page).to have_link("Login").or have_link("Log in").or have_link("Sign in")
 end
 
 Then('I should be on the sign in page') do

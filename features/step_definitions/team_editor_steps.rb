@@ -45,8 +45,6 @@ When(/^I add Pokémon slots (\d+) through (\d+) with valid configurations$/) do 
       | Nature    | Timid         |
       | EVs       | 0 HP / 0 Atk / 0 Def / 252 SpA / 4 SpD / 252 Spe |
       | IVs       | 31 / 0 / 31 / 31 / 31 / 31 |
-      | Moves     | Thunderbolt, Volt Switch, Protect, Fake Out |
-      | Tera Type | Electric      |
     })
   end
 end
