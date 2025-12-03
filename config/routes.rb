@@ -42,4 +42,7 @@ Rails.application.routes.draw do
   get  "/auth/google_oauth2/callback", to: "sessions#google",  as: :google_oauth2_callback
   get  "/auth/failure",                to: "sessions#failure"
   get "/auth/:provider/callback", to: "sessions#google"
+
+  #team root
+  resources :teams, only: %i[new create edit update show]
 end

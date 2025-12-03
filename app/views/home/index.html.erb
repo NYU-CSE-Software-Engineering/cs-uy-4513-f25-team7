@@ -2,8 +2,16 @@
   <h1>Welcome, <%= current_user.email %></h1>
   <p>Hello, <%= current_user.email %></p>
 
-  <p><%= link_to "Account Settings", edit_user_registration_path %></p>
-  <p><%= link_to "Forum", posts_path %></p>
+  <p>
+    <%= link_to "Account Settings", edit_user_registration_path %>
+  </p>
+
+  <!-- NEW: navigation from home screen -->
+  <p>
+    <%= link_to "Species Lookup", species_index_path %> |
+    <%= link_to "Team Editor (New Team)", new_team_path %>
+    <%= link_to "Forum", posts_path %>
+  </p>
   <%= button_to "Log out", destroy_user_session_path, method: :delete %>
 <% else %>
   <h1>Welcome to PokéForum!</h1>

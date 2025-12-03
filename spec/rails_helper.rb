@@ -32,6 +32,7 @@ begin
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
@@ -67,4 +68,13 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # --- SYSTEM TEST DRIVER CONFIG (fix for CI Chrome failure) ---
+  #
+  # Use the fast, non-JS rack_test driver for all system specs by default.
+  # This avoids needing a real Chrome/ChromeDriver in CI, which is causing:
+  # Selenium::WebDriver::Error::SessionNotCreatedError
+  config.before(:each, type: :system) do
+    driven_by :rack_test
+  end
 end

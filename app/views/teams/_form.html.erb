@@ -1,0 +1,64 @@
+<%= form_with model: @team, local: true do |f| %>
+  <% if flash[:alert] %>
+    <div class="alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <% if @team.any_illegal_slots? %>
+    <div id="error-summary" class="error-summary" data-role="error-summary">
+      <h2>Unresolved Issues</h2>
+      <ul>
+        <% @team.team_slots.each do |slot| %>
+          <% if slot.illegal? %>
+            <li>Slot <%= slot.slot_index %>: <%= slot.illegality_reason %></li>
+          <% end %>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name, "Team Name" %>
+    <%= f.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :visibility, "Visibility" %>
+    <%= f.select :visibility,
+                 [["Private", "private_team"], ["Public", "public_team"]] %>
+  </div>
+
+  <p>
+    <span class="badge">Draft</span>
+    &mdash;
+    <span>Owned by me</span>
+    &mdash;
+    <span>Visibility: <%= @team.visibility_label %></span>
+  </p>
+
+
+
+  <p data-last-saved="true">
+    Last saved:
+    <%= @team.last_saved_at.present? ? @team.last_saved_at.strftime("%Y-%m-%d %H:%M") : "not yet" %>
+  </p>
+
+  <hr>
+
+  <div class="team-slots">
+    <% @team.team_slots.each do |slot| %>
+      <%= render "slot_fields", f: f, slot: slot %>
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Add Pokémon" %>
+    <%= f.submit "Validate" %>
+    <%= f.submit "Save" %>
+
+    <% publish_disabled = @team.any_illegal_slots? %>
+    <%= f.submit "Publish",
+                 data: { action: "publish" },
+                 disabled: publish_disabled,
+                 "aria-disabled": (publish_disabled ? "true" : "false") %>
+  </div>
+<% end %>

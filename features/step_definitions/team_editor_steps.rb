@@ -47,6 +47,22 @@ When(/^I add Pokémon slots (\d+) through (\d+) with valid configurations$/) do 
       | IVs       | 31 / 0 / 31 / 31 / 31 / 31 |
     })
   end
+end
+
+# When(/^I press "([^"]*)"$/) do |button_text|
+#   click_button button_text
+# end
+
+# Then(/^I should see "([^"]*)"$/) do |text|
+#   expect(page).to have_content(text)
+# end
+
+Then("the team should be persisted as a draft owned by me") do
+  expect(page).to have_content("Draft")
+  expect(page).to have_content("Owned by me")
+end
+
+Then("I should see a last-saved timestamp") do
   expect(page).to have_content("Last saved").or have_css("[data-last-saved]")
 end
 
@@ -79,12 +95,17 @@ end
 When(/^I select the move "([^"]*)" \(which .+ cannot learn\)$/) do |move_name|
   slot_el = find_slot(1)
   fill_moves_in_slot(slot_el, [move_name])
+  click_button "Validate" if page.has_button?("Validate")
 end
 
 Then(/^the field "([^"]*)" should show an error "([^"]*)"$/) do |field_label, message|
-  field = find('label', text: field_label, exact: false)
-  container = field.first(:xpath, './/..') # parent
-  expect(container).to have_content(message)
+  slot_el = find_slot(1)
+
+  within(slot_el) do
+    field = find('label', text: field_label, exact: false, match: :first)
+    container = field.first(:xpath, './/..')
+    expect(container).to have_content(message)
+  end
 end
 
 Then(/^the Pokémon card for slot (\d+) should display an "([^"]*)" badge$/) do |slot_number, badge_text|
@@ -97,18 +118,41 @@ Then("there should be a link or focus that brings me to the invalid field") do
 end
 
 Given("slot 1 shows an {string} badge for an illegal move") do |badge|
+  # Create an illegal Garchomp with Wish, same pattern as AC2
+  step %{I add Pokémon slot 1 with:}, table(%{
+    | Species   | Garchomp |
+    | Item      | Choice Band |
+    | Ability   | Rough Skin |
+    | Nature    | Jolly |
+    | EVs       | 0 HP / 252 Atk / 4 Def / 0 SpA / 0 SpD / 252 Spe |
+    | IVs       | 31 / 31 / 31 / 31 / 31 / 31 |
+    | Moves     | Wish, Earthquake, Dragon Claw, Protect |
+    | Tera Type | Ground |
+  })
+
+  slot_el = find_slot(1)
+  fill_moves_in_slot(slot_el, ["Wish"])
+  click_button "Validate" if page.has_button?("Validate")
+
   step %{the Pokémon card for slot 1 should display an "#{badge}" badge}
 end
+
 
 When(/^I replace the illegal move with a legal move "([^"]*)"$/) do |move_name|
   slot_el = find_slot(1)
   fill_moves_in_slot(slot_el, [move_name])
+  # Re-run validator so legality flags get updated
+  click_button "Validate" if page.has_button?("Validate")
 end
 
 Then(/^the error on "([^"]*)" should disappear$/) do |field_label|
-  field = find('label', text: field_label, exact: false)
-  container = field.first(:xpath, './/..')
-  expect(container).not_to have_css('.error, .field-error', wait: 1)
+  slot_el = find_slot(1)
+
+  within(slot_el) do
+    field = find('label', text: field_label, exact: false, match: :first)
+    container = field.first(:xpath, './/..')
+    expect(container).not_to have_css('.error, .field-error', wait: 1)
+  end
 end
 
 # Accept both phrasings:
