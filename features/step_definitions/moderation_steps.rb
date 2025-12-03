@@ -34,18 +34,16 @@ Given("I am on the Role Management page") do
   expect(page).to have_content("Role Management").or have_button("Promote")
 end
 
-When(/^I click "([^"]*)" for "([^"]*)"$/) do |button_text, email|
-  within(:xpath, "//tr[td[contains(.,'#{email}')]]") do
-    click_button button_text
-  end
+When(/^I click "([^"]*)" for "([^"]*)"$/) do |action, email|
+  # Reload the Role Management page so it sees any newly-created users
+  visit users_path
+
+  row = find(:xpath, "//tr[td[contains(.,'#{email}')]]")
+  row.click_button(action)
 end
 
 When("I visit the Role Management page") do
   visit users_path
-end
-
-Then(/^I should see "([^"]*)"$/) do |text|
-  expect(page).to have_content(text)
 end
 
 Then("I should not see any {string} or {string} buttons") do |btn1, btn2|

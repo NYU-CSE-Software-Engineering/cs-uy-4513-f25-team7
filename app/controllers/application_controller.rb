@@ -10,11 +10,21 @@ class ApplicationController < ActionController::Base
   end
 
   def require_login
-    redirect_to new_user_session_path unless user_signed_in?
+    unless user_signed_in?
+      redirect_to new_user_session_path
+    end
+  end
+
+  # Gate for moderator-only actions (Role Management page & updates)
+  def require_moderator
+    unless current_user&.moderator?
+      # AC3: regular users must see "Not authorized"
+      redirect_to root_path, alert: "Not authorized"
+    end
   end
 
   # after “sign up”, send them home
-  def after_sign_up_path_for(_resource)
+  def after_sign_up_path_for(_user)
     root_path
   end
 end

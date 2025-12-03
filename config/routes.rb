@@ -18,9 +18,10 @@ Rails.application.routes.draw do
   # Root now points to the user home/dashboard but species index is still available
   root "home#index"
 
+  # User registration + moderation (role management)
+  resources :users, only: [:new, :create, :index, :update]
   # Registration (aliased path name so cucumber steps work)
   get  "/register", to: "users#new",    as: :new_user_registration
-  post "/users",    to: "users#create", as: :users
 
   # Sessions (plural)
   get    "/login",  to: "sessions#new",     as: :new_user_session
@@ -38,4 +39,6 @@ Rails.application.routes.draw do
   get  "/auth/google_oauth2/callback", to: "sessions#google",  as: :google_oauth2_callback
   get  "/auth/failure",                to: "sessions#failure"
   get "/auth/:provider/callback", to: "sessions#google"
+
+
 end

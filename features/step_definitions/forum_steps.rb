@@ -27,10 +27,6 @@ Given("I am a registered user") do
     expect(page).to have_css("[data-test-id='post-show']")
   end
   
-  Then('I should see {string}') do |text|
-    expect(page).to have_content(text)
-  end
-  
   Then("I should see a meta badge") do
     expect(page).to have_css("[data-test-id='post-badge-meta']")
   end

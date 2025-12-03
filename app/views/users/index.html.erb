@@ -1,0 +1,56 @@
+<h1>Role Management</h1>
+
+<%# Success banner for AC1/AC2 %>
+<% if flash[:success].present? %>
+  <div class="alert-success">
+    <%= flash[:success] %>
+  </div>
+<% end %>
+
+<%# Error banner for AC4 %>
+<% if flash[:error].present? %>
+  <div class="alert-danger">
+    <%= flash[:error] %>
+  </div>
+<% end %>
+
+<%# Also show any generic notices/alerts (like "ash@poke.com is now a moderator") %>
+<% if flash[:notice].present? %>
+  <p><%= flash[:notice] %></p>
+<% end %>
+
+<% if flash[:alert].present? %>
+  <p><%= flash[:alert] %></p>
+<% end %>
+
+<table>
+  <thead>
+  <tr>
+    <th>Email</th>
+    <th>Role</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @users.each do |user| %>
+    <tr>
+      <td><%= user.email %></td>
+      <td><%= user.role.humanize %></td>
+      <td>
+        <% if user.moderator? %>
+          <%= button_to "Demote",
+                        user_path(user),
+                        method: :patch,
+                        params: { user: { role: "user" } } %>
+        <% else %>
+          <%= button_to "Promote",
+                        user_path(user),
+                        method: :patch,
+                        params: { user: { role: "moderator" } } %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
