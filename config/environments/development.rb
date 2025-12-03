@@ -66,6 +66,11 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  # Disable Sprockets cache to avoid Windows permission issues
+  config.assets.configure do |env|
+    env.cache = ActiveSupport::Cache.lookup_store(:null_store)
+  end
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 

@@ -13,7 +13,12 @@ class ApplicationController < ActionController::Base
     redirect_to new_user_session_path unless user_signed_in?
   end
 
-  # after “sign up”, send them home
+  # Alias for compatibility with testing and Devise-style code
+  def authenticate_user!
+    require_login
+  end
+
+  # after "sign up", send them home
   def after_sign_up_path_for(_resource)
     root_path
   end
