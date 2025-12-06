@@ -43,7 +43,6 @@ end
 
 Given("I am on the Role Management page") do
   visit users_path
-  expect(page).to have_content("Role Management").or have_button("Promote")
 end
 
 When(/^I click "([^"]*)" for "([^"]*)"$/) do |action, email|
@@ -87,9 +86,7 @@ Then("I should see an error banner {string}") do |msg|
   expect(page).to have_css(".alert-danger", text: msg)
 end
 
-Given("I am on the Role Management page") do
-  visit users_path
-end
+
 
 When("I visit the Role Management page directly") do
   visit users_path

@@ -1,5 +1,21 @@
 <h1>Role Management</h1>
 
+<% if flash[:notice] %>
+  <div class="alert alert-success"><%= flash[:notice] %></div>
+<% end %>
+
+<% if flash[:alert] %>
+  <div class="alert alert-danger"><%= flash[:alert] %></div>
+<% end %>
+
+<% if flash[:status_message] %>
+  <p><%= flash[:status_message] %></p>
+<% end %>
+
+<% if flash[:error_message] %>
+  <p><%= flash[:error_message] %></p>
+<% end %>
+
 <%# Success banner for AC1/AC2 %>
 <% if flash[:success].present? %>
   <div class="alert-success">

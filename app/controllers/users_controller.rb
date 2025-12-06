@@ -21,14 +21,28 @@ class UsersController < ApplicationController
   end
 
   # Promote / demote a user
+
   def update
     @user = User.find(params[:id])
+    previous_role = @user.role
 
-    # Only admin is allowed here due to before_action :require_admin
     if @user.update(role_params)
-      flash[:success] = "#{@user.email} role updated to #{@user.role.titleize}"
+      # banner text the Cucumber scenarios look for
+      flash[:notice] = "Role updated successfully"
+
+      # detailed message about the specific user, also checked by Cucumber
+      if @user.moderator? && previous_role != "moderator"
+        flash[:status_message] = "#{@user.email} is now a moderator"
+      elsif @user.user? && previous_role != "user"
+        flash[:status_message] = "#{@user.email} is now a user"
+      else
+        flash[:status_message] = "#{@user.email} role updated"
+      end
     else
-      flash[:error] = @user.errors.full_messages.to_sentence
+      # AC4 sad path – they expect both the generic banner...
+      flash[:alert] = "Action not allowed"
+      # ...and the specific validation text
+      flash[:error_message] = @user.errors.full_messages.to_sentence
     end
 
     redirect_to users_path

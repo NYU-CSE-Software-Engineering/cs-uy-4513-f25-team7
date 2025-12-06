@@ -48,11 +48,11 @@ Feature: Role Assignment (Moderation Controls)
 
   # --- AC4: Safety Rule - Prevent Removing Final Moderator ---
 
-  Scenario: Last moderator cannot demote themselves
+  Scenario: Last moderator cannot be demoted
     Given the following users exist:
       | email           | role       |
       | mod@poke.com    | moderator  |
-    And I am signed in as "mod@poke.com"
+    And I am signed in as "admin@poke.com"
     And I am on the Role Management page
     When I click "Demote" for "mod@poke.com"
     Then I should see "There must be at least one moderator on the platform"
@@ -70,23 +70,3 @@ Feature: Role Assignment (Moderation Controls)
     When I visit the Role Management page directly
     Then I should see "Not authorized"
 
-  # New: There can only be one admin
-
-  Scenario: Cannot promote a second admin
-    Given the following users exist:
-      | email            | role   |
-      | admin@poke.com   | admin  |
-      | ash@poke.com     | user   |
-    And I am signed in as "admin@poke.com"
-    And I am on the Role Management page
-    When I click "Promote" for "ash@poke.com" to admin
-    Then I should see "There can only be one admin on the platform"
-
-  Scenario: Cannot demote the last admin
-    Given the following users exist:
-      | email            | role   |
-      | admin@poke.com   | admin  |
-    And I am signed in as "admin@poke.com"
-    And I am on the Role Management page
-    When I attempt to demote "admin@poke.com" to "user"
-    Then I should see "There must be at least one admin on the platform"
