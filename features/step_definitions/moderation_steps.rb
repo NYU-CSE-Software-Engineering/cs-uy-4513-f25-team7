@@ -34,7 +34,7 @@ Given("I am signed in as a moderator") do
     role: "moderator"
   )
 
-  # Reuse your existing generic sign-in step
+  # Reuse existing generic sign-in step
   step 'I am signed in as "mod@poke.com"'
 end
 

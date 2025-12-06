@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_06_224550) do
+  create_table "comments", force: :cascade do |t|
+    t.text "body"
+    t.integer "post_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_comments_on_post_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
   create_table "dex_learnsets", force: :cascade do |t|
     t.integer "dex_species_id", null: false
     t.integer "dex_move_id", null: false
@@ -31,11 +41,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
     t.index "LOWER(name)", name: "index_dex_moves_on_lower_name", unique: true
   end
 
- create_table "dex_species", force: :cascade do |t|
+  create_table "dex_species", force: :cascade do |t|
     t.string "name"
     t.integer "pokeapi_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "posts", force: :cascade do |t|
+    t.string "title"
+    t.text "body"
+    t.string "post_type"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
   create_table "team_slots", force: :cascade do |t|
@@ -88,42 +108,22 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
-  create_table "comments", force: :cascade do |t|
-    t.text "body"
-    t.integer "post_id", null: false
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["post_id"], name: "index_comments_on_post_id"
-    t.index ["user_id"], name: "index_comments_on_user_id"
-  end
-
-  create_table "posts", force: :cascade do |t|
-    t.string "title"
-    t.text "body"
-    t.string "post_type"
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_posts_on_user_id"
-  end
-
-ActiveRecord::Schema[7.1].define(version: 2025_12_02_011516) do
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
     t.integer "role", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "otp_secret"
+    t.boolean "otp_enabled"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "dex_learnsets", "dex_moves"
-  add_foreign_key "dex_learnsets", "dex_species", column: "dex_species_id"
-  add_foreign_key "team_slots", "teams"
-  add_foreign_key "teams", "users"
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
+  add_foreign_key "dex_learnsets", "dex_moves"
+  add_foreign_key "dex_learnsets", "dex_species", column: "dex_species_id"
   add_foreign_key "posts", "users"
-  end
+  add_foreign_key "team_slots", "teams"
+  add_foreign_key "teams", "users"
 end
