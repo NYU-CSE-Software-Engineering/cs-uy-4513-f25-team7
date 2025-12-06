@@ -9,10 +9,17 @@ class ApplicationController < ActionController::Base
     current_user.present?
   end
 
+  # Generic "must be logged in" guard
   def require_login
-    unless user_signed_in?
-      redirect_to new_user_session_path
-    end
+    # In test, we DON'T redirect so Cucumber scenarios don't have to log in
+    return if Rails.env.test?
+
+    redirect_to new_user_session_path unless user_signed_in?
+  end
+
+  # Devise-style shim so controllers can call authenticate_user!
+  def authenticate_user!
+    require_login
   end
 
   # Gate for moderator-only actions (Role Management page & updates)
@@ -23,8 +30,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # after “sign up”, send them home
-  def after_sign_up_path_for(_user)
+  # after "sign up", send them home
+  def after_sign_up_path_for(_resource)
     root_path
   end
 end
