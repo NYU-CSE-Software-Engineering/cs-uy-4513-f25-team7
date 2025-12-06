@@ -1,7 +1,4 @@
-# double definition error coming from socialgraph steps
-# Given("I am a registered user") do
-#   @user ||= User.create!(email: "test@example.com", password: "password123")
-# end
+# features/step_definitions/forum_steps.rb
 
 When("I go to the new post page") do
   visit new_post_path
@@ -20,10 +17,6 @@ When('I select {string} from "Post Type"') do |value|
   select value, from: "Post Type"
 end
 
-When('I press "Create Post"') do
-  click_button "Create Post"
-end
-
 Then("I should be on the post show page") do
   expect(page).to have_css("[data-test-id='post-show']")
 end
@@ -37,7 +30,7 @@ Given('a post titled {string} exists') do |title|
     user: @user || User.create!(email: "author@example.com", password: "password123"),
     title: title,
     body: "Body for #{title}",
-    post_type: "Thread" # keep main branch's value here
+    post_type: "Thread"
   )
 end
 
@@ -48,15 +41,6 @@ end
 
 When('I fill in "Add a comment" with {string}') do |comment_body|
   fill_in "Add a comment", with: comment_body
-end
-
-When('I press "Post Comment"') do
-  click_button "Post Comment"
-end
-
-Given("I sign out") do
-  click_link "Sign out" rescue nil
-  visit destroy_user_session_path(method: :delete) rescue nil
 end
 
 Then("I should not see the comment form") do
