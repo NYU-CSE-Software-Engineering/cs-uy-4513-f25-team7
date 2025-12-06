@@ -95,15 +95,4 @@ When("I visit the Role Management page directly") do
   visit users_path
 end
 
-When('I click "Demote" for {string}') do |email|
-  within(:xpath, "//tr[td[contains(.,'#{email}')]]") do
-    click_button "Demote"
-  end
-end
-
-When('I click "Promote" for {string}') do |email|
-  within(:xpath, "//tr[td[contains(.,'#{email}')]]") do
-    click_button "Promote"
-  end
-end
 

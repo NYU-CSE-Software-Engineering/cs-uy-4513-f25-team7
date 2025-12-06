@@ -60,4 +60,15 @@ class User < ApplicationRecord
       end
     end
   end
+  # --- 2FA / OTP stub for tests ---
+  # The sessions controller expects this to exist.
+  # For now, treat all users as having OTP disabled.
+  def otp_enabled
+    false
+  end
+
+  def otp_enabled?
+    otp_enabled
+  end
 end
+
