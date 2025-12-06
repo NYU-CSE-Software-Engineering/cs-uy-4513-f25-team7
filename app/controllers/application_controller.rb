@@ -30,6 +30,20 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Gate for admin-only actions (Role Management page & updates)
+  def require_admin
+    unless current_user&.admin?
+      redirect_to root_path, alert: "Not authorized"
+    end
+  end
+
+  # Gate for moderator OR admin
+  def require_moderator_or_admin
+    unless current_user&.moderator? || current_user&.admin?
+      redirect_to root_path, alert: "Not authorized"
+    end
+  end
+
   # after "sign up", send them home
   def after_sign_up_path_for(_resource)
     root_path

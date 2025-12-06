@@ -3,12 +3,17 @@
 
 Given("the following users exist:") do |table|
   table.hashes.each do |row|
-    User.find_or_create_by!(email: row["email"]) do |u|
-      u.password = "password123"
-      u.role = row["role"]
-    end
+    email = row.fetch("email")
+    role  = row["role"].presence || "user"  # default to "user" if missing
+
+    user = User.find_or_initialize_by(email: email)
+    user.password              = "password123"
+    user.password_confirmation = "password123"
+    user.role                  = role       # "user", "moderator", or "admin"
+    user.save!
   end
 end
+
 
 Given("I am signed in as {string}") do |email|
   visit new_user_session_path
@@ -80,5 +85,25 @@ end
 
 Then("I should see an error banner {string}") do |msg|
   expect(page).to have_css(".alert-danger", text: msg)
+end
+
+Given("I am on the Role Management page") do
+  visit users_path
+end
+
+When("I visit the Role Management page directly") do
+  visit users_path
+end
+
+When('I click "Demote" for {string}') do |email|
+  within(:xpath, "//tr[td[contains(.,'#{email}')]]") do
+    click_button "Demote"
+  end
+end
+
+When('I click "Promote" for {string}') do |email|
+  within(:xpath, "//tr[td[contains(.,'#{email}')]]") do
+    click_button "Promote"
+  end
 end
 

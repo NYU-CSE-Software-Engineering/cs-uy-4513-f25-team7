@@ -46,3 +46,32 @@ end
 Then("I should not see the comment form") do
   expect(page).not_to have_selector("form#new_comment")
 end
+
+Given('a post titled {string} exists by {string}') do |title, email|
+  user = User.find_or_create_by!(email: email) do |u|
+    u.password = "password123"
+    u.password_confirmation = "password123"
+  end
+
+  Post.find_or_create_by!(title: title, user: user) do |p|
+    p.body = "Sample body for #{title}"
+    p.post_type = "Thread"
+  end
+end
+
+Given('the post {string} has a comment {string}') do |title, comment_body|
+  post = Post.find_by!(title: title)
+  commenter = User.find_or_create_by!(email: "commenter@example.com") do |u|
+    u.password = "password123"
+    u.password_confirmation = "password123"
+  end
+  post.comments.create!(body: comment_body, user: commenter)
+end
+
+When('I press "Delete Post"') do
+  click_button "Delete Post"
+end
+
+When('I press "Delete Comment"') do
+  click_button "Delete Comment"
+end

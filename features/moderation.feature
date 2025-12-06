@@ -1,11 +1,15 @@
 Feature: Role Assignment (Moderation Controls)
-  As a moderator
+  As an admin
   I want to assign or remove the “moderator” role from other members
   So that I can control who has access to moderation tools on the Pokémon platform
 
   Background:
-    Given I am signed in as a moderator
+    Given the following users exist:
+      | email           | role   |
+      | admin@poke.com  | admin  |
+    And I am signed in as "admin@poke.com"
     And I am on the Role Management page
+
 
   # --- AC1: Promote a User to Moderator ---
 
@@ -54,3 +58,35 @@ Feature: Role Assignment (Moderation Controls)
     Then I should see "There must be at least one moderator on the platform"
     And "mod@poke.com" should remain listed as a moderator
     And I should see an error banner "Action not allowed"
+
+  # New: Moderator cannot see Role Management
+
+  Scenario: Moderator cannot manage roles
+    Given the following users exist:
+      | email           | role       |
+      | admin@poke.com  | admin      |
+      | mod@poke.com    | moderator  |
+    And I am signed in as "mod@poke.com"
+    When I visit the Role Management page directly
+    Then I should see "Not authorized"
+
+  # New: There can only be one admin
+
+  Scenario: Cannot promote a second admin
+    Given the following users exist:
+      | email            | role   |
+      | admin@poke.com   | admin  |
+      | ash@poke.com     | user   |
+    And I am signed in as "admin@poke.com"
+    And I am on the Role Management page
+    When I click "Promote" for "ash@poke.com" to admin
+    Then I should see "There can only be one admin on the platform"
+
+  Scenario: Cannot demote the last admin
+    Given the following users exist:
+      | email            | role   |
+      | admin@poke.com   | admin  |
+    And I am signed in as "admin@poke.com"
+    And I am on the Role Management page
+    When I attempt to demote "admin@poke.com" to "user"
+    Then I should see "There must be at least one admin on the platform"

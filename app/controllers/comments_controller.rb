@@ -15,15 +15,21 @@ class CommentsController < ApplicationController
 
   def destroy
     @comment = @post.comments.find(params[:id])
-    if @comment.user == current_user || current_user.admin? # Assuming admin role exists or will exist
+
+    if can_delete_comment?(@comment)
       @comment.destroy
-      redirect_to @post, notice: 'Comment was successfully deleted.'
+      redirect_to @post, notice: "Comment was successfully deleted."
     else
-      redirect_to @post, alert: 'You are not authorized to delete this comment.'
+      redirect_to @post, alert: "You are not authorized to delete this comment."
     end
   end
 
   private
+
+  def can_delete_comment?(comment)
+    return false unless current_user
+    current_user == comment.user || current_user.moderator? || current_user.admin?
+  end
 
   def set_post
     @post = Post.find(params[:post_id])
@@ -33,3 +39,4 @@ class CommentsController < ApplicationController
     params.require(:comment).permit(:body)
   end
 end
+

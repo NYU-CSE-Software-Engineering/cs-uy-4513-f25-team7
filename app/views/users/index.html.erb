@@ -37,19 +37,29 @@
     <tr>
       <td><%= user.email %></td>
       <td><%= user.role.humanize %></td>
+      <td><%= user.role.titleize %></td>
       <td>
-        <% if user.moderator? %>
-          <%= button_to "Demote",
-                        user_path(user),
-                        method: :patch,
-                        params: { user: { role: "user" } } %>
+        <% if current_user.admin? %>
+          <% if user.admin? %>
+            <!-- Admin cannot change their own admin status via UI -->
+            <em>Admin</em>
+          <% elsif user.moderator? %>
+            <%= button_to "Demote",
+                          user_path(user),
+                          method: :patch,
+                          params: { user: { role: "user" } } %>
+          <% else %>
+            <%= button_to "Promote",
+                          user_path(user),
+                          method: :patch,
+                          params: { user: { role: "moderator" } } %>
+          <% end %>
         <% else %>
-          <%= button_to "Promote",
-                        user_path(user),
-                        method: :patch,
-                        params: { user: { role: "moderator" } } %>
+          <!-- Non-admins see the roles but no role-change controls -->
+          <em>No controls</em>
         <% end %>
       </td>
+
     </tr>
   <% end %>
   </tbody>
