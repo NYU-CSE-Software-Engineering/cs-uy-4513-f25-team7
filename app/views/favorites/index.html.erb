@@ -1,0 +1,19 @@
+<section data-test="favorites-index">
+  <h1>My Favorites</h1>
+
+  <% if @favorites.any? %>
+    <ul>
+      <% @favorites.each do |favorite| %>
+        <li>
+          <% if favorite.favoritable.is_a?(Team) %>
+            <%= link_to favorite.favoritable.title, team_path(favorite.favoritable) %>
+          <% else %>
+            <%= favorite.favoritable.inspect %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>You have no favorites yet.</p>
+  <% end %>
+</section>

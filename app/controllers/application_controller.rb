@@ -16,10 +16,18 @@ class ApplicationController < ActionController::Base
 
     redirect_to new_user_session_path unless user_signed_in?
   end
+  
+  # def require_login
+  #   return if user_signed_in?
 
+  #   redirect_to new_user_session_path, alert: "Please sign in to continue" and return
+  # end
+
+  # after “sign up”, send them home
   # Devise-style shim so controllers can call authenticate_user!
   # (TeamsController is using this)
   # Alias for compatibility with testing and Devise-style code
+  
   def authenticate_user!
     require_login
   end

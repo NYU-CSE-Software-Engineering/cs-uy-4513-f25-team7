@@ -4,8 +4,7 @@ Feature: Social graph and notifications
   So that I get notifications in my inbox
 
   Background:
-    Given I am a registered user
-    And I am signed in
+    Given I am signed in for social notifications
     And there exists another user named "Misty"
     And there exists a public team called "Rain Dance" owned by "Misty"
 
@@ -15,13 +14,13 @@ Feature: Social graph and notifications
   Scenario: Follow a user successfully
     When I navigate to the profile page for "Misty"
     And I click "Follow"
-    Then I should see "Following"
+    Then I should see the social message "Following"
     And I should see "1 follower" on Misty's profile
     And a new notification should exist for "Misty"
 
   @sad
   Scenario: Cannot follow the same user twice
-    Given I already follow "Misty"
+    Given I already follow the user "Misty"
     When I click "Follow"
     Then I should see an error "Already following"
     And I should still see "1 follower" on Misty's profile
@@ -29,7 +28,7 @@ Feature: Social graph and notifications
   @sad
   Scenario: Cannot follow myself
     When I visit my own profile page
-    Then I should not see "Follow"
+    Then I should not see a follow button
 
   # --- AC2: Favorite a team/post ---
 
@@ -37,7 +36,7 @@ Feature: Social graph and notifications
   Scenario: Favorite a team successfully
     When I go to the team page for "Rain Dance"
     And I click "Favorite"
-    Then I should see "Favorited"
+    Then I should see the social message "Favorited"
     And I should find "Rain Dance" in My Favorites
     And a new notification should exist for "Misty"
 
@@ -61,8 +60,8 @@ Feature: Social graph and notifications
 
   @sad
   Scenario: Must be signed in to follow or favorite
-    Given I sign out
+    Given I sign out for social notifications
     When I navigate to the profile page for "Misty"
     And I click "Follow"
     Then I should be on the sign in page
-    And I should see "Please sign in to continue"
+    And I should see the social message "Please sign in to continue"

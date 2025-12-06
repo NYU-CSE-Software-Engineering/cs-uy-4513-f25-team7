@@ -1,4 +1,37 @@
+# current changes - from social_graph_notifications-development
+# Merge conflict resolution: accepted both changes - UNSURE IF INCORPORATE CURRENT CHANGES INTO INCOMING CHANGES CORRECTLY
+=begin
 class TeamsController < ApplicationController
+  before_action :set_team
+
+  def show
+    @favorite = current_user&.favorites&.find_by(favoritable: @team)
+  end
+  
+  private
+  
+  def set_team
+    @team = Team.find(params[:id])
+  end
+end
+=end
+
+class TeamsController < ApplicationController
+  before_action :set_team
+
+  def show
+    @favorite = current_user&.favorites&.find_by(favoritable: @team)
+  end
+  
+  private
+  
+  def set_team
+    @team = Team.find(params[:id])
+  end
+# end
+# Merge conflict resolution: accepted both changes - UNSURE IF INCORPORATE CURRENT CHANGES INTO INCOMING CHANGES CORRECTLY
+
+  
   before_action :authenticate_user!
 
   def new
@@ -8,72 +41,73 @@ class TeamsController < ApplicationController
     )
     build_slots_to_six(@team)
   end
-def create
-  @team = Team.new(team_params)
-  @team.user = current_user if @team.respond_to?(:user=) && current_user
-  build_slots_to_six(@team)
-
-  action = params[:commit]
-
-  case action
-  when "Validate"
-    @team.mark_legality!
+  
+  def create
+    @team = Team.new(team_params)
+    @team.user = current_user if @team.respond_to?(:user=) && current_user
     build_slots_to_six(@team)
-    render :new
 
-  when "Save"
-    @team.status = :draft if @team.respond_to?(:status=)
-    @team.last_saved_at = Time.current if @team.respond_to?(:last_saved_at=)
-    @team.mark_legality!
+    action = params[:commit]
 
-    if @team.save
-      flash.now[:notice] = "Saved draft: #{@team.name}"
+    case action
+    when "Validate"
+      @team.mark_legality!
       build_slots_to_six(@team)
       render :new
-    else
-      build_slots_to_six(@team)
-      render :new, status: :unprocessable_content
-    end
 
-  when "Publish"
-    # Re-run legality check server-side
-    @team.mark_legality!
-
-    if @team.legal?
-      @team.status = :published if @team.respond_to?(:status=)
-      @team.visibility = :public_team if @team.respond_to?(:visibility=)
+    when "Save"
+      @team.status = :draft if @team.respond_to?(:status=)
       @team.last_saved_at = Time.current if @team.respond_to?(:last_saved_at=)
+      @team.mark_legality!
 
-      # Be generous here so the feature passes even if other validations are picky
-      if @team.save(validate: false)
-        return redirect_to @team  # => /teams/:id
+      if @team.save
+        flash.now[:notice] = "Saved draft: #{@team.name}"
+        build_slots_to_six(@team)
+        render :new
       else
+        build_slots_to_six(@team)
+        render :new, status: :unprocessable_content
+      end
+
+    when "Publish"
+      # Re-run legality check server-side
+      @team.mark_legality!
+
+      if @team.legal?
+        @team.status = :published if @team.respond_to?(:status=)
+        @team.visibility = :public_team if @team.respond_to?(:visibility=)
+        @team.last_saved_at = Time.current if @team.respond_to?(:last_saved_at=)
+
+        # Be generous here so the feature passes even if other validations are picky
+        if @team.save(validate: false)
+          return redirect_to @team  # => /teams/:id
+        else
+          build_slots_to_six(@team)
+          return render :new, status: :unprocessable_content
+        end
+      else
+        @team.status = :draft if @team.respond_to?(:status=)
+        flash.now[:alert] = "Cannot publish: unresolved legality issues"
         build_slots_to_six(@team)
         return render :new, status: :unprocessable_content
       end
-    else
-      @team.status = :draft if @team.respond_to?(:status=)
-      flash.now[:alert] = "Cannot publish: unresolved legality issues"
+
+    when "Add Pokémon"
+      if @team.team_slots.size >= 6
+        flash.now[:alert] = "A team can have at most 6 Pokémon"
+      else
+        next_index = (@team.team_slots.map(&:slot_index).max || 0) + 1
+        @team.team_slots.build(slot_index: next_index)
+      end
+
       build_slots_to_six(@team)
-      return render :new, status: :unprocessable_content
-    end
+      render :new
 
-  when "Add Pokémon"
-    if @team.team_slots.size >= 6
-      flash.now[:alert] = "A team can have at most 6 Pokémon"
     else
-      next_index = (@team.team_slots.map(&:slot_index).max || 0) + 1
-      @team.team_slots.build(slot_index: next_index)
+      build_slots_to_six(@team)
+      render :new
     end
-
-    build_slots_to_six(@team)
-    render :new
-
-  else
-    build_slots_to_six(@team)
-    render :new
   end
-end
 
   def show
     @team = Team.find(params[:id])

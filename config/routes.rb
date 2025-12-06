@@ -43,6 +43,15 @@ Rails.application.routes.draw do
   get  "/auth/failure",                to: "sessions#failure"
   get "/auth/:provider/callback", to: "sessions#google"
 
+  resources :users, only: [:show] do
+    resource :follow, only: [:create, :destroy], controller: "user_follows"
+  end
+  
+  # Merge conflict resolution: accepted both changes - UNSURE IF INCORPORATE CURRENT CHANGES INTO INCOMING CHANGES CORRECTLY
+
+  resources :teams, only: [:show]
+  resources :favorites, only: [:index, :create, :destroy]
+  resources :notifications, only: [:index]
   #team root
   resources :teams, only: %i[new create edit update show]
 end

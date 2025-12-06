@@ -10,6 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+ActiveRecord::Schema[7.1].define(version: 2025_11_26_120300) do
+  create_table "dex_species", force: :cascade do |t|
+# Merge conflict resolution: accepted both changes - UNSURE IF INCORPORATE CURRENT CHANGES INTO INCOMING CHANGES CORRECTLY
 ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
   create_table "dex_learnsets", force: :cascade do |t|
     t.integer "dex_species_id", null: false
@@ -38,6 +41,65 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "favorites", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "favoritable_type", null: false
+    t.integer "favoritable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["favoritable_type", "favoritable_id"], name: "index_favorites_on_favoritable"
+    t.index ["user_id", "favoritable_type", "favoritable_id"], name: "index_favorites_uniqueness", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
+
+  create_table "follows", force: :cascade do |t|
+    t.integer "follower_id", null: false
+    t.integer "followee_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["followee_id"], name: "index_follows_on_followee_id"
+    t.index ["follower_id", "followee_id"], name: "index_follows_on_follower_id_and_followee_id", unique: true
+    t.index ["follower_id"], name: "index_follows_on_follower_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "actor_id", null: false
+    t.string "event_type", null: false
+    t.string "notifiable_type"
+    t.integer "notifiable_id"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_notifications_on_actor_id"
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+  
+  # Merge conflict resolution: accepted both changes - UNSURE IF INCORPORATE CURRENT CHANGES INTO INCOMING CHANGES CORRECTLY
+  # Test create_table "teams", force: :cascade do |t| - FIELDS ARE NOT MAPPED THE SAME
+  #   create_table "teams", force: :cascade do |t|
+  #     t.string "title", null: false
+  #     t.text "description"
+  #     t.boolean "public", default: true, null: false
+  #     t.integer "user_id", null: false
+  #     t.datetime "created_at", null: false
+  #     t.datetime "updated_at", null: false
+  #     t.index ["user_id"], name: "index_teams_on_user_id"
+  
+  create_table "teams", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "user_id"
+    t.integer "status", default: 0, null: false
+    t.integer "visibility", default: 0, null: false
+    t.boolean "legal", default: false, null: false
+    t.datetime "last_saved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_teams_on_user_id"
+  end
+  
   create_table "team_slots", force: :cascade do |t|
     t.integer "team_id", null: false
     t.integer "slot_index", null: false
@@ -74,18 +136,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
     t.text "illegal_reasons"
     t.index ["team_id", "slot_index"], name: "index_team_slots_on_team_id_and_slot_index", unique: true
     t.index ["team_id"], name: "index_team_slots_on_team_id"
-  end
-
-  create_table "teams", force: :cascade do |t|
-    t.string "name", null: false
-    t.integer "user_id"
-    t.integer "status", default: 0, null: false
-    t.integer "visibility", default: 0, null: false
-    t.boolean "legal", default: false, null: false
-    t.datetime "last_saved_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_teams_on_user_id"
   end
   
   create_table "comments", force: :cascade do |t|
@@ -128,10 +178,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_02_015308) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "favorites", "users"
+  add_foreign_key "follows", "users", column: "followee_id"
+  add_foreign_key "follows", "users", column: "follower_id"
+  add_foreign_key "notifications", "users"
+  add_foreign_key "notifications", "users", column: "actor_id"
+  add_foreign_key "teams", "users"
+  # Merge conflict resolution: accepted both changes - UNSURE IF INCORPORATE CURRENT CHANGES INTO INCOMING CHANGES CORRECTLY
   add_foreign_key "dex_learnsets", "dex_moves"
   add_foreign_key "dex_learnsets", "dex_species", column: "dex_species_id"
   add_foreign_key "team_slots", "teams"
-  add_foreign_key "teams", "users"
+  # add_foreign_key "teams", "users"
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
   add_foreign_key "posts", "users"

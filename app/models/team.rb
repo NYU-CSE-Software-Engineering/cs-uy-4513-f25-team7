@@ -1,4 +1,19 @@
 class Team < ApplicationRecord
+  belongs_to :user
+  has_many :favorites, as: :favoritable, dependent: :destroy
+
+  validates :title, presence: true
+
+  def owner
+    user
+  end
+
+  def public?
+    self[:public]
+  end
+  
+  # Merge conflict resolution: accepted both changes - UNSURE IF INCORPORATE CURRENT CHANGES INTO INCOMING CHANGES CORRECTLY
+  
   belongs_to :user, optional: true
   has_many :team_slots, -> { order(:slot_index) }, dependent: :destroy
 

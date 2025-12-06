@@ -1,0 +1,1209 @@
+david@10-17-6-67 cs-uy-4513-f25-team7 % git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   docs/.DS_Store
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .DS_Store
+        app/controllers/favorites_controller.rb
+        app/controllers/notifications_controller.rb
+        app/controllers/teams_controller.rb
+        app/controllers/user_follows_controller.rb
+        app/models/favorite.rb
+        app/models/notification.rb
+        app/models/team.rb
+        app/views/favorites/
+        app/views/notifications/
+        app/views/teams/
+        app/views/users/show.html.erb
+        db/migrate/
+        docs/proj_req_docs/
+
+no changes added to commit (use "git add" and/or "git commit -a")
+david@10-17-6-67 cs-uy-4513-f25-team7 % git switch main
+M       docs/.DS_Store
+Already on 'main'
+Your branch is up to date with 'origin/main'.
+david@10-17-6-67 cs-uy-4513-f25-team7 % git pull origin main
+From https://github.com/NYU-CSE-Software-Engineering/cs-uy-4513-f25-team7
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+david@10-17-6-67 cs-uy-4513-f25-team7 % git switch -c social_graph_notifications-development
+Switched to a new branch 'social_graph_notifications-development'
+david@10-17-6-67 cs-uy-4513-f25-team7 % rails db:setup
+Created database 'storage/development.sqlite3'
+Database 'storage/test.sqlite3' already exists
+You have 4 pending migrations:
+  20251126120000 CreateTeams
+  20251126120100 CreateFollows
+  20251126120200 CreateFavorites
+  20251126120300 CreateNotifications
+Run `bin/rails db:migrate` to update your database then try again.
+david@10-17-6-67 cs-uy-4513-f25-team7 % bin/rails db:migrate
+
+== 20251126120000 CreateTeams: migrating ======================================
+-- create_table(:teams)
+   -> 0.0087s
+== 20251126120000 CreateTeams: migrated (0.0087s) =============================
+
+== 20251126120100 CreateFollows: migrating ====================================
+-- create_table(:follows)
+   -> 0.0020s
+-- add_index(:follows, [:follower_id, :followee_id], {:unique=>true})
+   -> 0.0003s
+== 20251126120100 CreateFollows: migrated (0.0023s) ===========================
+
+== 20251126120200 CreateFavorites: migrating ==================================
+-- create_table(:favorites)
+   -> 0.0041s
+-- add_index(:favorites, [:user_id, :favoritable_type, :favoritable_id], {:unique=>true, :name=>"index_favorites_uniqueness"})
+   -> 0.0011s
+== 20251126120200 CreateFavorites: migrated (0.0053s) =========================
+
+== 20251126120300 CreateNotifications: migrating ==============================
+-- create_table(:notifications)
+   -> 0.0132s
+-- add_index(:notifications, [:user_id, :read_at])
+   -> 0.0032s
+== 20251126120300 CreateNotifications: migrated (0.0164s) =====================
+
+david@10-17-6-67 cs-uy-4513-f25-team7 % rails db:migrate RAILS_ENV=test
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <main> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+== 20251126120000 CreateTeams: migrating ======================================
+-- create_table(:teams)
+   -> 0.0009s
+== 20251126120000 CreateTeams: migrated (0.0010s) =============================
+
+== 20251126120100 CreateFollows: migrating ====================================
+-- create_table(:follows)
+   -> 0.0004s
+-- add_index(:follows, [:follower_id, :followee_id], {:unique=>true})
+   -> 0.0001s
+== 20251126120100 CreateFollows: migrated (0.0005s) ===========================
+
+== 20251126120200 CreateFavorites: migrating ==================================
+-- create_table(:favorites)
+   -> 0.0003s
+-- add_index(:favorites, [:user_id, :favoritable_type, :favoritable_id], {:unique=>true, :name=>"index_favorites_uniqueness"})
+   -> 0.0001s
+== 20251126120200 CreateFavorites: migrated (0.0004s) =========================
+
+== 20251126120300 CreateNotifications: migrating ==============================
+-- create_table(:notifications)
+   -> 0.0005s
+-- add_index(:notifications, [:user_id, :read_at])
+   -> 0.0001s
+== 20251126120300 CreateNotifications: migrated (0.0005s) =====================
+
+david@10-17-6-67 cs-uy-4513-f25-team7 % bin/rails server
+=> Booting Puma
+=> Rails 7.1.6 application starting in development 
+=> Run `bin/rails server --help` for more startup options
+Puma starting in single mode...
+* Puma version: 7.1.0 ("Neon Witch")
+* Ruby version: ruby 3.3.8 (2025-04-09 revision b200bad6cd) [arm64-darwin25]
+*  Min threads: 5
+*  Max threads: 5
+*  Environment: development
+*          PID: 25986
+* Listening on http://127.0.0.1:3000
+* Listening on http://[::1]:3000
+Use Ctrl-C to stop
+Started GET "/" for ::1 at 2025-12-03 02:10:34 -0500
+  ActiveRecord::SchemaMigration Load (0.3ms)  SELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT ?  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  Rendered home/index.html.erb within layouts/application (Duration: 23.6ms | Allocations: 16394)
+  CACHE User Load (0.0ms)  SELECT "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT ?  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  Rendered layout layouts/application.html.erb (Duration: 576.7ms | Allocations: 122395)
+Completed 200 OK in 598ms (Views: 580.2ms | ActiveRecord: 1.5ms | Allocations: 130975)
+
+
+^C- Gracefully stopping, waiting for requests to finish
+=== puma shutdown: 2025-12-03 02:33:45 -0500 ===
+- Goodbye!
+Exiting
+david@10-17-6-67 cs-uy-4513-f25-team7 % bin/rails server               
+=> Booting Puma
+=> Rails 7.1.6 application starting in development 
+=> Run `bin/rails server --help` for more startup options
+Puma starting in single mode...
+* Puma version: 7.1.0 ("Neon Witch")
+* Ruby version: ruby 3.3.8 (2025-04-09 revision b200bad6cd) [arm64-darwin25]
+*  Min threads: 5
+*  Max threads: 5
+*  Environment: development
+*          PID: 27727
+* Listening on http://127.0.0.1:3000
+* Listening on http://[::1]:3000
+Use Ctrl-C to stop
+Started GET "/?id=5f2ad2d9-8ded-4def-b8b0-9625ce46d97d&vscodeBrowserReqId=1764748099556" for ::1 at 2025-12-03 02:48:19 -0500
+  ActiveRecord::SchemaMigration Load (0.3ms)  SELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC
+Processing by HomeController#index as HTML
+  Parameters: {"id"=>"5f2ad2d9-8ded-4def-b8b0-9625ce46d97d", "vscodeBrowserReqId"=>"1764748099556"}
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT ?  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  Rendered home/index.html.erb within layouts/application (Duration: 26.0ms | Allocations: 12628)
+  CACHE User Load (0.0ms)  SELECT "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT ?  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  Rendered layout layouts/application.html.erb (Duration: 52.0ms | Allocations: 54496)
+Completed 200 OK in 69ms (Views: 54.0ms | ActiveRecord: 1.9ms | Allocations: 58805)
+
+
+Started GET "/" for ::1 at 2025-12-03 02:48:28 -0500
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT ?  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  Rendered home/index.html.erb within layouts/application (Duration: 13.4ms | Allocations: 3141)
+  CACHE User Load (0.0ms)  SELECT "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT ?  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:5:in `current_user'
+  Rendered layout layouts/application.html.erb (Duration: 15.3ms | Allocations: 4812)
+Completed 200 OK in 17ms (Views: 15.5ms | ActiveRecord: 0.1ms | Allocations: 5056)
+
+
+^C- Gracefully stopping, waiting for requests to finish
+=== puma shutdown: 2025-12-03 03:07:33 -0500 ===
+- Goodbye!
+Exiting
+david@10-17-6-67 cs-uy-4513-f25-team7 % gem install bundler -v 2.6.9
+Successfully installed bundler-2.6.9
+Parsing documentation for bundler-2.6.9
+Installing ri documentation for bundler-2.6.9
+Done installing documentation for bundler after 0 seconds
+1 gem installed
+
+A new release of RubyGems is available: 3.5.22 → 4.0.0!
+Run `gem update --system 4.0.0` to update your installation.
+
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <main> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am a registered user                                        # features/social_graph_notifications.feature:7
+      Ambiguous match of "I am a registered user":
+      
+      features/step_definitions/forum_steps.rb:1:in `"I am a registered user"'
+      features/step_definitions/social_graph_notifications_steps.rb:31:in `"I am a registered user"'
+      
+      You can run again with --guess to make Cucumber be more smart about it
+       (Cucumber::Ambiguous)
+      features/social_graph_notifications.feature:7:in `I am a registered user'
+    And I am signed in                                                  # features/step_definitions/auth_steps.rb:1
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:35
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:39
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:15
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:45
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:55
+    Then I should see "Following"                    # features/social_graph_notifications.feature:18
+    And I should see "1 follower" on Misty's profile # features/social_graph_notifications.feature:19
+      Undefined step: "I should see "1 follower" on Misty's profile" (Cucumber::Core::Test::Result::Undefined)
+      features/social_graph_notifications.feature:19:in `I should see "1 follower" on Misty's profile'
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:72
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:23
+    Given I already follow "Misty"                         # features/step_definitions/follow_species_steps.rb:156
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:55
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/social_graph_notifications.feature:27
+      Undefined step: "I should still see "1 follower" on Misty's profile" (Cucumber::Core::Test::Result::Undefined)
+      features/social_graph_notifications.feature:27:in `I should still see "1 follower" on Misty's profile'
+
+  @sad
+  Scenario: Cannot follow myself     # features/social_graph_notifications.feature:30
+    When I visit my own profile page # features/step_definitions/social_graph_notifications_steps.rb:50
+    Then I should not see "Follow"   # features/social_graph_notifications.feature:32
+      Undefined step: "I should not see "Follow"" (Cucumber::Core::Test::Result::Undefined)
+      features/social_graph_notifications.feature:32:in `I should not see "Follow"'
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully            # features/social_graph_notifications.feature:37
+    When I go to the team page for "Rain Dance"     # features/step_definitions/social_graph_notifications_steps.rb:78
+    And I click "Favorite"                          # features/step_definitions/social_graph_notifications_steps.rb:55
+    Then I should see "Favorited"                   # features/social_graph_notifications.feature:40
+    And I should find "Rain Dance" in My Favorites  # features/step_definitions/social_graph_notifications_steps.rb:92
+    And a new notification should exist for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:72
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:45
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:83
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:87
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:55
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:97
+    And I should still see "Favorited"                  # features/social_graph_notifications.feature:50
+      Undefined step: "I should still see "Favorited"" (Cucumber::Core::Test::Result::Undefined)
+      features/social_graph_notifications.feature:50:in `I should still see "Favorited"'
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:55
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:102
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:107
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:111
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:116
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:120
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:63
+    Given I sign out                                # features/social_graph_notifications.feature:64
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:45
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:55
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:129
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:68
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:15 # Scenario: Follow a user successfully
+cucumber features/social_graph_notifications.feature:23 # Scenario: Cannot follow the same user twice
+cucumber features/social_graph_notifications.feature:30 # Scenario: Cannot follow myself
+cucumber features/social_graph_notifications.feature:37 # Scenario: Favorite a team successfully
+cucumber features/social_graph_notifications.feature:45 # Scenario: Prevent duplicate favorite on the same team
+cucumber features/social_graph_notifications.feature:55 # Scenario: View notifications newest-first and mark as read
+cucumber features/social_graph_notifications.feature:63 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (7 failed)
+59 steps (7 failed, 48 skipped, 4 undefined)
+0m0.046s
+
+You can implement step definitions for undefined steps with these snippets:
+
+Then('I should see {string} on Misty's profile') do |string|
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then('I should still see {string} on Misty's profile') do |string|
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then('I should not see {string}') do |string|
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then('I should still see {string}') do |string|
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am a registered user                                        # features/step_definitions/forum_steps.rb:1
+    And I am signed in                                                  # features/step_definitions/auth_steps.rb:1
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:35
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:15
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:41
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:51
+    Then I should see "Following"                    # features/social_graph_notifications.feature:18
+      Ambiguous match of "I should see "Following"":
+      
+      features/step_definitions/forum_steps.rb:30:in `"I should see {string}"'
+      features/step_definitions/moderation_steps.rb:47:in `/^I should see "([^"]*)"$/'
+      features/step_definitions/social_graph_notifications_steps.rb:55:in `"I should see {string}"'
+      features/step_definitions/team_editor_steps.rb:58:in `/^I should see "([^"]*)"$/'
+      
+      You can run again with --guess to make Cucumber be more smart about it
+       (Cucumber::Ambiguous)
+      features/social_graph_notifications.feature:18:in `I should see "Following"'
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:59
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:67
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:23
+    Given I already follow "Misty"                         # features/step_definitions/follow_species_steps.rb:156
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:51
+      Unable to find link "Follow" (Capybara::ElementNotFound)
+      ./features/step_definitions/social_graph_notifications_steps.rb:52:in `rescue in block in <main>'
+      ./features/step_definitions/social_graph_notifications_steps.rb:52:in `"I click {string}"'
+      features/social_graph_notifications.feature:25:in `I click "Follow"'
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:63
+
+  @sad
+  Scenario: Cannot follow myself     # features/social_graph_notifications.feature:30
+    When I visit my own profile page # features/step_definitions/social_graph_notifications_steps.rb:46
+    Then I should not see "Follow"   # features/step_definitions/social_graph_notifications_steps.rb:100
+      expected not to find text "Follow" in "Home | Login | Register\nme@example.com\n0 followers\nFollow". (However, it was found 2 times using a case insensitive search.) (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/social_graph_notifications_steps.rb:101:in `"I should not see {string}"'
+      features/social_graph_notifications.feature:32:in `I should not see "Follow"'
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully            # features/social_graph_notifications.feature:37
+    When I go to the team page for "Rain Dance"     # features/step_definitions/social_graph_notifications_steps.rb:73
+    And I click "Favorite"                          # features/step_definitions/social_graph_notifications_steps.rb:51
+    Then I should see "Favorited"                   # features/social_graph_notifications.feature:40
+      Ambiguous match of "I should see "Favorited"":
+      
+      features/step_definitions/forum_steps.rb:30:in `"I should see {string}"'
+      features/step_definitions/moderation_steps.rb:47:in `/^I should see "([^"]*)"$/'
+      features/step_definitions/social_graph_notifications_steps.rb:55:in `"I should see {string}"'
+      features/step_definitions/team_editor_steps.rb:58:in `/^I should see "([^"]*)"$/'
+      
+      You can run again with --guess to make Cucumber be more smart about it
+       (Cucumber::Ambiguous)
+      features/social_graph_notifications.feature:40:in `I should see "Favorited"'
+    And I should find "Rain Dance" in My Favorites  # features/step_definitions/social_graph_notifications_steps.rb:87
+    And a new notification should exist for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:67
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:45
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:78
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:82
+      Validation failed: User must exist, User can't be blank (ActiveRecord::RecordInvalid)
+      ./features/step_definitions/social_graph_notifications_steps.rb:84:in `"I have already favorited the team {string}"'
+      features/social_graph_notifications.feature:47:in `I have already favorited the team "Rain Dance"'
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:51
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:92
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:96
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:55
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:105
+      Validation failed: User must exist (ActiveRecord::RecordInvalid)
+      ./features/step_definitions/social_graph_notifications_steps.rb:107:in `"I have at least one unread notification"'
+      features/social_graph_notifications.feature:56:in `I have at least one unread notification'
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:110
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:114
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:119
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:123
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:63
+    Given I sign out                                # features/social_graph_notifications.feature:64
+      Ambiguous match of "I sign out":
+      
+      features/step_definitions/forum_steps.rb:60:in `"I sign out"'
+      features/step_definitions/social_graph_notifications_steps.rb:128:in `"I sign out"'
+      
+      You can run again with --guess to make Cucumber be more smart about it
+       (Cucumber::Ambiguous)
+      features/social_graph_notifications.feature:64:in `I sign out'
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:41
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:51
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:132
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:68
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:15 # Scenario: Follow a user successfully
+cucumber features/social_graph_notifications.feature:23 # Scenario: Cannot follow the same user twice
+cucumber features/social_graph_notifications.feature:30 # Scenario: Cannot follow myself
+cucumber features/social_graph_notifications.feature:37 # Scenario: Favorite a team successfully
+cucumber features/social_graph_notifications.feature:45 # Scenario: Prevent duplicate favorite on the same team
+cucumber features/social_graph_notifications.feature:55 # Scenario: View notifications newest-first and mark as read
+cucumber features/social_graph_notifications.feature:63 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (7 failed)
+59 steps (7 failed, 17 skipped, 35 passed)
+0m0.387s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % gem install bundler -v 2.6.9
+
+Successfully installed bundler-2.6.9
+Parsing documentation for bundler-2.6.9
+Done installing documentation for bundler after 0 seconds
+1 gem installed
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am signed in for social notifications                       # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:40
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:44
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:14
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:55
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:65
+    Then I should see the social message "Following" # features/step_definitions/social_graph_notifications_steps.rb:69
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:73
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:81
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:22
+    Given I already follow the user "Misty"                # features/step_definitions/social_graph_notifications_steps.rb:50
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:65
+      Unable to find link "Follow" (Capybara::ElementNotFound)
+      ./features/step_definitions/social_graph_notifications_steps.rb:66:in `rescue in block in <main>'
+      ./features/step_definitions/social_graph_notifications_steps.rb:66:in `"I click {string}"'
+      features/social_graph_notifications.feature:24:in `I click "Follow"'
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:77
+
+  @sad
+  Scenario: Cannot follow myself          # features/social_graph_notifications.feature:29
+    When I visit my own profile page      # features/step_definitions/social_graph_notifications_steps.rb:60
+    Then I should not see a follow button # features/step_definitions/social_graph_notifications_steps.rb:114
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully             # features/social_graph_notifications.feature:36
+    When I go to the team page for "Rain Dance"      # features/step_definitions/social_graph_notifications_steps.rb:87
+    And I click "Favorite"                           # features/step_definitions/social_graph_notifications_steps.rb:65
+    Then I should see the social message "Favorited" # features/step_definitions/social_graph_notifications_steps.rb:69
+    And I should find "Rain Dance" in My Favorites   # features/step_definitions/social_graph_notifications_steps.rb:101
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:81
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:44
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:92
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:96
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:65
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:106
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:110
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:54
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:119
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:124
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:128
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:133
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:137
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:62
+    Given I sign out for social notifications       # features/step_definitions/social_graph_notifications_steps.rb:146
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:55
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:65
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:151
+         expected "/users/2" to equal "/login"
+      
+      ...or:
+      
+         expected to find text "Log in" in "Home | Account Settings |\nLog out\nFollowing\nMisty\n1 follower\nFollow\nFollowing" (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/social_graph_notifications_steps.rb:152:in `"I should be on the sign in page"'
+      features/social_graph_notifications.feature:66:in `I should be on the sign in page'
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:67
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:22 # Scenario: Cannot follow the same user twice
+cucumber features/social_graph_notifications.feature:62 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (2 failed, 5 passed)
+52 steps (2 failed, 3 skipped, 47 passed)
+0m0.342s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am signed in for social notifications                       # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:40
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:44
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:14
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:55
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:65
+    Then I should see the social message "Following" # features/step_definitions/social_graph_notifications_steps.rb:69
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:73
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:81
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:22
+    Given I already follow the user "Misty"                # features/step_definitions/social_graph_notifications_steps.rb:50
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:65
+      Unable to find link "Follow" (Capybara::ElementNotFound)
+      ./features/step_definitions/social_graph_notifications_steps.rb:66:in `rescue in block in <main>'
+      ./features/step_definitions/social_graph_notifications_steps.rb:66:in `"I click {string}"'
+      features/social_graph_notifications.feature:24:in `I click "Follow"'
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:77
+
+  @sad
+  Scenario: Cannot follow myself          # features/social_graph_notifications.feature:29
+    When I visit my own profile page      # features/step_definitions/social_graph_notifications_steps.rb:60
+    Then I should not see a follow button # features/step_definitions/social_graph_notifications_steps.rb:114
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully             # features/social_graph_notifications.feature:36
+    When I go to the team page for "Rain Dance"      # features/step_definitions/social_graph_notifications_steps.rb:87
+    And I click "Favorite"                           # features/step_definitions/social_graph_notifications_steps.rb:65
+    Then I should see the social message "Favorited" # features/step_definitions/social_graph_notifications_steps.rb:69
+    And I should find "Rain Dance" in My Favorites   # features/step_definitions/social_graph_notifications_steps.rb:101
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:81
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:44
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:92
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:96
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:65
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:106
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:110
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:54
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:119
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:124
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:128
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:133
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:137
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:62
+    Given I sign out for social notifications       # features/step_definitions/social_graph_notifications_steps.rb:146
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:55
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:65
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:151
+         expected "/users/2" to equal "/login"
+      
+      ...or:
+      
+         expected to find text "Log in" in "Home | Account Settings |\nLog out\nFollowing\nMisty\n1 follower\nFollow\nFollowing" (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/social_graph_notifications_steps.rb:152:in `"I should be on the sign in page"'
+      features/social_graph_notifications.feature:66:in `I should be on the sign in page'
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:67
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:22 # Scenario: Cannot follow the same user twice
+cucumber features/social_graph_notifications.feature:62 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (2 failed, 5 passed)
+52 steps (2 failed, 3 skipped, 47 passed)
+0m0.332s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am signed in for social notifications                       # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:40
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:44
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:14
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Following" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:74
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:22
+    Given I already follow the user "Misty"                # features/step_definitions/social_graph_notifications_steps.rb:50
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:78
+
+  @sad
+  Scenario: Cannot follow myself          # features/social_graph_notifications.feature:29
+    When I visit my own profile page      # features/step_definitions/social_graph_notifications_steps.rb:61
+    Then I should not see a follow button # features/step_definitions/social_graph_notifications_steps.rb:115
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully             # features/social_graph_notifications.feature:36
+    When I go to the team page for "Rain Dance"      # features/step_definitions/social_graph_notifications_steps.rb:88
+    And I click "Favorite"                           # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Favorited" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should find "Rain Dance" in My Favorites   # features/step_definitions/social_graph_notifications_steps.rb:102
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:44
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:93
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:97
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:107
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:111
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:54
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:120
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:125
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:129
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:134
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:138
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:62
+    Given I sign out for social notifications       # features/step_definitions/social_graph_notifications_steps.rb:147
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:152
+         expected "/users/2" to equal "/login"
+      
+      ...or:
+      
+         expected to find text "Log in" in "Home | Account Settings |\nLog out\nFollowing\nMisty\n1 follower\nFollow\nFollowing" (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/social_graph_notifications_steps.rb:153:in `"I should be on the sign in page"'
+      features/social_graph_notifications.feature:66:in `I should be on the sign in page'
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:67
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:62 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (1 failed, 6 passed)
+52 steps (1 failed, 1 skipped, 50 passed)
+0m0.340s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am signed in for social notifications                       # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:40
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:44
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:14
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Following" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:74
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:22
+    Given I already follow the user "Misty"                # features/step_definitions/social_graph_notifications_steps.rb:50
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:78
+
+  @sad
+  Scenario: Cannot follow myself          # features/social_graph_notifications.feature:29
+    When I visit my own profile page      # features/step_definitions/social_graph_notifications_steps.rb:61
+    Then I should not see a follow button # features/step_definitions/social_graph_notifications_steps.rb:115
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully             # features/social_graph_notifications.feature:36
+    When I go to the team page for "Rain Dance"      # features/step_definitions/social_graph_notifications_steps.rb:88
+    And I click "Favorite"                           # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Favorited" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should find "Rain Dance" in My Favorites   # features/step_definitions/social_graph_notifications_steps.rb:102
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:44
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:93
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:97
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:107
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:111
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:54
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:120
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:125
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:129
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:134
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:138
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:62
+    Given I sign out for social notifications       # features/step_definitions/social_graph_notifications_steps.rb:147
+      Ambiguous match, found 2 elements matching visible button "Log out" that is not disabled (Capybara::Ambiguous)
+      ./features/step_definitions/social_graph_notifications_steps.rb:149:in `"I sign out for social notifications"'
+      features/social_graph_notifications.feature:63:in `I sign out for social notifications'
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:156
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:67
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:62 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (1 failed, 6 passed)
+52 steps (1 failed, 4 skipped, 47 passed)
+0m0.290s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am signed in for social notifications                       # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:40
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:44
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:14
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Following" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:74
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:22
+    Given I already follow the user "Misty"                # features/step_definitions/social_graph_notifications_steps.rb:50
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:78
+
+  @sad
+  Scenario: Cannot follow myself          # features/social_graph_notifications.feature:29
+    When I visit my own profile page      # features/step_definitions/social_graph_notifications_steps.rb:61
+    Then I should not see a follow button # features/step_definitions/social_graph_notifications_steps.rb:115
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully             # features/social_graph_notifications.feature:36
+    When I go to the team page for "Rain Dance"      # features/step_definitions/social_graph_notifications_steps.rb:88
+    And I click "Favorite"                           # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Favorited" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should find "Rain Dance" in My Favorites   # features/step_definitions/social_graph_notifications_steps.rb:102
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:44
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:93
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:97
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:107
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:111
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:54
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:120
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:125
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:129
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:134
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:138
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:62
+    Given I sign out for social notifications       # features/step_definitions/social_graph_notifications_steps.rb:147
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:152
+         expected "/users/2" to equal "/login"
+      
+      ...or:
+      
+         expected to find text "Log in" in "Home | Account Settings |\nLog out\nFollowing\nMisty\n1 follower\nFollow\nFollowing" (RSpec::Expectations::ExpectationNotMetError)
+      ./features/step_definitions/social_graph_notifications_steps.rb:153:in `"I should be on the sign in page"'
+      features/social_graph_notifications.feature:66:in `I should be on the sign in page'
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:67
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:62 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (1 failed, 6 passed)
+52 steps (1 failed, 1 skipped, 50 passed)
+0m0.339s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am signed in for social notifications                       # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:40
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:44
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:14
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Following" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:74
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:22
+    Given I already follow the user "Misty"                # features/step_definitions/social_graph_notifications_steps.rb:50
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:78
+
+  @sad
+  Scenario: Cannot follow myself          # features/social_graph_notifications.feature:29
+    When I visit my own profile page      # features/step_definitions/social_graph_notifications_steps.rb:61
+    Then I should not see a follow button # features/step_definitions/social_graph_notifications_steps.rb:115
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully             # features/social_graph_notifications.feature:36
+    When I go to the team page for "Rain Dance"      # features/step_definitions/social_graph_notifications_steps.rb:88
+    And I click "Favorite"                           # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Favorited" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should find "Rain Dance" in My Favorites   # features/step_definitions/social_graph_notifications_steps.rb:102
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:44
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:93
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:97
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:107
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:111
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:54
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:120
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:125
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:129
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:134
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:138
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:62
+    Given I sign out for social notifications       # features/step_definitions/social_graph_notifications_steps.rb:147
+      Ambiguous match, found 2 elements matching visible button "Log out" that is not disabled (Capybara::Ambiguous)
+      ./features/step_definitions/social_graph_notifications_steps.rb:149:in `"I sign out for social notifications"'
+      features/social_graph_notifications.feature:63:in `I sign out for social notifications'
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:156
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:67
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:62 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (1 failed, 6 passed)
+52 steps (1 failed, 4 skipped, 47 passed)
+0m0.319s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am signed in for social notifications                       # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:40
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:44
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:14
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Following" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:74
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:22
+    Given I already follow the user "Misty"                # features/step_definitions/social_graph_notifications_steps.rb:50
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:78
+
+  @sad
+  Scenario: Cannot follow myself          # features/social_graph_notifications.feature:29
+    When I visit my own profile page      # features/step_definitions/social_graph_notifications_steps.rb:61
+    Then I should not see a follow button # features/step_definitions/social_graph_notifications_steps.rb:115
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully             # features/social_graph_notifications.feature:36
+    When I go to the team page for "Rain Dance"      # features/step_definitions/social_graph_notifications_steps.rb:88
+    And I click "Favorite"                           # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Favorited" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should find "Rain Dance" in My Favorites   # features/step_definitions/social_graph_notifications_steps.rb:102
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:44
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:93
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:97
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:107
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:111
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:54
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:120
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:125
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:129
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:134
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:138
+
+  @sad
+  Scenario: Must be signed in to follow or favorite # features/social_graph_notifications.feature:62
+    Given I sign out for social notifications       # features/step_definitions/social_graph_notifications_steps.rb:147
+    When I navigate to the profile page for "Misty" # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                            # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should be on the sign in page            # features/step_definitions/social_graph_notifications_steps.rb:152
+    And I should see "Please sign in to continue"   # features/social_graph_notifications.feature:67
+      Ambiguous match of "I should see "Please sign in to continue"":
+      
+      features/step_definitions/forum_steps.rb:30:in `"I should see {string}"'
+      features/step_definitions/moderation_steps.rb:47:in `/^I should see "([^"]*)"$/'
+      features/step_definitions/team_editor_steps.rb:58:in `/^I should see "([^"]*)"$/'
+      
+      You can run again with --guess to make Cucumber be more smart about it
+       (Cucumber::Ambiguous)
+      features/social_graph_notifications.feature:67:in `I should see "Please sign in to continue"'
+
+Failing Scenarios:
+cucumber features/social_graph_notifications.feature:62 # Scenario: Must be signed in to follow or favorite
+
+7 scenarios (1 failed, 6 passed)
+52 steps (1 failed, 51 passed)
+0m0.309s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % bundle exec cucumber features/social_graph_notifications.feature
+
+DEPRECATION WARNING: `Rails.application.secrets` is deprecated in favor of `Rails.application.credentials` and will be removed in Rails 7.2. (called from <top (required)> at /Users/david/Desktop/software engineering/cs-uy-4513-f25-team7/config/environment.rb:5)
+Using the default profile...
+Feature: Social graph and notifications
+  As a signed-in member
+  I want to follow users and favorite content
+  So that I get notifications in my inbox
+
+  Background:                                                           # features/social_graph_notifications.feature:6
+    Given I am signed in for social notifications                       # features/step_definitions/social_graph_notifications_steps.rb:31
+    And there exists another user named "Misty"                         # features/step_definitions/social_graph_notifications_steps.rb:40
+    And there exists a public team called "Rain Dance" owned by "Misty" # features/step_definitions/social_graph_notifications_steps.rb:44
+
+  # --- AC1: Follow a user ---
+  @happy
+  Scenario: Follow a user successfully               # features/social_graph_notifications.feature:14
+    When I navigate to the profile page for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Following" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:74
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Cannot follow the same user twice              # features/social_graph_notifications.feature:22
+    Given I already follow the user "Misty"                # features/step_definitions/social_graph_notifications_steps.rb:50
+    When I click "Follow"                                  # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error "Already following"         # features/step_definitions/identity_steps.rb:196
+    And I should still see "1 follower" on Misty's profile # features/step_definitions/social_graph_notifications_steps.rb:78
+
+  @sad
+  Scenario: Cannot follow myself          # features/social_graph_notifications.feature:29
+    When I visit my own profile page      # features/step_definitions/social_graph_notifications_steps.rb:61
+    Then I should not see a follow button # features/step_definitions/social_graph_notifications_steps.rb:115
+
+  # --- AC2: Favorite a team/post ---
+  @happy
+  Scenario: Favorite a team successfully             # features/social_graph_notifications.feature:36
+    When I go to the team page for "Rain Dance"      # features/step_definitions/social_graph_notifications_steps.rb:88
+    And I click "Favorite"                           # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see the social message "Favorited" # features/step_definitions/social_graph_notifications_steps.rb:70
+    And I should find "Rain Dance" in My Favorites   # features/step_definitions/social_graph_notifications_steps.rb:102
+    And a new notification should exist for "Misty"  # features/step_definitions/social_graph_notifications_steps.rb:82
+
+  @sad
+  Scenario: Prevent duplicate favorite on the same team # features/social_graph_notifications.feature:44
+    Given I am on the team page for "Rain Dance"        # features/step_definitions/social_graph_notifications_steps.rb:93
+    And I have already favorited the team "Rain Dance"  # features/step_definitions/social_graph_notifications_steps.rb:97
+    When I click "Favorite"                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should see an error message                  # features/step_definitions/social_graph_notifications_steps.rb:107
+    And I should still see "Favorited"                  # features/step_definitions/social_graph_notifications_steps.rb:111
+
+  # --- AC3: Notifications inbox ---
+  @happy
+  Scenario: View notifications newest-first and mark as read # features/social_graph_notifications.feature:54
+    Given I have at least one unread notification            # features/step_definitions/social_graph_notifications_steps.rb:120
+    When I visit the notifications page                      # features/step_definitions/social_graph_notifications_steps.rb:125
+    Then I should see my newest notification listed first    # features/step_definitions/social_graph_notifications_steps.rb:129
+    And the unread badge should be visible                   # features/step_definitions/social_graph_notifications_steps.rb:134
+    And my unread notifications should be marked as read     # features/step_definitions/social_graph_notifications_steps.rb:138
+
+  @sad
+  Scenario: Must be signed in to follow or favorite                  # features/social_graph_notifications.feature:62
+    Given I sign out for social notifications                        # features/step_definitions/social_graph_notifications_steps.rb:147
+    When I navigate to the profile page for "Misty"                  # features/step_definitions/social_graph_notifications_steps.rb:56
+    And I click "Follow"                                             # features/step_definitions/social_graph_notifications_steps.rb:66
+    Then I should be on the sign in page                             # features/step_definitions/social_graph_notifications_steps.rb:152
+    And I should see the social message "Please sign in to continue" # features/step_definitions/social_graph_notifications_steps.rb:70
+
+7 scenarios (7 passed)
+52 steps (52 passed)
+0m0.321s
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Share your Cucumber Report with your team at https://reports.cucumber.io     │
+│                                                                              │
+│ Command line option:    --publish                                            │
+│ Environment variable:   CUCUMBER_PUBLISH_ENABLED=true                        │
+│ cucumber.yml:           default: --publish                                   │
+│                                                                              │
+│ More information at https://cucumber.io/docs/cucumber/environment-variables/ │
+│                                                                              │
+│ To disable this message, specify CUCUMBER_PUBLISH_QUIET=true or use the      │
+│ --publish-quiet option. You can also add this to your cucumber.yml:          │
+│ default: --publish-quiet                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+david@10-17-6-67 cs-uy-4513-f25-team7 % 
