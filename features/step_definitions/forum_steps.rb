@@ -68,10 +68,4 @@ Given('the post {string} has a comment {string}') do |title, comment_body|
   post.comments.create!(body: comment_body, user: commenter)
 end
 
-When('I press "Delete Post"') do
-  click_button "Delete Post"
-end
 
-When('I press "Delete Comment"') do
-  click_button "Delete Comment"
-end
