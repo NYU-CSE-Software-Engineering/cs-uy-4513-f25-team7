@@ -8,6 +8,9 @@ class User < ApplicationRecord
 
   has_many :favorites, dependent: :destroy
   has_many :notifications, dependent: :destroy
+  # Merge conflict resolution: accepted both changes - UNSURE IF INCORPORATE CURRENT CHANGES INTO INCOMING CHANGES CORRECTLY
+  has_many :posts, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   before_validation :ensure_role
 

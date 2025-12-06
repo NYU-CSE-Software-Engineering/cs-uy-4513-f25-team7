@@ -70,6 +70,10 @@ end
 Then('I should see the social message {string}') do |text|
   expect(page).to have_content(text)
 end
+# Merge conflict resolution: accepted both changes
+# Then('I should see {string}') do |text|
+#   expect(page).to have_content(text)
+# end
 
 Then('I should see {string} on Misty\'s profile') do |text|
   expect(page).to have_content(text)
@@ -141,7 +145,15 @@ end
 
 # ---------- Session helpers ----------
 Given('I sign out') do
-  click_link "Sign out" rescue nil
+  if page.has_button?("Log out")
+    first(:button, "Log out").click
+  elsif page.has_link?("Log out")
+    first(:link, "Log out").click
+  elsif page.has_link?("Sign out")
+    first(:link, "Sign out").click
+  end
+  # Wait for signed out state - should see Login link
+  expect(page).to have_link("Login").or have_link("Log in").or have_link("Sign in")
 end
 
 Given('I sign out for social notifications') do

@@ -1,0 +1,187 @@
+<% slot = local_assigns[:slot] %>
+<% f    = local_assigns[:f]    %>
+
+<div class="team-slot" id="slot-<%= slot.slot_index %>" data-slot="<%= slot.slot_index %>">
+  <h2>Slot <%= slot.slot_index %></h2>
+
+  <% if slot.respond_to?(:illegal?) && slot.illegal? %>
+    <span class="badge badge-illegal">Illegal</span>
+  <% else %>
+    <span class="badge badge-legal">Legal</span>
+  <% end %>
+
+  <%= f.fields_for :team_slots, slot do |sf| %>
+    <%= sf.hidden_field :slot_index %>
+
+    <!-- Species + sprite preview -->
+    <div class="field species-field"
+         data-role="species-field"
+         data-slot-index="<%= slot.slot_index %>">
+      <%= sf.label :species, "Species" %>
+      <%= sf.text_field :species,
+            autocomplete: "off",
+            data: {
+              role: "species-input",
+              slot_index: slot.slot_index
+            },
+            list: "species-options-slot-#{slot.slot_index}" %>
+
+      <!-- Autocomplete options for this slot -->
+      <datalist id="species-options-slot-<%= slot.slot_index %>"
+                data-role="species-datalist"></datalist>
+
+      <!-- Sprite preview for this slot -->
+      <div class="species-sprite-preview"
+           data-role="species-sprite"
+           style="margin-top: 0.5rem;">
+        <!-- JS will insert an <img> here -->
+      </div>
+    </div>
+
+    <div class="field">
+      <%= sf.label :item, "Item" %>
+      <%= sf.text_field :item %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :ability, "Ability" %>
+      <%= sf.text_field :ability %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :nature, "Nature" %>
+      <%= sf.text_field :nature %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :tera_type, "Tera Type" %>
+      <%= sf.text_field :tera_type %>
+    </div>
+
+    <div class="field">
+      <%= sf.label :nickname, "Nickname" %>
+      <%= sf.text_field :nickname %>
+    </div>
+
+    <fieldset class="evs">
+      <legend>EVs</legend>
+
+      <div class="field">
+        <%= sf.label :ev_hp, "HP EVs" %>
+        <%= sf.number_field :ev_hp %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_atk, "Atk EVs" %>
+        <%= sf.number_field :ev_atk %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_def, "Def EVs" %>
+        <%= sf.number_field :ev_def %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_spa, "SpA EVs" %>
+        <%= sf.number_field :ev_spa %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_spd, "SpD EVs" %>
+        <%= sf.number_field :ev_spd %>
+      </div>
+      <div class="field">
+        <%= sf.label :ev_spe, "Spe EVs" %>
+        <%= sf.number_field :ev_spe %>
+      </div>
+    </fieldset>
+
+    <fieldset class="ivs">
+      <legend>IVs</legend>
+
+      <div class="field">
+        <%= sf.label :iv_hp, "HP IVs" %>
+        <%= sf.number_field :iv_hp %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_atk, "Atk IVs" %>
+        <%= sf.number_field :iv_atk %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_def, "Def IVs" %>
+        <%= sf.number_field :iv_def %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_spa, "SpA IVs" %>
+        <%= sf.number_field :iv_spa %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_spd, "SpD IVs" %>
+        <%= sf.number_field :iv_spd %>
+      </div>
+      <div class="field">
+        <%= sf.label :iv_spe, "Spe IVs" %>
+        <%= sf.number_field :iv_spe %>
+      </div>
+    </fieldset>
+
+    <!-- Moves group that the system spec looks for -->
+    <div class="field moves-field-group">
+      <label>Moves</label>
+
+      <div class="moves">
+        <div class="field">
+          <% move_1_id = "slot_#{slot.slot_index}_move_1" %>
+          <%= sf.label :move_1, "Move 1", for: move_1_id %>
+          <%= sf.text_field :move_1, id: move_1_id %>
+        </div>
+        <div class="field">
+          <% move_2_id = "slot_#{slot.slot_index}_move_2" %>
+          <%= sf.label :move_2, "Move 2", for: move_2_id %>
+          <%= sf.text_field :move_2, id: move_2_id %>
+        </div>
+        <div class="field">
+          <% move_3_id = "slot_#{slot.slot_index}_move_3" %>
+          <%= sf.label :move_3, "Move 3", for: move_3_id %>
+          <%= sf.text_field :move_3, id: move_3_id %>
+        </div>
+        <div class="field">
+          <% move_4_id = "slot_#{slot.slot_index}_move_4" %>
+          <%= sf.label :move_4, "Move 4", for: move_4_id %>
+          <%= sf.text_field :move_4, id: move_4_id %>
+        </div>
+      </div>
+
+      <% if slot.respond_to?(:illegal?) &&
+            slot.illegal? &&
+            slot.respond_to?(:illegality_reason) &&
+            slot.illegality_reason.present? %>
+
+        <% illegal_anchor_id = begin
+             illegal_moves = Dex::LearnsetChecker.illegal_moves_for_slot(slot)
+             first_illegal = illegal_moves.first
+
+             raw_moves = [slot.move_1, slot.move_2, slot.move_3, slot.move_4]
+             idx = if first_illegal
+                     raw_moves.index { |m|
+                       m.to_s.strip.casecmp(first_illegal.to_s.strip).zero?
+                     }
+                   end
+
+             if idx
+               "slot_#{slot.slot_index}_move_#{idx + 1}"
+             else
+               "slot_#{slot.slot_index}_move_1"
+             end
+           rescue
+             "slot_#{slot.slot_index}_move_1"
+           end %>
+
+        <div class="field-error">
+          <a
+            data-role="move-error-link"
+            href="#<%= illegal_anchor_id %>"
+          >
+            <%= slot.illegality_reason %>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

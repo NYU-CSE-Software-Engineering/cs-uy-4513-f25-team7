@@ -20,7 +20,15 @@ module Api
           end
         end
 
-        render json: matches
+        # 3) Return JSON with sprite_url included
+        render json: matches.map { |species|
+          {
+            id:         species.id,
+            name:       species.name,
+            pokeapi_id: species.pokeapi_id,
+            sprite_url: sprite_url_for(species)
+          }
+        }
       end
 
       private
@@ -28,6 +36,15 @@ module Api
       # Very simple heuristics so we don't call PokeAPI on total garbage constantly
       def likely_exact_name?(query)
         query.length >= 3 && query.match?(/\A[a-zA-Z\-]+\z/)
+      end
+
+      # Use the same convention as your species show page:
+      # if your show page uses a different URL helper, mirror it here.
+      def sprite_url_for(species)
+        return nil unless species.pokeapi_id.present?
+
+        # Classic PokeAPI sprite CDN:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{species.pokeapi_id}.png"
       end
     end
   end

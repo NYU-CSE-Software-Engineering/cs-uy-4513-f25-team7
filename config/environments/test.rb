@@ -66,6 +66,11 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
 
+  # Disable Sprockets cache to avoid Windows permission issues
+  config.assets.configure do |env|
+    env.cache = ActiveSupport::Cache.lookup_store(:null_store)
+  end
+
   # Dummy Keys for testing purposes
   config.active_record.encryption.primary_key = ENV.fetch("AR_ENC_PRIMARY_KEY", "0" * 32)
   config.active_record.encryption.deterministic_key = ENV.fetch("AR_ENC_DETERMINISTIC_KEY", "1" * 32)
