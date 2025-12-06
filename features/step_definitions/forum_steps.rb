@@ -1,6 +1,7 @@
-Given("I am a registered user") do
-  @user ||= User.create!(email: "test@example.com", password: "password123")
-end
+# double definition error coming from socialgraph steps
+# Given("I am a registered user") do
+#   @user ||= User.create!(email: "test@example.com", password: "password123")
+# end
 
 When("I go to the new post page") do
   visit new_post_path
