@@ -23,8 +23,23 @@ class PostsController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
+  def destroy
+    @post = Post.find(params[:id])
+
+    if can_delete_post?(@post)
+      @post.destroy
+      redirect_to posts_path, notice: "Post was successfully deleted."
+    else
+      redirect_to @post, alert: "You are not authorized to delete this post."
+    end
+  end
 
   private
+
+  def can_delete_post?(post)
+    return false unless current_user
+    current_user == post.user || current_user.moderator? || current_user.admin?
+  end
 
   def post_params
     params.require(:post).permit(:title, :body, :post_type)

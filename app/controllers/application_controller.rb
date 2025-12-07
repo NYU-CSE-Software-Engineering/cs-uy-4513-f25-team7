@@ -18,10 +18,30 @@ class ApplicationController < ActionController::Base
   end
 
   # Devise-style shim so controllers can call authenticate_user!
-  # (TeamsController is using this)
-  # Alias for compatibility with testing and Devise-style code
   def authenticate_user!
     require_login
+  end
+
+  # Gate for moderator-only actions (Role Management page & updates)
+  def require_moderator
+    unless current_user&.moderator?
+      # AC3: regular users must see "Not authorized"
+      redirect_to root_path, alert: "Not authorized"
+    end
+  end
+
+  # Gate for admin-only actions (Role Management page & updates)
+  def require_admin
+    unless current_user&.admin?
+      redirect_to root_path, alert: "Not authorized"
+    end
+  end
+
+  # Gate for moderator OR admin
+  def require_moderator_or_admin
+    unless current_user&.moderator? || current_user&.admin?
+      redirect_to root_path, alert: "Not authorized"
+    end
   end
 
   # after "sign up", send them home

@@ -45,17 +45,19 @@ Given("a user exists with email {string} and password {string}") do |email, pass
     u.password_confirmation = password
   end
 end
-
-Given("a user exists with email {string} and password {string} and 2FA enabled") do |email, password|
+Given('a user exists with email {string} and password {string} and 2FA enabled') do |email, password|
   user = User.find_or_create_by!(email: email) do |u|
     u.password = password
-    u.password_confirmation = password
+    # set a valid base role
+    u.role = :member if u.respond_to?(:role=)
   end
 
-  # enable 2FA for this user
   secret = ROTP::Base32.random_base32
-  user.update!(otp_enabled: true, otp_secret: secret)
+  user.update!(otp_secret: secret, otp_enabled: true)
 end
+
+
+
 
 Given("I am on the registration page") do
   visit new_user_registration_path
@@ -93,7 +95,6 @@ When("I log in with email {string} and password {string}") do |email, password|
 end
 
 When("I navigate to my account settings") do
-  # Adjust if you have a different settings page
   visit edit_user_registration_path
 end
 
@@ -109,41 +110,31 @@ When("I enable two-factor authentication") do
   end
 end
 
-When("I enter a valid authentication code from my authenticator") do
-  # This is for the enrollment verification step
-  user = current_user_by_email!
-  secret =
-    if user.respond_to?(:otp_secret) && user.otp_secret.present?
-      user.otp_secret
-    else
-      raise "During 2FA enrollment, store the secret in user.otp_secret so tests can verify"
-    end
-
-  fill_in "Authentication code", with: totp_code_for(secret)
-  if page.has_button?("Verify code")
-    click_button "Verify code"
-  else
-    click_button(/Verify|Confirm|Submit/i)
-  end
-end
-
 When("I enter a valid authentication code") do
-  # This covers either enrollment verify OR login challenge
-  user = current_user_by_email!
-  secret =
-    if user.respond_to?(:otp_secret) && user.otp_secret.present?
-      user.otp_secret
-    else
-      raise "User has no otp_secret set; cannot generate TOTP in test"
-    end
+  # Use Ash by default unless @current_email set earlier
+  email = @current_email || "ash@poke.example"
+  user  = User.find_by!(email: email)
 
-  fill_in "Authentication code", with: totp_code_for(secret)
-  if page.has_button?("Verify code")
+  totp = ROTP::TOTP.new(user.otp_secret, issuer: "PokeForum")
+
+  fill_in "Authentication code", with: totp.now, match: :first
+
+  # For enrollment vs login, accept any "Verify..."-type button
+  if page.has_button?("Verify and enable 2FA")
+    click_button "Verify and enable 2FA"
+  elsif page.has_button?("Verify code")
     click_button "Verify code"
   else
-    click_button(/Verify|Confirm|Submit/i)
+    click_button(/Verify/i)
   end
 end
+
+# Alias phrase used in the feature
+When("I enter a valid authentication code from my authenticator") do
+  step "I enter a valid authentication code"
+end
+
+
 
 When("I enter an invalid authentication code") do
   fill_in "Authentication code", with: "000000"
@@ -268,3 +259,4 @@ end
 When("I attempt to log in with email {string} and password {string}") do |email, password|
   step %(I log in with email "#{email}" and password "#{password}")
 end
+

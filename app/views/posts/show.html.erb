@@ -17,19 +17,29 @@
     </div>
   </div>
 
+  <h1><%= @post.title %></h1>
+  <p><%= @post.body %></p>
+
+  <% if current_user && (current_user == @post.user || current_user.moderator? || current_user.admin?) %>
+    <%= button_to "Delete Post",
+                  post_path(@post),
+                  method: :delete,
+                  data: { confirm: "Are you sure you want to delete this post?" } %>
+  <% end %>
+
   <h3>Comments</h3>
   <div id="comments">
     <% @comments.each do |comment| %>
-      <div class="card mb-2">
-        <div class="card-body py-2">
-          <p class="mb-1"><%= comment.body %></p>
-          <small class="text-muted">
-            - <%= comment.user.email %> at <%= comment.created_at.strftime("%I:%M %p") %>
-            <% if current_user == comment.user %>
-              <%= link_to 'Delete', post_comment_path(@post, comment), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' }, class: 'text-danger ms-2' %>
-            <% end %>
-          </small>
-        </div>
+      <div class="comment">
+        <p><%= comment.body %></p>
+        <p><em>by <%= comment.user.email %></em></p>
+
+        <% if current_user && (current_user == comment.user || current_user.moderator? || current_user.admin?) %>
+          <%= button_to "Delete Comment",
+                        post_comment_path(@post, comment),
+                        method: :delete,
+                        data: { confirm: "Delete this comment?" } %>
+        <% end %>
       </div>
     <% end %>
   </div>
