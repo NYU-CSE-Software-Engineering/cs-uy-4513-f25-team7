@@ -27,7 +27,8 @@ class User < ApplicationRecord
   validate :enforce_single_admin
 
   def display_name
-    name.presence || email
+    respond_to?(:name) && name.present? ? name : email
+    # name.presence || email
   end
 
   def enable_otp!(secret = ROTP::Base32.random_base32)
