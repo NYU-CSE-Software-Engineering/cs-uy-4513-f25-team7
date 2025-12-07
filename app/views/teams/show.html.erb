@@ -1,11 +1,51 @@
-<section data-test="team-show">
-  <h1><%= @team.title %></h1>
-  <p>Owner: <%= @team.user.display_name %></p>
-  <p><%= @team.description.presence || "No description provided." %></p>
+<h1><%= @team.name %></h1>
 
+<% if user_signed_in? %>
   <% if @favorite %>
     <%= button_to "Favorited", favorite_path(@favorite), method: :delete, form: { data: { turbo: false } } %>
   <% else %>
     <%= button_to "Favorite", favorites_path, params: { favoritable_type: @team.class.name, favoritable_id: @team.id }, method: :post, form: { data: { turbo: false } } %>
   <% end %>
-</section>
+<% end %>
+
+<p>
+  <% if @team.draft? %>
+    <span class="badge">Draft</span>
+  <% else %>
+    <span class="badge">Published</span>
+  <% end %>
+  &mdash;
+  <span>Visibility: <%= @team.visibility_label %></span>
+</p>
+
+<p>
+  Legality:
+  <% if @team.legal? %>
+    <span class="badge badge-legal">Legal</span>
+  <% else %>
+    <span class="badge badge-illegal">Illegal</span>
+  <% end %>
+</p>
+
+<p>
+  Owner:
+  <span>Owned by me</span>
+</p>
+
+<p>
+  Shareable URL: <%= team_url(@team) %>
+</p>
+
+<hr>
+
+<h2>Pokémon</h2>
+<% @team.team_slots.each do |slot| %>
+  <div class="team-slot" id="slot-<%= slot.slot_index %>" data-slot="<%= slot.slot_index %>">
+    <h3>Slot <%= slot.slot_index %> - <%= slot.species.presence || "(empty)" %></h3>
+    <% if slot.illegal? %>
+      <span class="badge badge-illegal">Illegal</span>
+    <% else %>
+      <span class="badge badge-legal">Legal</span>
+    <% end %>
+  </div>
+<% end %>

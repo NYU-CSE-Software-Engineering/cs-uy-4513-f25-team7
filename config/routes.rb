@@ -15,6 +15,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :posts do
+    resources :comments, only: [:create, :destroy]
+  end
+
   # Root now points to the user home/dashboard but species index is still available
   root "home#index"
 
@@ -43,7 +47,8 @@ Rails.application.routes.draw do
     resource :follow, only: [:create, :destroy], controller: "user_follows"
   end
 
-  resources :teams, only: [:show]
+  # team builder
+  resources :teams, only: %i[new create edit update show]
   resources :favorites, only: [:index, :create, :destroy]
   resources :notifications, only: [:index]
 end

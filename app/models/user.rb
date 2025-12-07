@@ -8,6 +8,8 @@ class User < ApplicationRecord
 
   has_many :favorites, dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_many :posts, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   before_validation :ensure_role
 
