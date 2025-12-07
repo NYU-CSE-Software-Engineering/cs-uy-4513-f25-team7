@@ -77,6 +77,7 @@ end
 
   def show
     @team = Team.find(params[:id])
+    @favorite = current_user&.favorites&.find_by(favoritable: @team)
   end
 
   private

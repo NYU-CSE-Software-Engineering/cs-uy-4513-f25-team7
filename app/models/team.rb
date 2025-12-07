@@ -1,5 +1,6 @@
 class Team < ApplicationRecord
   belongs_to :user, optional: true
+  has_many :favorites, as: :favoritable, dependent: :destroy
   has_many :team_slots, -> { order(:slot_index) }, dependent: :destroy
 
   accepts_nested_attributes_for :team_slots, allow_destroy: true
@@ -54,5 +55,9 @@ class Team < ApplicationRecord
   # Human-facing visibility text for views / Cucumber expectations
   def visibility_label
     public_team? ? "Public" : "Private"
+  end
+
+  def owner
+    user
   end
 end

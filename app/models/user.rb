@@ -1,6 +1,13 @@
 class User < ApplicationRecord
   has_secure_password
 
+  has_many :follower_relationships, class_name: "Follow", foreign_key: :followee_id, dependent: :destroy
+  has_many :followee_relationships, class_name: "Follow", foreign_key: :follower_id, dependent: :destroy
+  has_many :followers, through: :follower_relationships, source: :follower
+  has_many :followees, through: :followee_relationships, source: :followee
+
+  has_many :favorites, dependent: :destroy
+  has_many :notifications, dependent: :destroy
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy
   # Roles used by the moderation feature:
@@ -18,6 +25,11 @@ class User < ApplicationRecord
   validates :role, presence: true, inclusion: { in: roles.keys }
   validate :cannot_remove_final_moderator
   validate :enforce_single_admin
+
+  def display_name
+    respond_to?(:name) && name.present? ? name : email
+    # name.presence || email
+  end
 
   def enable_otp!(secret = ROTP::Base32.random_base32)
     update!(otp_secret: secret, otp_enabled: true)

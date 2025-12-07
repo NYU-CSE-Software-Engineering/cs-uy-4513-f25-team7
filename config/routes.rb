@@ -44,6 +44,12 @@ Rails.application.routes.draw do
   get  "/auth/failure",                to: "sessions#failure"
   get "/auth/:provider/callback", to: "sessions#google"
 
-  #team root
+  resources :users, only: [:show] do
+    resource :follow, only: [:create, :destroy], controller: "user_follows"
+  end
+
+  # team builder
   resources :teams, only: %i[new create edit update show]
+  resources :favorites, only: [:index, :create, :destroy]
+  resources :notifications, only: [:index]
 end

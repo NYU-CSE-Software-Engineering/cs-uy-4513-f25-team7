@@ -5,6 +5,12 @@ class UsersController < ApplicationController
       @user = User.new
     end
 
+  def show
+    @user = User.find(params[:id])
+    @follower_count = @user.followers.count
+    @following = user_signed_in? ? current_user.followees.exists?(@user.id) : false
+  end
+
   def create
     @user = User.new(sign_up_params)
     if @user.save

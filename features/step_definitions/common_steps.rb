@@ -9,6 +9,13 @@ Then("I should not see {string}") do |text|
   expect(page).not_to have_content(text)
 end
 
+Given('I am a registered user') do
+  @current_user ||= User.find_or_create_by!(email: "test@example.com") do |u|
+    u.password = "password123"
+    u.password_confirmation = "password123"
+  end
+  @user = @current_user
+end
 
 When("I press {string}") do |text|
   if page.has_button?(text)
