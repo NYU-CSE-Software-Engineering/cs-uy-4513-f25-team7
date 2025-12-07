@@ -53,3 +53,31 @@ Feature: Forum posts, meta posts, and comments
     When I view the post "Hazard removal options"
     Then I should not see the comment form
     And I should see "Please sign in to comment."
+
+
+  @happy
+  Scenario: Moderator deletes a post
+    Given the following users exist:
+      | email            | role       |
+      | admin@poke.com   | admin      |
+      | mod@poke.com     | moderator  |
+    And a post titled "Hazard removal options" exists by "test@example.com"
+    And I am signed in as "mod@poke.com"
+    When I view the post "Hazard removal options"
+    And I press "Delete Post"
+    Then I should see "Post was successfully deleted."
+    And I should not see "Hazard removal options"
+
+  @happy
+  Scenario: Moderator deletes a comment
+    Given the following users exist:
+      | email            | role       |
+      | admin@poke.com   | admin      |
+      | mod@poke.com     | moderator  |
+    And a post titled "Spike stacking" exists by "test@example.com"
+    And the post "Spike stacking" has a comment "Great set!"
+    And I am signed in as "mod@poke.com"
+    When I view the post "Spike stacking"
+    And I press "Delete Comment"
+    Then I should see "Comment was successfully deleted."
+    And I should not see "Great set!"

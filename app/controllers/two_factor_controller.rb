@@ -21,7 +21,7 @@ class TwoFactorController < ApplicationController
 
   def create
     code = params[:code].to_s.strip
-    unless current_user.otp_secret.present?
+    unless current_user&.otp_secret.present?
       redirect_to edit_user_registration_path, alert: "No 2FA enrollment in progress" and return
     end
 

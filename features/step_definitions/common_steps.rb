@@ -5,8 +5,8 @@ Then('I should see {string}') do |text|
   expect(page).to have_content(text)
 end
 
-When('I press {string}') do |button|
-  click_button button
+Then("I should not see {string}") do |text|
+  expect(page).not_to have_content(text)
 end
 
 Given('I am a registered user') do
@@ -16,3 +16,12 @@ Given('I am a registered user') do
   end
   @user = @current_user
 end
+
+When("I press {string}") do |text|
+  if page.has_button?(text)
+    click_button text
+  else
+    click_link text
+  end
+end
+
