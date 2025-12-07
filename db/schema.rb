@@ -82,6 +82,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_002231) do
     t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
     t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
     t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "posts", force: :cascade do |t|
     t.string "title"
     t.text "body"
@@ -142,26 +144,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_002231) do
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
-  create_table "comments", force: :cascade do |t|
-    t.text "body"
-    t.integer "post_id", null: false
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["post_id"], name: "index_comments_on_post_id"
-    t.index ["user_id"], name: "index_comments_on_user_id"
-  end
-
-  create_table "posts", force: :cascade do |t|
-    t.string "title"
-    t.text "body"
-    t.string "post_type"
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_posts_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
@@ -184,9 +166,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_002231) do
   add_foreign_key "posts", "users"
   add_foreign_key "team_slots", "teams"
   add_foreign_key "teams", "users"
-  add_foreign_key "comments", "posts"
-  add_foreign_key "comments", "users"
-  add_foreign_key "posts", "users"
   add_foreign_key "favorites", "users"
   add_foreign_key "follows", "users", column: "followee_id"
   add_foreign_key "follows", "users", column: "follower_id"
