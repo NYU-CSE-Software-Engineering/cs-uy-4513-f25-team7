@@ -22,15 +22,11 @@ class User < ApplicationRecord
   def enable_otp!(secret = ROTP::Base32.random_base32)
     update!(otp_secret: secret, otp_enabled: true)
   end
-  # --- 2FA / OTP stub for tests ---
-  # For now, treat all users as having OTP disabled.
-  def otp_enabled
-    false
-  end
 
   def otp_enabled?
-    otp_enabled
+    !!self[:otp_enabled]
   end
+
   private
 
   def ensure_role

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_06_224550) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_07_002231) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.integer "post_id", null: false
@@ -116,6 +116,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_06_224550) do
     t.datetime "updated_at", null: false
     t.string "otp_secret"
     t.boolean "otp_enabled"
+    t.string "google_uid"
+    t.string "google_token"
+    t.string "google_refresh_token"
+    t.datetime "google_token_expires_at"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
