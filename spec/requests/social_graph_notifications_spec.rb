@@ -42,7 +42,7 @@ RSpec.describe "Social graph notifications", type: :request do
   describe "favorites" do
     let(:user) { User.create!(email: "fav@example.com", password: "password") }
     let(:owner) { User.create!(email: "owner@example.com", password: "password") }
-    let(:team) { Team.create!(title: "Rain Dance", user: owner) }
+    let(:team) { Team.create!(name: "Rain Dance", user: owner) }
 
     it "requires authentication" do
       post favorites_path, params: { favoritable_type: "Team", favoritable_id: team.id }

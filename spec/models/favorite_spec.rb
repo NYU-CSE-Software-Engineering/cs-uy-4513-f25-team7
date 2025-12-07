@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Favorite, type: :model do
   let(:user) { User.create!(email: "fav@example.com", password: "password") }
   let(:team_owner) { User.create!(email: "owner@example.com", password: "password") }
-  let(:team) { Team.create!(title: "Rain Dance", user: team_owner) }
+  let(:team) { Team.create!(name: "Rain Dance", user: team_owner) }
 
   it "is valid with user and favoritable" do
     expect(described_class.new(user: user, favoritable: team)).to be_valid
