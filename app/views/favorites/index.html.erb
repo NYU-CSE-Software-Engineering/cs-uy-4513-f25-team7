@@ -6,7 +6,7 @@
       <% @favorites.each do |favorite| %>
         <li>
           <% if favorite.favoritable.is_a?(Team) %>
-            <%= link_to favorite.favoritable.title, team_path(favorite.favoritable) %>
+            <%= link_to favorite.favoritable.name, team_path(favorite.favoritable) %>
           <% else %>
             <%= favorite.favoritable.inspect %>
           <% end %>

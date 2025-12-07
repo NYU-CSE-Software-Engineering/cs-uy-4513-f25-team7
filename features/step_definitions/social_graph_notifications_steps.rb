@@ -20,10 +20,11 @@ def user_by_name(name)
 end
 
 def ensure_team!(title:, owner:)
-  # Adjust attrs to match your Team schema
-  Team.find_or_create_by!(title: title, user: owner) do |t|
-    t.description = "Sample"
-    t.public = true if t.respond_to?(:public=)
+  # Adjust attrs to match current Team schema (uses name/visibility/status)
+  Team.find_or_create_by!(name: title, user: owner) do |t|
+    t.visibility = :public_team if t.respond_to?(:visibility=)
+    t.status = :published if t.respond_to?(:status=)
+    t.legal = true if t.respond_to?(:legal=)
   end
 end
 
@@ -86,7 +87,7 @@ end
 
 # ---------- Favorite flows ----------
 When('I go to the team page for {string}') do |title|
-  @team ||= Team.find_by!(title: title)
+  @team ||= Team.find_by!(name: title)
   visit team_path(@team)
 end
 
@@ -95,7 +96,7 @@ Given('I am on the team page for {string}') do |title|
 end
 
 Given('I have already favorited the team {string}') do |title|
-  @team ||= Team.find_by!(title: title)
+  @team ||= Team.find_by!(name: title)
   Favorite.find_or_create_by!(user: @me, favoritable: @team)
 end
 
