@@ -136,7 +136,14 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
       <div class="form-group" style="margin-bottom: 0;">
         <%= sf.label :item, "Item" %>
-        <%= sf.select :item, items, {}, { class: "form-select" } %>
+        <%= sf.text_field :item, placeholder: "e.g. Choice Band", list: "item-options" %>
+        <datalist id="item-options">
+          <% items.each do |label, value| %>
+            <% if value.present? %>
+              <option value="<%= value %>">
+            <% end %>
+          <% end %>
+        </datalist>
       </div>
 
       <div class="form-group" style="margin-bottom: 0;">
