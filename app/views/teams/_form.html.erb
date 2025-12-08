@@ -34,25 +34,11 @@
     <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem; flex-wrap: wrap;">
       <span class="badge badge-<%= @team.status %>"><%= @team.status.to_s.capitalize %></span>
       <span class="badge badge-<%= @team.public_team? ? 'public' : 'private' %>"><%= @team.visibility_label %></span>
+      <span class="text-muted text-small">Owned by me</span>
       <span class="text-muted text-small" data-last-saved="true">
         Last saved: <%= @team.last_saved_at.present? ? @team.last_saved_at.strftime("%b %d, %Y at %I:%M %p") : "Not yet saved" %>
       </span>
     </div>
-  </div>
-
-  <!-- Action Buttons (Top) -->
-  <div class="flex gap-2" style="margin-bottom: 1.5rem; flex-wrap: wrap;">
-    <%= f.submit "💾 Save", class: "btn btn-primary" %>
-    <%= f.submit "✓ Validate", class: "btn btn-secondary" %>
-    <%= f.submit "➕ Add Pokémon", class: "btn btn-secondary" %>
-    
-    <% publish_disabled = @team.any_illegal_slots? %>
-    <%= f.submit "🚀 Publish",
-                 data: { action: "publish" },
-                 disabled: publish_disabled,
-                 class: "btn btn-primary",
-                 style: publish_disabled ? "opacity: 0.5; cursor: not-allowed;" : "",
-                 "aria-disabled": (publish_disabled ? "true" : "false") %>
   </div>
 
   <!-- Team Slots -->
@@ -63,19 +49,21 @@
     <% end %>
   </div>
 
-  <!-- Action Buttons (Bottom) -->
+  <!-- Action Buttons -->
   <div class="flex gap-2" style="margin-top: 1.5rem; flex-wrap: wrap;">
-    <%= f.submit "💾 Save", class: "btn btn-primary" %>
-    <%= f.submit "✓ Validate", class: "btn btn-secondary" %>
+    <%= f.submit "Save", name: "commit", class: "btn btn-primary" %>
+    <%= f.submit "Validate", name: "commit", class: "btn btn-secondary" %>
+    <%= f.submit "Add Pokémon", name: "commit", class: "btn btn-secondary" %>
     
     <% publish_disabled = @team.any_illegal_slots? %>
-    <%= f.submit "🚀 Publish",
+    <%= f.submit "Publish",
+                 name: "commit",
                  data: { action: "publish" },
                  disabled: publish_disabled,
-                 class: "btn btn-primary",
+                 class: "btn btn-success",
                  style: publish_disabled ? "opacity: 0.5; cursor: not-allowed;" : "",
                  "aria-disabled": (publish_disabled ? "true" : "false") %>
     
-    <%= link_to "← Back to Home", root_path, class: "btn btn-secondary" %>
+    <%= link_to "Back to Home", root_path, class: "btn btn-secondary" %>
   </div>
 <% end %>

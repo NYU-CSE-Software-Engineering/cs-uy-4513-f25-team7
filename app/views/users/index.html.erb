@@ -7,14 +7,26 @@
     <%= link_to "← Back to Settings", edit_user_registration_path, class: "btn btn-secondary" %>
   </div>
 
+  <% if flash[:notice] %>
+    <div class="flash notice alert-success" style="margin-bottom: 1.5rem;">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
   <% if flash[:status_message] %>
-    <div class="flash notice" style="margin-bottom: 1.5rem;">
+    <div class="flash notice alert-success" style="margin-bottom: 1.5rem;">
       <%= flash[:status_message] %>
     </div>
   <% end %>
 
+  <% if flash[:alert] %>
+    <div class="flash alert alert-danger" style="margin-bottom: 1.5rem;">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
   <% if flash[:error_message] %>
-    <div class="flash alert" style="margin-bottom: 1.5rem;">
+    <div class="flash alert alert-danger" style="margin-bottom: 1.5rem;">
       <%= flash[:error_message] %>
     </div>
   <% end %>
@@ -35,7 +47,7 @@
     </div>
     <div class="card text-center" style="padding: 1.5rem;">
       <div style="font-size: 2rem; margin-bottom: 0.5rem;"><%= @users.where(role: :user).count %></div>
-      <div class="text-muted text-small">Members</div>
+      <div class="text-muted text-small">Users</div>
     </div>
   </div>
 
@@ -74,7 +86,7 @@
                 </span>
               <% else %>
                 <span class="badge" style="background: var(--bg-input);">
-                  👤 Member
+                  👤 User
                 </span>
               <% end %>
             </td>
@@ -85,21 +97,17 @@
                 <% elsif user.admin? %>
                   <span class="text-muted text-small">Admin</span>
                 <% elsif user.moderator? %>
-                  <%= button_to user_path(user),
+                  <%= button_to "Demote", user_path(user),
                                 method: :patch,
                                 params: { user: { role: "user" } },
                                 class: "btn btn-secondary btn-small",
-                                style: "background: rgba(239, 68, 68, 0.2); color: var(--error); border-color: var(--error);" do %>
-                    ↓ Demote to Member
-                  <% end %>
+                                style: "background: rgba(239, 68, 68, 0.2); color: var(--error); border-color: var(--error);" %>
                 <% else %>
-                  <%= button_to user_path(user),
+                  <%= button_to "Promote", user_path(user),
                                 method: :patch,
                                 params: { user: { role: "moderator" } },
                                 class: "btn btn-secondary btn-small",
-                                style: "background: rgba(139, 92, 246, 0.2); color: #8b5cf6; border-color: #8b5cf6;" do %>
-                    ↑ Promote to Moderator
-                  <% end %>
+                                style: "background: rgba(139, 92, 246, 0.2); color: #8b5cf6; border-color: #8b5cf6;" %>
                 <% end %>
               <% else %>
                 <span class="text-muted text-small">—</span>
@@ -123,7 +131,7 @@
         <span class="text-muted text-small">Can delete posts and comments from any user</span>
       </div>
       <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <span class="badge" style="background: var(--bg-input); min-width: 100px; justify-content: center;">👤 Member</span>
+        <span class="badge" style="background: var(--bg-input); min-width: 100px; justify-content: center;">👤 User</span>
         <span class="text-muted text-small">Can create posts, comments, and teams</span>
       </div>
     </div>

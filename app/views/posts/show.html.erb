@@ -23,7 +23,7 @@
       </div>
       
       <% if current_user && (current_user == @post.user || current_user.moderator? || current_user.admin?) %>
-        <%= button_to "Delete",
+        <%= button_to "Delete Post",
                       post_path(@post),
                       method: :delete,
                       class: "btn btn-danger btn-small",
@@ -56,7 +56,7 @@
               </div>
               
               <% if current_user && (current_user == comment.user || current_user.moderator? || current_user.admin?) %>
-                <%= button_to "Delete",
+                <%= button_to "Delete Comment",
                               post_comment_path(@post, comment),
                               method: :delete,
                               class: "btn btn-danger btn-small",
@@ -80,7 +80,7 @@
   <% else %>
     <div class="card text-center" style="padding: 2rem;">
       <p class="text-muted" style="margin: 0;">
-        <%= link_to 'Sign in', new_user_session_path %> to join the discussion.
+        Please <%= link_to 'sign in', new_user_session_path %> to comment.
       </p>
     </div>
   <% end %>

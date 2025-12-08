@@ -21,7 +21,7 @@
       </div>
 
       <div class="form-group">
-        <%= form.label :post_type, "Category" %>
+        <%= form.label :post_type, "Post Type" %>
         <%= form.select :post_type, [
           ['💬 Thread - General Discussion', 'Thread'],
           ['📊 Meta - Site/Community Discussion', 'Meta'],
@@ -31,7 +31,7 @@
       </div>
 
       <div class="form-group">
-        <%= form.label :body, "Content" %>
+        <%= form.label :body, "Body" %>
         <%= form.text_area :body, rows: 10, placeholder: "Write your post here..." %>
       </div>
 

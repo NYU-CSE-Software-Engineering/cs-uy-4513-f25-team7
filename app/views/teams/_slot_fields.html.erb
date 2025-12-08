@@ -96,7 +96,7 @@
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
     <h3 style="margin: 0;">Slot <%= slot.slot_index %></h3>
     <% if slot.respond_to?(:illegal?) && slot.illegal? %>
-      <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: var(--error);">⚠️ Illegal</span>
+      <span class="badge badge-illegal" style="background: rgba(239, 68, 68, 0.2); color: var(--error);">⚠️ Illegal</span>
     <% else %>
       <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: var(--success);">✓ Legal</span>
     <% end %>
@@ -191,27 +191,27 @@
         <legend style="padding: 0 0.5rem; font-weight: 600; color: var(--text-primary);">EVs (Max 510 total)</legend>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :ev_hp, "HP", style: "font-size: 0.8rem;" %>
+            <%= sf.label :ev_hp, "HP EVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :ev_hp, min: 0, max: 252, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :ev_atk, "Atk", style: "font-size: 0.8rem;" %>
+            <%= sf.label :ev_atk, "Atk EVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :ev_atk, min: 0, max: 252, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :ev_def, "Def", style: "font-size: 0.8rem;" %>
+            <%= sf.label :ev_def, "Def EVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :ev_def, min: 0, max: 252, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :ev_spa, "SpA", style: "font-size: 0.8rem;" %>
+            <%= sf.label :ev_spa, "SpA EVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :ev_spa, min: 0, max: 252, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :ev_spd, "SpD", style: "font-size: 0.8rem;" %>
+            <%= sf.label :ev_spd, "SpD EVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :ev_spd, min: 0, max: 252, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :ev_spe, "Spe", style: "font-size: 0.8rem;" %>
+            <%= sf.label :ev_spe, "Spe EVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :ev_spe, min: 0, max: 252, style: "padding: 0.5rem;" %>
           </div>
         </div>
@@ -222,27 +222,27 @@
         <legend style="padding: 0 0.5rem; font-weight: 600; color: var(--text-primary);">IVs (0-31)</legend>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :iv_hp, "HP", style: "font-size: 0.8rem;" %>
+            <%= sf.label :iv_hp, "HP IVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :iv_hp, min: 0, max: 31, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :iv_atk, "Atk", style: "font-size: 0.8rem;" %>
+            <%= sf.label :iv_atk, "Atk IVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :iv_atk, min: 0, max: 31, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :iv_def, "Def", style: "font-size: 0.8rem;" %>
+            <%= sf.label :iv_def, "Def IVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :iv_def, min: 0, max: 31, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :iv_spa, "SpA", style: "font-size: 0.8rem;" %>
+            <%= sf.label :iv_spa, "SpA IVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :iv_spa, min: 0, max: 31, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :iv_spd, "SpD", style: "font-size: 0.8rem;" %>
+            <%= sf.label :iv_spd, "SpD IVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :iv_spd, min: 0, max: 31, style: "padding: 0.5rem;" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <%= sf.label :iv_spe, "Spe", style: "font-size: 0.8rem;" %>
+            <%= sf.label :iv_spe, "Spe IVs", style: "font-size: 0.8rem;" %>
             <%= sf.number_field :iv_spe, min: 0, max: 31, style: "padding: 0.5rem;" %>
           </div>
         </div>
@@ -251,27 +251,27 @@
 
     <!-- Moves Section -->
     <div class="field moves-field-group" style="margin-top: 1.5rem;">
+      <label style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">Moves</label>
       <fieldset style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
-        <legend style="padding: 0 0.5rem; font-weight: 600; color: var(--text-primary);">Moves</legend>
         <div class="moves" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
           <div class="form-group" style="margin-bottom: 0;">
             <% move_1_id = "slot_#{slot.slot_index}_move_1" %>
-            <%= sf.label :move_1, "Move 1", style: "font-size: 0.8rem;" %>
+            <%= sf.label :move_1, "Move 1", for: move_1_id, style: "font-size: 0.8rem;" %>
             <%= sf.text_field :move_1, id: move_1_id, placeholder: "e.g. Thunderbolt" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
             <% move_2_id = "slot_#{slot.slot_index}_move_2" %>
-            <%= sf.label :move_2, "Move 2", style: "font-size: 0.8rem;" %>
+            <%= sf.label :move_2, "Move 2", for: move_2_id, style: "font-size: 0.8rem;" %>
             <%= sf.text_field :move_2, id: move_2_id, placeholder: "e.g. Volt Switch" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
             <% move_3_id = "slot_#{slot.slot_index}_move_3" %>
-            <%= sf.label :move_3, "Move 3", style: "font-size: 0.8rem;" %>
+            <%= sf.label :move_3, "Move 3", for: move_3_id, style: "font-size: 0.8rem;" %>
             <%= sf.text_field :move_3, id: move_3_id, placeholder: "e.g. Grass Knot" %>
           </div>
           <div class="form-group" style="margin-bottom: 0;">
             <% move_4_id = "slot_#{slot.slot_index}_move_4" %>
-            <%= sf.label :move_4, "Move 4", style: "font-size: 0.8rem;" %>
+            <%= sf.label :move_4, "Move 4", for: move_4_id, style: "font-size: 0.8rem;" %>
             <%= sf.text_field :move_4, id: move_4_id, placeholder: "e.g. Protect" %>
           </div>
         </div>
@@ -301,7 +301,7 @@
                "slot_#{slot.slot_index}_move_1"
              end %>
 
-          <div class="flash alert" style="margin-top: 1rem; padding: 0.75rem;">
+          <div class="field-error" style="margin-top: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-md);">
             <a data-role="move-error-link" href="#<%= illegal_anchor_id %>" style="color: var(--error);">
               ⚠️ <%= slot.illegality_reason %>
             </a>

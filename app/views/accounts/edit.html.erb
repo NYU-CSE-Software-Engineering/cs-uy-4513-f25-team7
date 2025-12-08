@@ -14,7 +14,7 @@
         </span>
       <% else %>
         <span class="badge" style="background: var(--bg-input); font-size: 0.9rem; padding: 0.5rem 1rem;">
-          👤 Member
+          👤 User
         </span>
       <% end %>
     </div>
@@ -59,7 +59,7 @@
           <% if current_user.otp_enabled %>
             <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: var(--success);">Active</span>
           <% else %>
-            <%= link_to "Enable 2FA", new_two_factor_path, class: "btn btn-secondary btn-small" %>
+            <%= button_to "Enable 2FA", new_two_factor_path, method: :get, class: "btn btn-secondary btn-small" %>
           <% end %>
         </div>
       </div>
