@@ -1,6 +1,7 @@
 <% if user_signed_in? %>
   <div class="welcome-section">
     <h1>Welcome back, <%= current_user.display_name %>!</h1>
+    <p class="text-muted">Hello, <%= current_user.email %></p>
     <p class="text-muted">Ready to catch 'em all? Here's your dashboard.</p>
   </div>
 
