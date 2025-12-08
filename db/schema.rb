@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_08_040000) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_08_151321) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.integer "post_id", null: false
@@ -48,42 +48,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_08_040000) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "favorites", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "favoritable_type", null: false
-    t.integer "favoritable_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["favoritable_type", "favoritable_id"], name: "index_favorites_on_favoritable"
-    t.index ["user_id", "favoritable_type", "favoritable_id"], name: "index_favorites_uniqueness", unique: true
-    t.index ["user_id"], name: "index_favorites_on_user_id"
-  end
-
-  create_table "follows", force: :cascade do |t|
-    t.integer "follower_id", null: false
-    t.integer "followee_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["followee_id"], name: "index_follows_on_followee_id"
-    t.index ["follower_id", "followee_id"], name: "index_follows_on_follower_id_and_followee_id", unique: true
-    t.index ["follower_id"], name: "index_follows_on_follower_id"
-  end
-
-  create_table "notifications", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "actor_id", null: false
-    t.string "event_type", null: false
-    t.string "notifiable_type"
-    t.integer "notifiable_id"
-    t.datetime "read_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["actor_id"], name: "index_notifications_on_actor_id"
-    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
-    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
-    t.index ["user_id"], name: "index_notifications_on_user_id"
-  end
-
   create_table "posts", force: :cascade do |t|
     t.string "title"
     t.text "body"
@@ -91,8 +55,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_08_040000) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "dex_species_id"
-    t.index ["dex_species_id"], name: "index_posts_on_dex_species_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -167,12 +129,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_08_040000) do
   add_foreign_key "comments", "users"
   add_foreign_key "dex_learnsets", "dex_moves"
   add_foreign_key "dex_learnsets", "dex_species", column: "dex_species_id"
-  add_foreign_key "favorites", "users"
-  add_foreign_key "follows", "users", column: "followee_id"
-  add_foreign_key "follows", "users", column: "follower_id"
-  add_foreign_key "notifications", "users"
-  add_foreign_key "notifications", "users", column: "actor_id"
-  add_foreign_key "posts", "dex_species", column: "dex_species_id"
   add_foreign_key "posts", "users"
   add_foreign_key "team_slots", "teams"
   add_foreign_key "teams", "users"
