@@ -1,0 +1,35 @@
+<div style="max-width: 500px; margin: 3rem auto;">
+  <div class="card">
+    <div class="text-center" style="margin-bottom: 2rem;">
+      <span style="font-size: 3rem;">👑</span>
+      <h1 style="font-size: 2rem;">Admin Setup</h1>
+      <p class="text-muted">Enter the admin secret code to become an administrator</p>
+    </div>
+
+    <% if @no_admins %>
+      <div class="flash notice" style="margin-bottom: 1.5rem; background: rgba(16, 185, 129, 0.1); border-color: var(--success); color: var(--success);">
+        <strong>🎉 First Admin Setup!</strong>
+        <p style="margin: 0.5rem 0 0 0;">No admins exist yet. You can be the first!</p>
+      </div>
+    <% end %>
+
+    <%= form_with url: become_admin_path, method: :post, local: true do |f| %>
+      <div class="form-group">
+        <%= label_tag :admin_code, "Admin Secret Code" %>
+        <%= password_field_tag :admin_code, nil, placeholder: "Enter the secret code", required: true %>
+        <p class="text-muted text-small" style="margin-top: 0.25rem;">
+          This code is set by the system administrator
+        </p>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <%= submit_tag "Become Admin", class: "btn btn-primary", style: "width: 100%;" %>
+      </div>
+    <% end %>
+
+    <div style="margin-top: 2rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+      <%= link_to "← Back to Settings", edit_user_registration_path %>
+    </div>
+  </div>
+</div>
+

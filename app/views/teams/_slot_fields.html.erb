@@ -1,14 +1,106 @@
-<% slot = local_assigns[:slot] %>
-<% f    = local_assigns[:f]    %>
+<%
+  slot = local_assigns[:slot]
+  f    = local_assigns[:f]
 
-<div class="team-slot" id="slot-<%= slot.slot_index %>" data-slot="<%= slot.slot_index %>">
-  <h2>Slot <%= slot.slot_index %></h2>
+  # Define dropdown options
+  items = [
+    ["-- Select Item --", ""],
+    ["Leftovers", "Leftovers"],
+    ["Life Orb", "Life Orb"],
+    ["Choice Band", "Choice Band"],
+    ["Choice Specs", "Choice Specs"],
+    ["Choice Scarf", "Choice Scarf"],
+    ["Focus Sash", "Focus Sash"],
+    ["Assault Vest", "Assault Vest"],
+    ["Rocky Helmet", "Rocky Helmet"],
+    ["Heavy-Duty Boots", "Heavy-Duty Boots"],
+    ["Sitrus Berry", "Sitrus Berry"],
+    ["Lum Berry", "Lum Berry"],
+    ["Expert Belt", "Expert Belt"],
+    ["Eviolite", "Eviolite"],
+    ["Black Sludge", "Black Sludge"],
+    ["Weakness Policy", "Weakness Policy"],
+    ["Air Balloon", "Air Balloon"],
+    ["Safety Goggles", "Safety Goggles"],
+    ["Covert Cloak", "Covert Cloak"],
+    ["Clear Amulet", "Clear Amulet"],
+    ["Booster Energy", "Booster Energy"],
+    ["Loaded Dice", "Loaded Dice"],
+    ["Mirror Herb", "Mirror Herb"],
+    ["Mental Herb", "Mental Herb"],
+    ["Power Herb", "Power Herb"],
+    ["White Herb", "White Herb"],
+    ["Shell Bell", "Shell Bell"],
+    ["Scope Lens", "Scope Lens"],
+    ["King's Rock", "King's Rock"],
+    ["Light Clay", "Light Clay"],
+    ["Terrain Extender", "Terrain Extender"],
+    ["Toxic Orb", "Toxic Orb"],
+    ["Flame Orb", "Flame Orb"]
+  ]
 
-  <% if slot.respond_to?(:illegal?) && slot.illegal? %>
-    <span class="badge badge-illegal">Illegal</span>
-  <% else %>
-    <span class="badge badge-legal">Legal</span>
-  <% end %>
+  natures = [
+    ["-- Select Nature --", ""],
+    ["Adamant (+Atk, -SpA)", "Adamant"],
+    ["Bashful (Neutral)", "Bashful"],
+    ["Bold (+Def, -Atk)", "Bold"],
+    ["Brave (+Atk, -Spe)", "Brave"],
+    ["Calm (+SpD, -Atk)", "Calm"],
+    ["Careful (+SpD, -SpA)", "Careful"],
+    ["Docile (Neutral)", "Docile"],
+    ["Gentle (+SpD, -Def)", "Gentle"],
+    ["Hardy (Neutral)", "Hardy"],
+    ["Hasty (+Spe, -Def)", "Hasty"],
+    ["Impish (+Def, -SpA)", "Impish"],
+    ["Jolly (+Spe, -SpA)", "Jolly"],
+    ["Lax (+Def, -SpD)", "Lax"],
+    ["Lonely (+Atk, -Def)", "Lonely"],
+    ["Mild (+SpA, -Def)", "Mild"],
+    ["Modest (+SpA, -Atk)", "Modest"],
+    ["Naive (+Spe, -SpD)", "Naive"],
+    ["Naughty (+Atk, -SpD)", "Naughty"],
+    ["Quiet (+SpA, -Spe)", "Quiet"],
+    ["Quirky (Neutral)", "Quirky"],
+    ["Rash (+SpA, -SpD)", "Rash"],
+    ["Relaxed (+Def, -Spe)", "Relaxed"],
+    ["Sassy (+SpD, -Spe)", "Sassy"],
+    ["Serious (Neutral)", "Serious"],
+    ["Timid (+Spe, -Atk)", "Timid"]
+  ]
+
+  tera_types = [
+    ["-- Select Tera Type --", ""],
+    ["Normal", "Normal"],
+    ["Fire", "Fire"],
+    ["Water", "Water"],
+    ["Electric", "Electric"],
+    ["Grass", "Grass"],
+    ["Ice", "Ice"],
+    ["Fighting", "Fighting"],
+    ["Poison", "Poison"],
+    ["Ground", "Ground"],
+    ["Flying", "Flying"],
+    ["Psychic", "Psychic"],
+    ["Bug", "Bug"],
+    ["Rock", "Rock"],
+    ["Ghost", "Ghost"],
+    ["Dragon", "Dragon"],
+    ["Dark", "Dark"],
+    ["Steel", "Steel"],
+    ["Fairy", "Fairy"],
+    ["Stellar", "Stellar"]
+  ]
+%>
+
+<div class="team-slot card" id="slot-<%= slot.slot_index %>" data-slot="<%= slot.slot_index %>" style="margin-bottom: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 style="margin: 0;">Slot <%= slot.slot_index %></h3>
+    <% if slot.respond_to?(:illegal?) && slot.illegal? %>
+      <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: var(--error);">⚠️ Illegal</span>
+    <% else %>
+      <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: var(--success);">✓ Legal</span>
+    <% end %>
+  </div>
 
   <%= f.fields_for :team_slots, slot do |sf| %>
     <%= sf.hidden_field :slot_index %>
@@ -16,172 +108,185 @@
     <!-- Species + sprite preview -->
     <div class="field species-field"
          data-role="species-field"
-         data-slot-index="<%= slot.slot_index %>">
-      <%= sf.label :species, "Species" %>
-      <%= sf.text_field :species,
-            autocomplete: "off",
-            data: {
-              role: "species-input",
-              slot_index: slot.slot_index
-            },
-            list: "species-options-slot-#{slot.slot_index}" %>
-
-      <!-- Autocomplete options for this slot -->
-      <datalist id="species-options-slot-<%= slot.slot_index %>"
-                data-role="species-datalist"></datalist>
-
-      <!-- Sprite preview for this slot -->
+         data-slot-index="<%= slot.slot_index %>"
+         style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: start;">
+      <div>
+        <%= sf.label :species, "Species" %>
+        <%= sf.text_field :species,
+              autocomplete: "off",
+              placeholder: "Search Pokémon...",
+              data: {
+                role: "species-input",
+                slot_index: slot.slot_index
+              },
+              list: "species-options-slot-#{slot.slot_index}" %>
+        <datalist id="species-options-slot-<%= slot.slot_index %>"
+                  data-role="species-datalist"></datalist>
+      </div>
+      
+      <!-- Sprite preview (inside species-field so JS can find it) -->
       <div class="species-sprite-preview"
            data-role="species-sprite"
-           style="margin-top: 0.5rem;">
+           style="width: 96px; height: 96px; background: var(--bg-input); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
         <!-- JS will insert an <img> here -->
       </div>
     </div>
 
-    <div class="field">
-      <%= sf.label :item, "Item" %>
-      <%= sf.text_field :item %>
+    <!-- Basic Info Row -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= sf.label :item, "Item" %>
+        <%= sf.select :item, items, {}, { class: "form-select" } %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= sf.label :ability, "Ability" %>
+        <%= sf.text_field :ability, placeholder: "e.g. Intimidate" %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= sf.label :nature, "Nature" %>
+        <%= sf.select :nature, natures, {}, { class: "form-select" } %>
+      </div>
     </div>
 
-    <div class="field">
-      <%= sf.label :ability, "Ability" %>
-      <%= sf.text_field :ability %>
+    <!-- Tera & Nickname Row -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= sf.label :tera_type, "Tera Type" %>
+        <%= sf.select :tera_type, tera_types, {}, { class: "form-select" } %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= sf.label :nickname, "Nickname" %>
+        <%= sf.text_field :nickname, placeholder: "Optional nickname" %>
+      </div>
     </div>
 
-    <div class="field">
-      <%= sf.label :nature, "Nature" %>
-      <%= sf.text_field :nature %>
-    </div>
-
-    <div class="field">
-      <%= sf.label :tera_type, "Tera Type" %>
-      <%= sf.text_field :tera_type %>
-    </div>
-
-    <div class="field">
-      <%= sf.label :nickname, "Nickname" %>
-      <%= sf.text_field :nickname %>
-    </div>
-
-    <fieldset class="evs">
-      <legend>EVs</legend>
-
-      <div class="field">
-        <%= sf.label :ev_hp, "HP EVs" %>
-        <%= sf.number_field :ev_hp %>
-      </div>
-      <div class="field">
-        <%= sf.label :ev_atk, "Atk EVs" %>
-        <%= sf.number_field :ev_atk %>
-      </div>
-      <div class="field">
-        <%= sf.label :ev_def, "Def EVs" %>
-        <%= sf.number_field :ev_def %>
-      </div>
-      <div class="field">
-        <%= sf.label :ev_spa, "SpA EVs" %>
-        <%= sf.number_field :ev_spa %>
-      </div>
-      <div class="field">
-        <%= sf.label :ev_spd, "SpD EVs" %>
-        <%= sf.number_field :ev_spd %>
-      </div>
-      <div class="field">
-        <%= sf.label :ev_spe, "Spe EVs" %>
-        <%= sf.number_field :ev_spe %>
-      </div>
-    </fieldset>
-
-    <fieldset class="ivs">
-      <legend>IVs</legend>
-
-      <div class="field">
-        <%= sf.label :iv_hp, "HP IVs" %>
-        <%= sf.number_field :iv_hp %>
-      </div>
-      <div class="field">
-        <%= sf.label :iv_atk, "Atk IVs" %>
-        <%= sf.number_field :iv_atk %>
-      </div>
-      <div class="field">
-        <%= sf.label :iv_def, "Def IVs" %>
-        <%= sf.number_field :iv_def %>
-      </div>
-      <div class="field">
-        <%= sf.label :iv_spa, "SpA IVs" %>
-        <%= sf.number_field :iv_spa %>
-      </div>
-      <div class="field">
-        <%= sf.label :iv_spd, "SpD IVs" %>
-        <%= sf.number_field :iv_spd %>
-      </div>
-      <div class="field">
-        <%= sf.label :iv_spe, "Spe IVs" %>
-        <%= sf.number_field :iv_spe %>
-      </div>
-    </fieldset>
-
-    <!-- Moves group that the system spec looks for -->
-    <div class="field moves-field-group">
-      <label>Moves</label>
-
-      <div class="moves">
-        <div class="field">
-          <% move_1_id = "slot_#{slot.slot_index}_move_1" %>
-          <%= sf.label :move_1, "Move 1", for: move_1_id %>
-          <%= sf.text_field :move_1, id: move_1_id %>
+    <!-- Stats Section -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
+      <!-- EVs -->
+      <fieldset class="evs" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+        <legend style="padding: 0 0.5rem; font-weight: 600; color: var(--text-primary);">EVs (Max 510 total)</legend>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :ev_hp, "HP", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :ev_hp, min: 0, max: 252, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :ev_atk, "Atk", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :ev_atk, min: 0, max: 252, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :ev_def, "Def", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :ev_def, min: 0, max: 252, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :ev_spa, "SpA", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :ev_spa, min: 0, max: 252, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :ev_spd, "SpD", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :ev_spd, min: 0, max: 252, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :ev_spe, "Spe", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :ev_spe, min: 0, max: 252, style: "padding: 0.5rem;" %>
+          </div>
         </div>
-        <div class="field">
-          <% move_2_id = "slot_#{slot.slot_index}_move_2" %>
-          <%= sf.label :move_2, "Move 2", for: move_2_id %>
-          <%= sf.text_field :move_2, id: move_2_id %>
+      </fieldset>
+
+      <!-- IVs -->
+      <fieldset class="ivs" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+        <legend style="padding: 0 0.5rem; font-weight: 600; color: var(--text-primary);">IVs (0-31)</legend>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :iv_hp, "HP", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :iv_hp, min: 0, max: 31, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :iv_atk, "Atk", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :iv_atk, min: 0, max: 31, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :iv_def, "Def", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :iv_def, min: 0, max: 31, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :iv_spa, "SpA", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :iv_spa, min: 0, max: 31, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :iv_spd, "SpD", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :iv_spd, min: 0, max: 31, style: "padding: 0.5rem;" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <%= sf.label :iv_spe, "Spe", style: "font-size: 0.8rem;" %>
+            <%= sf.number_field :iv_spe, min: 0, max: 31, style: "padding: 0.5rem;" %>
+          </div>
         </div>
-        <div class="field">
-          <% move_3_id = "slot_#{slot.slot_index}_move_3" %>
-          <%= sf.label :move_3, "Move 3", for: move_3_id %>
-          <%= sf.text_field :move_3, id: move_3_id %>
+      </fieldset>
+    </div>
+
+    <!-- Moves Section -->
+    <div class="field moves-field-group" style="margin-top: 1.5rem;">
+      <fieldset style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+        <legend style="padding: 0 0.5rem; font-weight: 600; color: var(--text-primary);">Moves</legend>
+        <div class="moves" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <% move_1_id = "slot_#{slot.slot_index}_move_1" %>
+            <%= sf.label :move_1, "Move 1", style: "font-size: 0.8rem;" %>
+            <%= sf.text_field :move_1, id: move_1_id, placeholder: "e.g. Thunderbolt" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <% move_2_id = "slot_#{slot.slot_index}_move_2" %>
+            <%= sf.label :move_2, "Move 2", style: "font-size: 0.8rem;" %>
+            <%= sf.text_field :move_2, id: move_2_id, placeholder: "e.g. Volt Switch" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <% move_3_id = "slot_#{slot.slot_index}_move_3" %>
+            <%= sf.label :move_3, "Move 3", style: "font-size: 0.8rem;" %>
+            <%= sf.text_field :move_3, id: move_3_id, placeholder: "e.g. Grass Knot" %>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <% move_4_id = "slot_#{slot.slot_index}_move_4" %>
+            <%= sf.label :move_4, "Move 4", style: "font-size: 0.8rem;" %>
+            <%= sf.text_field :move_4, id: move_4_id, placeholder: "e.g. Protect" %>
+          </div>
         </div>
-        <div class="field">
-          <% move_4_id = "slot_#{slot.slot_index}_move_4" %>
-          <%= sf.label :move_4, "Move 4", for: move_4_id %>
-          <%= sf.text_field :move_4, id: move_4_id %>
-        </div>
-      </div>
 
-      <% if slot.respond_to?(:illegal?) &&
-            slot.illegal? &&
-            slot.respond_to?(:illegality_reason) &&
-            slot.illegality_reason.present? %>
+        <% if slot.respond_to?(:illegal?) &&
+              slot.illegal? &&
+              slot.respond_to?(:illegality_reason) &&
+              slot.illegality_reason.present? %>
 
-        <% illegal_anchor_id = begin
-             illegal_moves = Dex::LearnsetChecker.illegal_moves_for_slot(slot)
-             first_illegal = illegal_moves.first
+          <% illegal_anchor_id = begin
+               illegal_moves = Dex::LearnsetChecker.illegal_moves_for_slot(slot)
+               first_illegal = illegal_moves.first
 
-             raw_moves = [slot.move_1, slot.move_2, slot.move_3, slot.move_4]
-             idx = if first_illegal
-                     raw_moves.index { |m|
-                       m.to_s.strip.casecmp(first_illegal.to_s.strip).zero?
-                     }
-                   end
+               raw_moves = [slot.move_1, slot.move_2, slot.move_3, slot.move_4]
+               idx = if first_illegal
+                       raw_moves.index { |m|
+                         m.to_s.strip.casecmp(first_illegal.to_s.strip).zero?
+                       }
+                     end
 
-             if idx
-               "slot_#{slot.slot_index}_move_#{idx + 1}"
-             else
+               if idx
+                 "slot_#{slot.slot_index}_move_#{idx + 1}"
+               else
+                 "slot_#{slot.slot_index}_move_1"
+               end
+             rescue
                "slot_#{slot.slot_index}_move_1"
-             end
-           rescue
-             "slot_#{slot.slot_index}_move_1"
-           end %>
+             end %>
 
-        <div class="field-error">
-          <a
-            data-role="move-error-link"
-            href="#<%= illegal_anchor_id %>"
-          >
-            <%= slot.illegality_reason %>
-          </a>
-        </div>
-      <% end %>
+          <div class="flash alert" style="margin-top: 1rem; padding: 0.75rem;">
+            <a data-role="move-error-link" href="#<%= illegal_anchor_id %>" style="color: var(--error);">
+              ⚠️ <%= slot.illegality_reason %>
+            </a>
+          </div>
+        <% end %>
+      </fieldset>
     </div>
   <% end %>
 </div>

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get    "/species/:name",         to: "species#show",    as: :species
   post   "/species/:name/follow",  to: "follows#create",  as: :species_follow
   delete "/species/:name/follow",  to: "follows#destroy"
+  post   "/species/:name/posts",   to: "species#create_post", as: :species_posts
   get "/feed", to: "feed#show", as: :feed
   get "/species", to: "species#index", as: :species_index
 
@@ -32,8 +33,16 @@ Rails.application.routes.draw do
   post   "/login",  to: "sessions#create",  as: :user_session
   delete "/logout", to: "sessions#destroy", as: :destroy_user_session
 
-  # For enabling 2 factor
-  get "/settings", to: "accounts#edit", as: :edit_user_registration
+  # For enabling 2 factor and profile settings
+  get   "/settings", to: "accounts#edit",   as: :edit_user_registration
+  patch "/settings", to: "accounts#update", as: :update_profile
+
+  # Admin setup (first admin promotion)
+  get  "/admin/setup",  to: "accounts#admin_setup",  as: :admin_setup
+  post "/admin/setup",  to: "accounts#become_admin", as: :become_admin
+  
+  # Admin panel
+  get "/admin", to: "users#index", as: :admin_panel
 
   get  "/two_factor/new", to: "two_factor#new",    as: :new_two_factor
   post "/two_factor",     to: "two_factor#create", as: :two_factor

@@ -1,21 +1,95 @@
 <% if user_signed_in? %>
-  <h1>Welcome, <%= current_user.email %></h1>
-  <p>Hello, <%= current_user.email %></p>
+  <div class="welcome-section">
+    <h1>Welcome back, <%= current_user.display_name %>!</h1>
+    <p class="text-muted">Ready to catch 'em all? Here's your dashboard.</p>
+  </div>
 
-  <p>
-    <%= link_to "Account Settings", edit_user_registration_path %>
-  </p>
+  <div class="quick-links">
+    <%= link_to new_team_path, class: "quick-link" do %>
+      <div class="quick-link-icon">🎮</div>
+      <div>New Team</div>
+    <% end %>
+    
+    <%= link_to species_index_path, class: "quick-link" do %>
+      <div class="quick-link-icon">🔍</div>
+      <div>Species Lookup</div>
+    <% end %>
+    
+    <%= link_to posts_path, class: "quick-link" do %>
+      <div class="quick-link-icon">💬</div>
+      <div>Forum</div>
+    <% end %>
+    
+    <%= link_to feed_path, class: "quick-link" do %>
+      <div class="quick-link-icon">📰</div>
+      <div>My Feed</div>
+    <% end %>
+  </div>
 
-  <!-- NEW: navigation from home screen -->
-  <p>
-    <%= link_to "Species Lookup", species_index_path %> |
-    <%= link_to "Team Editor (New Team)", new_team_path %>
-    <%= link_to "Forum", posts_path %>
-  </p>
-  <%= button_to "Log out", destroy_user_session_path, method: :delete %>
+  <hr>
+
+  <h2>⚔️ My Teams</h2>
+  
+  <% if @teams.any? %>
+    <div class="team-list">
+      <% @teams.each do |team| %>
+        <div class="team-item">
+          <div>
+            <h4 style="margin-bottom: 0.25rem;"><%= link_to team.name, edit_team_path(team) %></h4>
+            <div class="flex gap-1" style="align-items: center;">
+              <span class="badge badge-<%= team.status %>"><%= team.status %></span>
+              <span class="badge badge-<%= team.public_team? ? 'public' : 'private' %>"><%= team.visibility_label %></span>
+              <% if team.last_saved_at %>
+                <span class="text-muted text-small">· <%= time_ago_in_words(team.last_saved_at) %> ago</span>
+              <% end %>
+            </div>
+          </div>
+          <%= link_to "Edit →", edit_team_path(team), class: "btn btn-secondary btn-small" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card text-center" style="padding: 3rem;">
+      <p style="font-size: 3rem; margin-bottom: 1rem;">🎯</p>
+      <h3>No teams yet!</h3>
+      <p class="text-muted">Build your first competitive team and dominate the battlefield.</p>
+      <%= link_to "Create Your First Team", new_team_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+
 <% else %>
-  <h1>Welcome to PokéForum!</h1>
-  <p><%= link_to "Forum", posts_path %></p>
-  <%= link_to "Login", new_user_session_path %> |
-  <%= link_to "Register", new_user_registration_path %>
+  <div class="welcome-section">
+    <h1>Welcome to PokéForum!</h1>
+    <p class="text-muted" style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">
+      The ultimate community for Pokémon trainers. Build teams, discuss strategies, and connect with fellow trainers.
+    </p>
+    
+    <div class="quick-links" style="margin-top: 2.5rem;">
+      <%= link_to new_user_registration_path, class: "quick-link" do %>
+        <div class="quick-link-icon">🚀</div>
+        <div>Get Started</div>
+      <% end %>
+      
+      <%= link_to posts_path, class: "quick-link" do %>
+        <div class="quick-link-icon">💬</div>
+        <div>Browse Forum</div>
+      <% end %>
+      
+      <%= link_to species_index_path, class: "quick-link" do %>
+        <div class="quick-link-icon">🔍</div>
+        <div>Explore Pokémon</div>
+      <% end %>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="text-center" style="padding: 2rem 0;">
+    <h2>Ready to join the community?</h2>
+    <p class="text-muted">Create an account to build teams, follow your favorite Pokémon, and join discussions.</p>
+    <div class="flex flex-center gap-2" style="margin-top: 1.5rem;">
+      <%= link_to "Create Account", new_user_registration_path, class: "btn btn-primary" %>
+      <%= link_to "Sign In", new_user_session_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
 <% end %>

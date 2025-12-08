@@ -80,6 +80,76 @@ end
     @favorite = current_user&.favorites&.find_by(favoritable: @team)
   end
 
+  def edit
+    @team = current_user.teams.find(params[:id])
+    build_slots_to_six(@team)
+  end
+
+  def update
+    @team = current_user.teams.find(params[:id])
+    @team.assign_attributes(team_params)
+    build_slots_to_six(@team)
+
+    action = params[:commit]
+
+    case action
+    when "Validate"
+      @team.mark_legality!
+      build_slots_to_six(@team)
+      render :edit
+
+    when "Save"
+      @team.status = :draft if @team.respond_to?(:status=)
+      @team.last_saved_at = Time.current if @team.respond_to?(:last_saved_at=)
+      @team.mark_legality!
+
+      if @team.save
+        flash.now[:notice] = "Saved draft: #{@team.name}"
+        build_slots_to_six(@team)
+        render :edit
+      else
+        build_slots_to_six(@team)
+        render :edit, status: :unprocessable_content
+      end
+
+    when "Publish"
+      @team.mark_legality!
+
+      if @team.legal?
+        @team.status = :published if @team.respond_to?(:status=)
+        @team.visibility = :public_team if @team.respond_to?(:visibility=)
+        @team.last_saved_at = Time.current if @team.respond_to?(:last_saved_at=)
+
+        if @team.save(validate: false)
+          return redirect_to @team
+        else
+          build_slots_to_six(@team)
+          return render :edit, status: :unprocessable_content
+        end
+      else
+        @team.status = :draft if @team.respond_to?(:status=)
+        flash.now[:alert] = "Cannot publish: unresolved legality issues"
+        build_slots_to_six(@team)
+        return render :edit, status: :unprocessable_content
+      end
+
+    when "Add Pokémon"
+      if @team.team_slots.size >= 6
+        flash.now[:alert] = "A team can have at most 6 Pokémon"
+      else
+        next_index = (@team.team_slots.map(&:slot_index).max || 0) + 1
+        @team.team_slots.build(slot_index: next_index)
+      end
+
+      build_slots_to_six(@team)
+      render :edit
+
+    else
+      build_slots_to_six(@team)
+      render :edit
+    end
+  end
+
   private
 
   def build_slots_to_six(team)
