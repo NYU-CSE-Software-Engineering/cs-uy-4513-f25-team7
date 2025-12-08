@@ -153,7 +153,14 @@
 
       <div class="form-group" style="margin-bottom: 0;">
         <%= sf.label :nature, "Nature" %>
-        <%= sf.select :nature, natures, {}, { class: "form-select" } %>
+        <%= sf.text_field :nature, placeholder: "e.g. Jolly", list: "nature-options" %>
+        <datalist id="nature-options">
+          <% natures.each do |label, value| %>
+            <% if value.present? %>
+              <option value="<%= value %>">
+            <% end %>
+          <% end %>
+        </datalist>
       </div>
     </div>
 
@@ -161,7 +168,14 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
       <div class="form-group" style="margin-bottom: 0;">
         <%= sf.label :tera_type, "Tera Type" %>
-        <%= sf.select :tera_type, tera_types, {}, { class: "form-select" } %>
+        <%= sf.text_field :tera_type, placeholder: "e.g. Dragon", list: "tera-options" %>
+        <datalist id="tera-options">
+          <% tera_types.each do |label, value| %>
+            <% if value.present? %>
+              <option value="<%= value %>">
+            <% end %>
+          <% end %>
+        </datalist>
       </div>
 
       <div class="form-group" style="margin-bottom: 0;">
