@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_08_153213) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_09_215322) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.integer "post_id", null: false
@@ -96,6 +96,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_08_153213) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
+  create_table "reviews", force: :cascade do |t|
+    t.integer "team_id", null: false
+    t.integer "user_id", null: false
+    t.integer "rating", null: false
+    t.text "body"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id", "deleted_at"], name: "index_reviews_on_team_id_and_deleted_at"
+    t.index ["team_id", "user_id"], name: "index_reviews_on_team_id_and_user_id", unique: true
+    t.index ["team_id"], name: "index_reviews_on_team_id"
+    t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
   create_table "team_slots", force: :cascade do |t|
     t.integer "team_id", null: false
     t.integer "slot_index", null: false
@@ -143,6 +157,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_08_153213) do
     t.datetime "last_saved_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "average_rating", precision: 3, scale: 2, default: "0.0"
+    t.integer "reviews_count", default: 0
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
@@ -174,6 +190,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_08_153213) do
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "posts", "dex_species", column: "dex_species_id"
   add_foreign_key "posts", "users"
+  add_foreign_key "reviews", "teams"
+  add_foreign_key "reviews", "users"
   add_foreign_key "team_slots", "teams"
   add_foreign_key "teams", "users"
 end

@@ -29,12 +29,15 @@
 
 <p>
   Owner:
-  <span>Owned by me</span>
+  <span><%= @team.user&.display_name || "Unknown" %></span>
 </p>
 
 <p>
   Shareable URL: <%= team_url(@team) %>
 </p>
+
+<!-- Rating Summary -->
+<%= render "reviews/summary", team: @team %>
 
 <hr>
 
@@ -48,4 +51,44 @@
       <span class="badge badge-legal">Legal</span>
     <% end %>
   </div>
+<% end %>
+
+<hr>
+
+<!-- Reviews Section -->
+<h2>Reviews</h2>
+
+<% if @team.published? && @team.public_team? %>
+  <% if user_signed_in? %>
+    <% existing_review = @team.reviews.visible.find_by(user: current_user) %>
+    <% if @team.user != current_user %>
+      <% if existing_review %>
+        <div class="existing-review">
+          <p><strong>Your Review:</strong></p>
+          <%= render "reviews/review", review: existing_review, team: @team, show_actions: true %>
+        </div>
+      <% else %>
+        <%= render "reviews/form", team: @team, review: Review.new %>
+      <% end %>
+    <% else %>
+      <p class="info-message">You cannot review your own team.</p>
+    <% end %>
+  <% else %>
+    <p><%= link_to "Log in", new_user_session_path %> to leave a review.</p>
+  <% end %>
+
+  <hr>
+
+  <% visible_reviews = @team.reviews.visible.by_recent.where.not(user: current_user) %>
+  <% if visible_reviews.any? %>
+    <div class="reviews-list">
+      <% visible_reviews.each do |review| %>
+        <%= render "reviews/review", review: review, team: @team, show_actions: (user_signed_in? && (current_user.moderator? || current_user.admin?)) %>
+      <% end %>
+    </div>
+  <% elsif @team.reviews.visible.count == 0 %>
+    <p class="empty-state">No reviews yet. Be the first to review this team!</p>
+  <% end %>
+<% else %>
+  <p class="info-message">Reviews are only available for published public teams.</p>
 <% end %>

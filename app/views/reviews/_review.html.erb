@@ -1,0 +1,32 @@
+<%# app/views/reviews/_review.html.erb %>
+<div class="review-card" id="review-<%= review.id %>">
+  <div class="review-header">
+    <span class="review-author"><%= review.user.display_name %></span>
+    <span class="review-stars">
+      <%= "★" * review.rating %><%= "☆" * (5 - review.rating) %>
+    </span>
+    <span class="review-date"><%= time_ago_in_words(review.created_at) %> ago</span>
+  </div>
+
+  <% if review.body.present? %>
+    <div class="review-body">
+      <%= simple_format(h(review.body)) %>
+    </div>
+  <% end %>
+
+  <% if show_actions %>
+    <div class="review-actions">
+      <% if user_signed_in? && review.user == current_user %>
+        <%= link_to "Edit", edit_team_review_path(team, review), class: "btn btn-small" %>
+        <%= button_to "Delete", team_review_path(team, review), method: :delete, 
+            form: { data: { turbo: false, turbo_confirm: "Are you sure you want to delete your review?" } },
+            class: "btn btn-small btn-danger" %>
+      <% elsif user_signed_in? && (current_user.moderator? || current_user.admin?) %>
+        <%= button_to "Remove (Mod)", team_review_path(team, review), method: :delete,
+            form: { data: { turbo: false, turbo_confirm: "Remove this review as moderator?" } },
+            class: "btn btn-small btn-warning" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+

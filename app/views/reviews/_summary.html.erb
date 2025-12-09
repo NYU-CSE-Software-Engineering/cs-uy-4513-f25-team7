@@ -1,0 +1,24 @@
+<%# app/views/reviews/_summary.html.erb %>
+<div class="rating-summary">
+  <% if team.reviews_count && team.reviews_count > 0 %>
+    <span class="stars">
+      <% avg = team.average_rating || 0 %>
+      <% 5.times do |i| %>
+        <% if i < avg.floor %>
+          ★
+        <% elsif i < avg %>
+          ☆
+        <% else %>
+          ☆
+        <% end %>
+      <% end %>
+    </span>
+    <span class="rating-text">
+      <%= sprintf("%.1f", team.average_rating || 0) %> 
+      (<%= pluralize(team.reviews_count, "review") %>)
+    </span>
+  <% else %>
+    <span class="no-ratings">No ratings yet</span>
+  <% end %>
+</div>
+
