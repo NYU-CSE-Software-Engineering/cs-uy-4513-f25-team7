@@ -1,0 +1,67 @@
+<div data-test="home-feed" class="feed-page" style="max-width: 900px; margin: 0 auto;">
+  <header class="welcome-section" style="padding: 0 0 2rem 0; text-align: left;">
+    <h1>My Feed</h1>
+    <p class="text-muted">Recent posts from trainers you follow.</p>
+  </header>
+
+  <% if @ordered_posts.any? %>
+    <div class="posts-list">
+      <% @ordered_posts.each do |p| %>
+        <% title      = p.respond_to?(:title) ? p.title : p[:title] %>
+        <% author     = p.respond_to?(:user) ? p.user&.display_name : nil %>
+        <% timestamp  = p.respond_to?(:created_at) ? time_ago_in_words(p.created_at) : nil %>
+        <% body       = p.respond_to?(:body) ? p.body : nil %>
+        <% comments_n = p.respond_to?(:comments) ? p.comments.size : nil %>
+
+        <article class="post-card">
+          <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+            <div>
+              <h3 style="margin-bottom: 0.25rem; font-size: 1.1rem;">
+                <% if defined?(Post) && p.is_a?(Post) %>
+                  <%= link_to title, post_path(p) %>
+                <% else %>
+                  <%= title %>
+                <% end %>
+              </h3>
+
+              <% if author.present? || timestamp.present? %>
+                <p class="text-muted text-small" style="margin: 0;">
+                  <% if author.present? %>
+                    <strong><%= author %></strong>
+                  <% end %>
+                  <% if author.present? && timestamp.present? %> · <% end %>
+                  <% if timestamp.present? %>
+                    <%= timestamp %> ago
+                  <% end %>
+                </p>
+              <% end %>
+            </div>
+          </header>
+
+          <% if body.present? %>
+            <p class="text-secondary" style="margin: 0.75rem 0;"><%= truncate(body, length: 180) %></p>
+          <% end %>
+
+          <% if comments_n %>
+            <p class="text-muted text-small" style="margin: 0;">
+              <%= comments_n %> <%= "comment".pluralize(comments_n) %>
+            </p>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+    <div class="card text-center" style="padding: 3rem;">
+      <p style="font-size: 3rem; margin-bottom: 1rem;">📰</p>
+      <h3>There are no more posts to show</h3>
+      <p class="text-muted">Follow other trainers or start a discussion to see posts here.</p>
+      <%= link_to "Browse Forum", posts_path, class: "btn btn-primary" %>
+    </div>
+  <% else %>
+    <div class="card text-center" style="padding: 3rem;">
+      <p style="font-size: 3rem; margin-bottom: 1rem;">📰</p>
+      <h3>Your feed is empty</h3>
+      <p class="text-muted">Follow other trainers or start a discussion to see posts here.</p>
+      <%= link_to "Browse Forum", posts_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
