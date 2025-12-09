@@ -1,57 +1,91 @@
-<div data-test-id="post-show">
-  <div class="card mb-4">
-    <div class="card-body">
-      <h1 class="card-title">
-        <%= @post.title %>
-        <% if @post.post_type == 'Meta' %>
-          <span class="badge bg-info text-dark" data-test-id="post-badge-meta">Meta</span>
-        <% else %>
-          <span class="badge bg-secondary"><%= @post.post_type %></span>
-        <% end %>
-      </h1>
-      <p class="text-muted">Posted by <%= @post.user.email %> on <%= @post.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
-      <hr>
-      <div class="card-text">
-        <%= simple_format(@post.body) %>
+<div data-test-id="post-show" style="max-width: 800px; margin: 0 auto;">
+  <!-- Post Card -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+      <div>
+        <h1 style="margin-bottom: 0.5rem;">
+          <%= @post.title %>
+        </h1>
+        <div class="flex gap-1" style="align-items: center; flex-wrap: wrap;">
+          <span class="post-type-badge <%= @post.post_type.downcase %>" data-test-id="post-badge-<%= @post.post_type.downcase %>">
+            <%= @post.post_type %>
+          </span>
+          <span class="text-muted text-small">
+            by <strong><%= @post.user.display_name %></strong>
+            · <%= @post.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+          </span>
+          <% if @post.dex_species %>
+            <span class="text-muted text-small">
+              · in <%= link_to @post.dex_species.name, species_path(name: @post.dex_species.name) %>
+            </span>
+          <% end %>
+        </div>
       </div>
+      
+      <% if current_user && (current_user == @post.user || current_user.moderator? || current_user.admin?) %>
+        <%= button_to "Delete Post",
+                      post_path(@post),
+                      method: :delete,
+                      class: "btn btn-danger btn-small",
+                      data: { confirm: "Are you sure you want to delete this post?" } %>
+      <% end %>
+    </div>
+    
+    <hr>
+    
+    <div style="line-height: 1.8; color: var(--text-secondary);">
+      <%= simple_format(@post.body) %>
     </div>
   </div>
 
-  <h1><%= @post.title %></h1>
-  <p><%= @post.body %></p>
-
-  <% if current_user && (current_user == @post.user || current_user.moderator? || current_user.admin?) %>
-    <%= button_to "Delete Post",
-                  post_path(@post),
-                  method: :delete,
-                  data: { confirm: "Are you sure you want to delete this post?" } %>
-  <% end %>
-
-  <h3>Comments</h3>
-  <div id="comments">
-    <% @comments.each do |comment| %>
-      <div class="comment">
-        <p><%= comment.body %></p>
-        <p><em>by <%= comment.user.email %></em></p>
-
-        <% if current_user && (current_user == comment.user || current_user.moderator? || current_user.admin?) %>
-          <%= button_to "Delete Comment",
-                        post_comment_path(@post, comment),
-                        method: :delete,
-                        data: { confirm: "Delete this comment?" } %>
+  <!-- Comments Section -->
+  <div style="margin-bottom: 2rem;">
+    <h3>💬 Comments (<%= @comments.count %>)</h3>
+    
+    <div id="comments" style="margin-top: 1rem;">
+      <% if @comments.any? %>
+        <% @comments.each do |comment| %>
+          <div class="card" style="margin-bottom: 1rem; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div style="flex: 1;">
+                <p style="margin-bottom: 0.5rem;"><%= comment.body %></p>
+                <p class="text-muted text-small" style="margin: 0;">
+                  <strong><%= comment.user.display_name %></strong>
+                  · <%= time_ago_in_words(comment.created_at) %> ago
+                </p>
+              </div>
+              
+              <% if current_user && (current_user == comment.user || current_user.moderator? || current_user.admin?) %>
+                <%= button_to "Delete Comment",
+                              post_comment_path(@post, comment),
+                              method: :delete,
+                              class: "btn btn-danger btn-small",
+                              data: { confirm: "Delete this comment?" } %>
+              <% end %>
+            </div>
+          </div>
         <% end %>
-      </div>
-    <% end %>
+      <% else %>
+        <p class="text-muted">No comments yet. Be the first to share your thoughts!</p>
+      <% end %>
+    </div>
   </div>
 
+  <!-- Comment Form -->
   <% if user_signed_in? %>
-    <div class="mt-4">
-      <h4>Add a comment</h4>
+    <div class="card">
+      <h4 style="margin-bottom: 1rem;">Add a comment</h4>
       <%= render 'comments/form', post: @post, comment: @comment %>
     </div>
   <% else %>
-    <p class="mt-4 text-muted">Please <%= link_to 'sign in', new_user_session_path %> to comment.</p>
+    <div class="card text-center" style="padding: 2rem;">
+      <p class="text-muted" style="margin: 0;">
+        Please <%= link_to 'sign in', new_user_session_path %> to comment.
+      </p>
+    </div>
   <% end %>
 
-  <%= link_to 'Back to Forum', posts_path, class: 'btn btn-secondary mt-3' %>
+  <div style="margin-top: 2rem;">
+    <%= link_to '← Back to Forum', posts_path, class: 'btn btn-secondary' %>
+  </div>
 </div>

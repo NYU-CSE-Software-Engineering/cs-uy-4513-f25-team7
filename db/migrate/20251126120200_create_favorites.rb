@@ -1,6 +1,6 @@
 class CreateFavorites < ActiveRecord::Migration[7.1]
   def change
-    create_table :favorites do |t|
+    create_table :favorites, if_not_exists: true do |t|
       t.references :user, null: false, foreign_key: true
       t.references :favoritable, polymorphic: true, null: false
 

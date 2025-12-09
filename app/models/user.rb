@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :notifications, dependent: :destroy
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy
+  has_many :teams, dependent: :destroy
   # Roles used by the moderation feature:
   #   user (default)
   #   moderator
@@ -22,13 +23,15 @@ class User < ApplicationRecord
   before_validation :ensure_role
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validates :username, uniqueness: { case_sensitive: false, allow_blank: true },
+                       length: { minimum: 3, maximum: 20, allow_blank: true },
+                       format: { with: /\A[a-zA-Z0-9_]+\z/, message: "can only contain letters, numbers, and underscores", allow_blank: true }
   validates :role, presence: true, inclusion: { in: roles.keys }
   validate :cannot_remove_final_moderator
   validate :enforce_single_admin
 
   def display_name
-    respond_to?(:name) && name.present? ? name : email
-    # name.presence || email
+    username.presence || email.split('@').first
   end
 
   def enable_otp!(secret = ROTP::Base32.random_base32)

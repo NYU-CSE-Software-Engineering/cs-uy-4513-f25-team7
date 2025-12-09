@@ -1,6 +1,7 @@
 class CreateTeams < ActiveRecord::Migration[7.1]
   def change
-    create_table :teams do |t|
+    # Only create the table if it doesn't already exist
+    create_table :teams, if_not_exists: true do |t|
       t.string :title, null: false
       t.text :description
       t.boolean :public, null: false, default: true

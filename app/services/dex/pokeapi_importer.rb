@@ -43,6 +43,7 @@ module Dex
       end
 
       import_learnset_for_species(species, data)
+      species  # Return the species object, not the learnset array
     end
 
     private

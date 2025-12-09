@@ -1,6 +1,6 @@
 class CreateDexMoves < ActiveRecord::Migration[7.1]
   def change
-    create_table :dex_moves do |t|
+    create_table :dex_moves, if_not_exists:true do |t|
       t.string :name, null: false
 
       t.timestamps

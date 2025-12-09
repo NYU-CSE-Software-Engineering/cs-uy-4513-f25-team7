@@ -1,82 +1,139 @@
-<h1>Role Management</h1>
-
-<% if flash[:notice] %>
-  <div class="alert alert-success"><%= flash[:notice] %></div>
-<% end %>
-
-<% if flash[:alert] %>
-  <div class="alert alert-danger"><%= flash[:alert] %></div>
-<% end %>
-
-<% if flash[:status_message] %>
-  <p><%= flash[:status_message] %></p>
-<% end %>
-
-<% if flash[:error_message] %>
-  <p><%= flash[:error_message] %></p>
-<% end %>
-
-<%# Success banner for AC1/AC2 %>
-<% if flash[:success].present? %>
-  <div class="alert-success">
-    <%= flash[:success] %>
+<div style="max-width: 900px; margin: 0 auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+      <h1>👑 Admin Panel</h1>
+      <p class="text-muted">Manage users and roles</p>
+    </div>
+    <%= link_to "← Back to Settings", edit_user_registration_path, class: "btn btn-secondary" %>
   </div>
-<% end %>
 
-<%# Error banner for AC4 %>
-<% if flash[:error].present? %>
-  <div class="alert-danger">
-    <%= flash[:error] %>
-  </div>
-<% end %>
-
-<%# Also show any generic notices/alerts (like "ash@poke.com is now a moderator") %>
-<% if flash[:notice].present? %>
-  <p><%= flash[:notice] %></p>
-<% end %>
-
-<% if flash[:alert].present? %>
-  <p><%= flash[:alert] %></p>
-<% end %>
-
-<table>
-  <thead>
-  <tr>
-    <th>Email</th>
-    <th>Role</th>
-    <th>Actions</th>
-  </tr>
-  </thead>
-
-  <tbody>
-  <% @users.each do |user| %>
-    <tr>
-      <td><%= user.email %></td>
-      <td><%= user.role.humanize %></td>
-      <td><%= user.role.titleize %></td>
-      <td>
-        <% if current_user.admin? %>
-          <% if user.admin? %>
-            <!-- Admin cannot change their own admin status via UI -->
-            <em>Admin</em>
-          <% elsif user.moderator? %>
-            <%= button_to "Demote",
-                          user_path(user),
-                          method: :patch,
-                          params: { user: { role: "user" } } %>
-          <% else %>
-            <%= button_to "Promote",
-                          user_path(user),
-                          method: :patch,
-                          params: { user: { role: "moderator" } } %>
-          <% end %>
-        <% else %>
-          <!-- Non-admins see the roles but no role-change controls -->
-          <em>No controls</em>
-        <% end %>
-      </td>
-
-    </tr>
+  <% if flash[:notice] %>
+    <div class="flash notice alert-success" style="margin-bottom: 1.5rem;">
+      <%= flash[:notice] %>
+    </div>
   <% end %>
-  </tbody>
-</table>
+
+  <% if flash[:status_message] %>
+    <div class="flash notice alert-success" style="margin-bottom: 1.5rem;">
+      <%= flash[:status_message] %>
+    </div>
+  <% end %>
+
+  <% if flash[:alert] %>
+    <div class="flash alert alert-danger" style="margin-bottom: 1.5rem;">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <% if flash[:error_message] %>
+    <div class="flash alert alert-danger" style="margin-bottom: 1.5rem;">
+      <%= flash[:error_message] %>
+    </div>
+  <% end %>
+
+  <!-- Stats Cards -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div class="card text-center" style="padding: 1.5rem;">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;"><%= @users.count %></div>
+      <div class="text-muted text-small">Total Users</div>
+    </div>
+    <div class="card text-center" style="padding: 1.5rem; border-color: #fbbf24;">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem; color: #fbbf24;"><%= @users.where(role: :admin).count %></div>
+      <div class="text-muted text-small">Admins</div>
+    </div>
+    <div class="card text-center" style="padding: 1.5rem; border-color: #8b5cf6;">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem; color: #8b5cf6;"><%= @users.where(role: :moderator).count %></div>
+      <div class="text-muted text-small">Moderators</div>
+    </div>
+    <div class="card text-center" style="padding: 1.5rem;">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;"><%= @users.where(role: :user).count %></div>
+      <div class="text-muted text-small">Users</div>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table style="margin: 0;">
+      <thead>
+        <tr>
+          <th style="padding: 1rem 1.5rem;">User</th>
+          <th style="padding: 1rem 1.5rem;">Role</th>
+          <th style="padding: 1rem 1.5rem; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td style="padding: 1rem 1.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-primary); display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                  <%= user.display_name.first.upcase %>
+                </div>
+                <div>
+                  <strong><%= user.display_name %></strong>
+                  <p class="text-muted text-small" style="margin: 0;"><%= user.email %></p>
+                </div>
+              </div>
+            </td>
+            <td style="padding: 1rem 1.5rem;">
+              <% if user.admin? %>
+                <span class="badge" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a1a2e;">
+                  👑 Admin
+                </span>
+              <% elsif user.moderator? %>
+                <span class="badge" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
+                  🛡️ Moderator
+                </span>
+              <% else %>
+                <span class="badge" style="background: var(--bg-input);">
+                  👤 User
+                </span>
+              <% end %>
+            </td>
+            <td style="padding: 1rem 1.5rem; text-align: right;">
+              <% if current_user.admin? %>
+                <% if user.id == current_user.id %>
+                  <span class="text-muted text-small">That's you!</span>
+                <% elsif user.admin? %>
+                  <span class="text-muted text-small">Admin</span>
+                <% elsif user.moderator? %>
+                  <%= button_to "Demote", user_path(user),
+                                method: :patch,
+                                params: { user: { role: "user" } },
+                                class: "btn btn-secondary btn-small",
+                                style: "background: rgba(239, 68, 68, 0.2); color: var(--error); border-color: var(--error);" %>
+                <% else %>
+                  <%= button_to "Promote", user_path(user),
+                                method: :patch,
+                                params: { user: { role: "moderator" } },
+                                class: "btn btn-secondary btn-small",
+                                style: "background: rgba(139, 92, 246, 0.2); color: #8b5cf6; border-color: #8b5cf6;" %>
+                <% end %>
+              <% else %>
+                <span class="text-muted text-small">—</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top: 1.5rem; padding: 1.5rem;">
+    <h4 style="margin-bottom: 0.75rem;">Role Permissions</h4>
+    <div style="display: grid; gap: 0.75rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="badge" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a1a2e; min-width: 100px; justify-content: center;">👑 Admin</span>
+        <span class="text-muted text-small">Can manage all users, promote/demote moderators, and delete any content</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="badge" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; min-width: 100px; justify-content: center;">🛡️ Moderator</span>
+        <span class="text-muted text-small">Can delete posts and comments from any user</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="badge" style="background: var(--bg-input); min-width: 100px; justify-content: center;">👤 User</span>
+        <span class="text-muted text-small">Can create posts, comments, and teams</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 class CreateDexLearnsets < ActiveRecord::Migration[7.1]
   def change
-    create_table :dex_learnsets do |t|
+    create_table :dex_learnsets, if_not_exists:true do |t|
       t.references :dex_species, null: false, foreign_key: true
       t.references :dex_move,    null: false, foreign_key: true
 

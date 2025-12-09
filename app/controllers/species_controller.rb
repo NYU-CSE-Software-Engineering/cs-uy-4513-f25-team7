@@ -1,6 +1,5 @@
 # app/controllers/species_controller.rb
 class SpeciesController < ApplicationController
-  layout false
 
   def index
     query = params[:q].to_s.strip
@@ -22,11 +21,45 @@ class SpeciesController < ApplicationController
     @sprite_url =
       if @dex_species&.pokeapi_id
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{@dex_species.pokeapi_id}.png"
-        # Or, for nicer art:
-        # "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/#{@dex_species.pokeapi_id}.png"
       end
 
     @following = FollowsController.following_for(@name)
     @follower_count = FollowsController.count_for(@name)
+
+    # Load discussion posts for this species
+    @posts = @dex_species ? Post.for_species(@dex_species.id).includes(:user, :comments).order(created_at: :desc) : []
+    @new_post = Post.new(dex_species: @dex_species) if user_signed_in?
+  end
+
+  def create_post
+    @name = params[:name]
+    @dex_species = DexSpecies.find_by("LOWER(name) = ?", @name.downcase)
+
+    if @dex_species.nil?
+      redirect_to species_path(name: @name), alert: "Species not found"
+      return
+    end
+
+    @post = Post.new(post_params)
+    @post.user = current_user
+    @post.dex_species = @dex_species
+
+    if @post.save
+      redirect_to species_path(name: @name), notice: "Discussion posted!"
+    else
+      # Reload data for the show page
+      @sprite_url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{@dex_species.pokeapi_id}.png" if @dex_species&.pokeapi_id
+      @following = FollowsController.following_for(@name)
+      @follower_count = FollowsController.count_for(@name)
+      @posts = Post.for_species(@dex_species.id).includes(:user, :comments).order(created_at: :desc)
+      @new_post = @post
+      render :show
+    end
+  end
+
+  private
+
+  def post_params
+    params.require(:post).permit(:title, :body, :post_type)
   end
 end

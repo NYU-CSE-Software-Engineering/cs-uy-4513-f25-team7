@@ -1,17 +1,99 @@
-<h1>Account Settings</h1>
+<div style="max-width: 600px; margin: 0 auto;">
+  <h1>⚙️ Account Settings</h1>
 
-<% if user_signed_in? %>
-  <p>Signed in as <strong><%= current_user.email %></strong></p>
+  <% if user_signed_in? %>
+    <!-- Role Badge -->
+    <div style="margin-bottom: 1.5rem;">
+      <% if current_user.admin? %>
+        <span class="badge" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a1a2e; font-size: 0.9rem; padding: 0.5rem 1rem;">
+          👑 Administrator
+        </span>
+      <% elsif current_user.moderator? %>
+        <span class="badge" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; font-size: 0.9rem; padding: 0.5rem 1rem;">
+          🛡️ Moderator
+        </span>
+      <% else %>
+        <span class="badge" style="background: var(--bg-input); font-size: 0.9rem; padding: 0.5rem 1rem;">
+          👤 User
+        </span>
+      <% end %>
+    </div>
 
-  <% if current_user.otp_enabled %>
-    <p>Two-factor authentication: <strong>Enabled</strong></p>
-    <p>You can continue to use your authenticator app to sign in.</p>
+    <!-- Profile Section -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <h3 style="margin-bottom: 1rem;">Profile</h3>
+      
+      <%= form_with url: update_profile_path, method: :patch, local: true do |f| %>
+        <div class="form-group">
+          <%= f.label :username, "Username" %>
+          <%= f.text_field :username, value: current_user.username, placeholder: "Choose a username", maxlength: 20 %>
+          <p class="text-muted text-small" style="margin-top: 0.25rem;">This name appears on your posts and comments</p>
+        </div>
+        
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" value="<%= current_user.email %>" disabled style="opacity: 0.6;">
+          <p class="text-muted text-small" style="margin-top: 0.25rem;">Email cannot be changed</p>
+        </div>
+        
+        <%= f.submit "Save Profile", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+
+    <!-- Security Section -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <h3 style="margin-bottom: 1rem;">Security</h3>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-input); border-radius: var(--radius-md);">
+        <div>
+          <strong>Two-Factor Authentication</strong>
+          <p class="text-muted text-small" style="margin: 0.25rem 0 0 0;">
+            <% if current_user.otp_enabled %>
+              <span style="color: var(--success);">✓ Enabled</span> - Your account is protected
+            <% else %>
+              <span style="color: var(--warning);">⚠ Disabled</span> - Add an extra layer of security
+            <% end %>
+          </p>
+        </div>
+        <div>
+          <% if current_user.otp_enabled %>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: var(--success);">Active</span>
+          <% else %>
+            <%= button_to "Enable 2FA", new_two_factor_path, method: :get, class: "btn btn-secondary btn-small" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Section -->
+    <% if current_user.admin? %>
+      <div class="card" style="margin-bottom: 1.5rem; border-color: #fbbf24;">
+        <h3 style="margin-bottom: 1rem;">👑 Admin Panel</h3>
+        <p class="text-muted" style="margin-bottom: 1rem;">Manage users, roles, and platform settings</p>
+        
+        <%= link_to admin_panel_path, class: "btn btn-primary", style: "background: linear-gradient(135deg, #fbbf24, #f59e0b); border: none;" do %>
+          🛡️ User Management
+        <% end %>
+      </div>
+    <% elsif current_user.moderator? %>
+      <div class="card" style="margin-bottom: 1.5rem; border-color: #8b5cf6;">
+        <h3 style="margin-bottom: 1rem;">🛡️ Moderator Tools</h3>
+        <p class="text-muted" style="margin-bottom: 1rem;">You can moderate posts and comments</p>
+      </div>
+    <% else %>
+      <!-- Admin Setup Link for regular users -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">🔐 Admin Access</h3>
+        <p class="text-muted" style="margin-bottom: 1rem;">
+          Have an admin code? You can become an administrator.
+        </p>
+        <%= link_to "Enter Admin Code →", admin_setup_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+
   <% else %>
-    <p>Two-factor authentication: <strong>Disabled</strong></p>
-    <p>Protect your account by adding an authenticator app.</p>
-    <%= button_to "Enable 2FA", new_two_factor_path, method: :get %>
+    <div class="card text-center" style="padding: 3rem;">
+      <p class="text-muted">Please <%= link_to "log in", new_user_session_path %> to access settings.</p>
+    </div>
   <% end %>
-
-<% else %>
-  <p>Please log in.</p>
-<% end %>
+</div>

@@ -1,34 +1,44 @@
-<h1>New Post</h1>
+<div style="max-width: 700px; margin: 0 auto;">
+  <h1>📝 New Post</h1>
+  <p class="text-muted" style="margin-bottom: 2rem;">Share your thoughts with the community</p>
 
-<%= form_with(model: @post, local: true, id: "new_post") do |form| %>
-  <% if @post.errors.any? %>
-    <div class="alert alert-danger">
-      <h2><%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:</h2>
-      <ul>
-        <% @post.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <div class="card">
+    <%= form_with(model: @post, local: true, id: "new_post") do |form| %>
+      <% if @post.errors.any? %>
+        <div class="flash alert" style="margin-bottom: 1.5rem;">
+          <strong><%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:</strong>
+          <ul style="margin: 0.5rem 0 0 1.5rem;">
+            <% @post.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
 
-  <div class="mb-3">
-    <%= form.label :title, class: 'form-label' %>
-    <%= form.text_field :title, class: 'form-control' %>
+      <div class="form-group">
+        <%= form.label :title, "Title" %>
+        <%= form.text_field :title, placeholder: "Give your post a descriptive title" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :post_type, "Post Type" %>
+        <%= form.select :post_type, [
+          ['💬 Thread - General Discussion', 'Thread'],
+          ['📊 Meta - Site/Community Discussion', 'Meta'],
+          ['⚔️ Strategy - Competitive Tips', 'Strategy'],
+          ['📢 Announcement - Important News', 'Announcement']
+        ] %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :body, "Body" %>
+        <%= form.text_area :body, rows: 10, placeholder: "Write your post here..." %>
+      </div>
+
+      <div class="flex gap-2" style="margin-top: 1.5rem;">
+        <%= form.submit 'Create Post', class: 'btn btn-primary' %>
+        <%= link_to 'Cancel', posts_path, class: 'btn btn-secondary' %>
+      </div>
+    <% end %>
   </div>
-
-  <div class="mb-3">
-    <%= form.label :post_type, 'Post Type', class: 'form-label' %>
-    <%= form.select :post_type, ['Thread', 'Meta', 'Strategy', 'Announcement'], {}, class: 'form-select' %>
-  </div>
-
-  <div class="mb-3">
-    <%= form.label :body, class: 'form-label' %>
-    <%= form.text_area :body, rows: 10, class: 'form-control' %>
-  </div>
-
-  <div class="mb-3">
-    <%= form.submit 'Create Post', class: 'btn btn-primary' %>
-    <%= link_to 'Cancel', posts_path, class: 'btn btn-secondary' %>
-  </div>
-<% end %>
+</div>

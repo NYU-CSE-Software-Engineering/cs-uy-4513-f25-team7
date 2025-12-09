@@ -2,6 +2,7 @@ class Team < ApplicationRecord
   belongs_to :user, optional: true
   has_many :favorites, as: :favoritable, dependent: :destroy
   has_many :team_slots, -> { order(:slot_index) }, dependent: :destroy
+  has_many :reviews, dependent: :destroy
 
   accepts_nested_attributes_for :team_slots, allow_destroy: true
 
@@ -60,4 +61,17 @@ class Team < ApplicationRecord
   def owner
     user
   end
+
+  # Recalculate the cached average rating from visible reviews
+  def recalculate_rating!
+    visible_reviews = reviews.visible
+    self.reviews_count = visible_reviews.count
+    self.average_rating = visible_reviews.average(:rating)&.round(2) || 0.0
+    save!
+  end
+
+  # Scope for browsing highest-rated teams (requires minimum reviews)
+  scope :highest_rated, ->(min_reviews: 2) {
+    where("reviews_count >= ?", min_reviews).order(average_rating: :desc)
+  }
 end

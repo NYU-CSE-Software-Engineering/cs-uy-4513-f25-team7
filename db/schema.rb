@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_07_002231) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_09_215322) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.integer "post_id", null: false
@@ -91,7 +91,23 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_002231) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "dex_species_id"
+    t.index ["dex_species_id"], name: "index_posts_on_dex_species_id"
     t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.integer "team_id", null: false
+    t.integer "user_id", null: false
+    t.integer "rating", null: false
+    t.text "body"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id", "deleted_at"], name: "index_reviews_on_team_id_and_deleted_at"
+    t.index ["team_id", "user_id"], name: "index_reviews_on_team_id_and_user_id", unique: true
+    t.index ["team_id"], name: "index_reviews_on_team_id"
+    t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
   create_table "team_slots", force: :cascade do |t|
@@ -141,6 +157,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_002231) do
     t.datetime "last_saved_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "average_rating", precision: 3, scale: 2, default: "0.0"
+    t.integer "reviews_count", default: 0
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
@@ -156,19 +174,24 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_002231) do
     t.string "google_token"
     t.string "google_refresh_token"
     t.datetime "google_token_expires_at"
+    t.string "username"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
   add_foreign_key "dex_learnsets", "dex_moves"
   add_foreign_key "dex_learnsets", "dex_species", column: "dex_species_id"
-  add_foreign_key "posts", "users"
-  add_foreign_key "team_slots", "teams"
-  add_foreign_key "teams", "users"
   add_foreign_key "favorites", "users"
   add_foreign_key "follows", "users", column: "followee_id"
   add_foreign_key "follows", "users", column: "follower_id"
   add_foreign_key "notifications", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
+  add_foreign_key "posts", "dex_species", column: "dex_species_id"
+  add_foreign_key "posts", "users"
+  add_foreign_key "reviews", "teams"
+  add_foreign_key "reviews", "users"
+  add_foreign_key "team_slots", "teams"
+  add_foreign_key "teams", "users"
 end
