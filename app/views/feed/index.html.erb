@@ -1,0 +1,131 @@
+<div data-test="home-feed" class="feed-page" style="max-width: 900px; margin: 0 auto;">
+  <header class="welcome-section" style="padding: 0 0 2rem 0; text-align: left;">
+    <h1>My Feed</h1>
+    <p class="text-muted">Recent posts from trainers and species you follow.</p>
+  </header>
+
+  <% if @ordered_posts.any? %>
+    <div class="posts-list">
+      <% @ordered_posts.each do |p| %>
+        <% is_real_post = defined?(Post) && p.is_a?(Post) %>
+
+        <% title      = p.respond_to?(:title)      ? p.title : p[:title] %>
+        <% author     = p.respond_to?(:user)       ? p.user&.display_name : nil %>
+        <% timestamp  = p.respond_to?(:created_at) ? time_ago_in_words(p.created_at) : nil %>
+        <% body       = p.respond_to?(:body)       ? p.body : nil %>
+        <% comments_n = p.respond_to?(:comments)   ? p.comments.size : nil %>
+
+        <% species_name =
+             if is_real_post && p.respond_to?(:dex_species) && p.dex_species.present?
+               p.dex_species.name
+             elsif p.respond_to?(:species)
+               p.species
+             end %>
+
+        <% activity_author    = nil %>
+        <% activity_action    = nil %> <!-- "commented" or "posted" -->
+        <% activity_timestamp = nil %>
+
+        <% if is_real_post %>
+          <% if current_user && p.user_id == current_user.id %>
+            <% # Your own post: only consider comments from other users as activity %>
+            <% other_comments = p.comments.reject { |c| c.user_id == current_user.id } %>
+            <% if other_comments.any? %>
+              <% latest_comment   = other_comments.max_by(&:created_at) %>
+              <% activity_author  = latest_comment.user&.display_name %>
+              <% activity_action  = "commented" if activity_author.present? %>
+              <% activity_timestamp = time_ago_in_words(latest_comment.created_at) %>
+              <% body = latest_comment.body if latest_comment.body.present? %>
+            <% end %>
+          <% else %>
+            <% latest_comment = p.comments.max_by(&:created_at) %>
+            <% if latest_comment && latest_comment.created_at > p.created_at %>
+              <% # Someone commented more recently than the post itself %>
+              <% activity_author    = latest_comment.user&.display_name %>
+              <% activity_action    = "commented" if activity_author.present? %>
+              <% activity_timestamp = time_ago_in_words(latest_comment.created_at) %>
+              <% body = latest_comment.body if latest_comment.body.present? %>
+            <% else %>
+              <% activity_author    = author %>
+              <% activity_action    = "posted" if author.present? %>
+              <% activity_timestamp = timestamp %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <% activity_author    = author %>
+          <% activity_action    = "posted" if author.present? %>
+          <% activity_timestamp = timestamp %>
+        <% end %>
+
+        <article class="post card mb-3 p-3">
+          <header class="post-title" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+            <div>
+              <strong style="display:block; margin-bottom: 0.25rem; font-size: 1.1rem;">
+                <% if is_real_post %>
+                  <%= link_to title, post_path(p) %>
+                <% else %>
+                  <%= title %>
+                <% end %>
+              </strong>
+
+              <% if author.present? || timestamp.present? || species_name.present? %>
+                <p class="text-muted text-small" style="margin: 0;">
+                  <% if author.present? %>
+                    Posted by <strong><%= author %></strong>
+                  <% end %>
+
+                  <% if author.present? && timestamp.present? %> · <% end %>
+
+                  <% if timestamp.present? %>
+                    <%= timestamp %> ago
+                  <% end %>
+
+                  <% if species_name.present? %>
+                    <% if author.present? || timestamp.present? %> · <% end %>
+                    in
+                    <% if is_real_post && p.respond_to?(:dex_species) && p.dex_species %>
+                      <%= link_to species_name, species_path(name: species_name) %>
+                    <% else %>
+                      <strong><%= species_name %></strong>
+                    <% end %>
+                  <% end %>
+                </p>
+              <% end %>
+
+              <% # Second line: latest comment activity, when that is the most recent thing %>
+              <% if activity_action == "commented" && activity_author.present? && activity_timestamp.present? %>
+                <p class="text-muted text-small" style="margin: 0;">
+                  <strong><%= activity_author %></strong> commented · <%= activity_timestamp %> ago
+                </p>
+              <% end %>
+            </div>
+          </header>
+
+          <% if body.present? %>
+            <p class="text-secondary" style="margin: 0.75rem 0;"><%= truncate(body, length: 180) %></p>
+          <% end %>
+
+          <% if comments_n %>
+            <p class="text-muted text-small" style="margin: 0;">
+              <%= comments_n %> <%= "comment".pluralize(comments_n) %>
+            </p>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+
+    <div class="card text-center" style="padding: 3rem;">
+      <p style="font-size: 3rem; margin-bottom: 1rem;">📰</p>
+      <h3>There are no more posts to show</h3>
+      <p class="text-muted">Follow more trainers or species, or start a discussion in the forum.</p>
+      <%= link_to "Browse Forum", posts_path, class: "btn btn-primary" %>
+    </div>
+  <% else %>
+    <div class="card text-center" style="padding: 3rem;">
+      <p style="font-size: 3rem; margin-bottom: 1rem;">📰</p>
+      <h3>Your feed is empty</h3>
+      <p class="text-muted">Follow other trainers or start a discussion to see posts here.</p>
+      <%= link_to "Browse Forum", posts_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

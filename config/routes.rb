@@ -7,7 +7,8 @@ Rails.application.routes.draw do
   post   "/species/:name/follow",  to: "follows#create",  as: :species_follow
   delete "/species/:name/follow",  to: "follows#destroy"
   post   "/species/:name/posts",   to: "species#create_post", as: :species_posts
-  get "/feed", to: "feed#show", as: :feed
+  # get "/feed", to: "feed#show", as: :feed
+  get "/feed", to: "feed#index", as: :feed
   get "/species", to: "species#index", as: :species_index
 
   namespace :api do
