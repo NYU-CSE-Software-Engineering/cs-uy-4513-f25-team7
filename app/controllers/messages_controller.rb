@@ -8,12 +8,13 @@ class MessagesController < ApplicationController
   end
 
   def new
-    @message = Message.new
-    if params[:recipient_id].present?
-      @recipient = User.find_by(id: params[:recipient_id])
-      @message.recipient = @recipient if @recipient
+    if params[:recipient_username].present?
+      @recipient = User.find_by(username: params[:recipient_username])
     end
+
+    @message = Message.new(recipient: @recipient)
   end
+
 
   def create
     # Sender is always the current signed-in user
