@@ -48,4 +48,10 @@ class ApplicationController < ActionController::Base
   def after_sign_up_path_for(_resource)
     root_path
   end
+  def ensure_authenticated
+    return if user_signed_in?
+
+    flash[:alert] = "Please sign in to continue"
+    redirect_to new_user_session_path
+  end
 end

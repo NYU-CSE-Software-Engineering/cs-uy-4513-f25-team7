@@ -29,7 +29,7 @@ RSpec.describe "Two-factor enrollment (invalid code)", type: :request do
     follow_redirect!
     expect(response).to have_http_status(:ok)
 
-    # Assert: error message and 2FA remains disabled
+    # Assert: error messages and 2FA remains disabled
     expect(response.body).to include("Incorrect code. Please try again.")
     user.reload
     expect(user.otp_enabled).to be(false)

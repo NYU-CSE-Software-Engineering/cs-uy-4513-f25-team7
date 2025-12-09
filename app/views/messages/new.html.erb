@@ -1,0 +1,39 @@
+<section data-test="messages-new">
+  <h1>New Message</h1>
+
+  <% if @message.errors.any? %>
+    <div class="alert-danger">
+      <ul>
+        <% @message.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with(model: @message, local: true) do |form| %>
+    <% if @message.recipient.present? %>
+      <p>To: <strong><%= @message.recipient.display_name %></strong></p>
+      <%= form.hidden_field :recipient_id, value: @message.recipient.id %>
+    <% else %>
+      <div class="field">
+        <%= form.label :recipient_id, "Recipient ID" %>
+        <%= form.number_field :recipient_id %>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= form.label :subject, "Subject" %>
+      <%= form.text_field :subject %>
+    </div>
+
+    <div class="field">
+      <%= form.label :body, "Body" %>
+      <%= form.text_area :body %>
+    </div>
+
+    <div class="actions">
+      <%= form.submit "Send Message" %>
+    </div>
+  <% end %>
+</section>

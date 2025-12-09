@@ -8,7 +8,7 @@ RSpec.describe "Google OAuth failure", type: :request do
 
   it "shows an error and stays on login page" do
     # simulate Google redirect to /auth/failure
-    get "/auth/failure?strategy=google_oauth2&message=access_denied"
+    get "/auth/failure?strategy=google_oauth2&messages=access_denied"
 
     follow_redirect!
 

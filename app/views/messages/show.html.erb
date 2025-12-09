@@ -1,0 +1,13 @@
+<section data-test="messages-show">
+  <h1><%= @message.subject.presence || "(no subject)" %></h1>
+
+  <p><strong>From:</strong> <%= @message.sender.display_name %></p>
+  <p><strong>To:</strong> <%= @message.recipient.display_name %></p>
+  <p><strong>Sent:</strong> <%= @message.created_at.strftime('%b %d, %Y %l:%M %p') %></p>
+
+  <article>
+    <%= simple_format(@message.body) %>
+  </article>
+
+  <p><%= link_to "Back to Inbox", messages_path %></p>
+</section>

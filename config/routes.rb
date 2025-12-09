@@ -52,4 +52,6 @@ Rails.application.routes.draw do
   resources :teams, only: %i[new create edit update show]
   resources :favorites, only: [:index, :create, :destroy]
   resources :notifications, only: [:index]
+
+  resources :messages, only: [:index, :new, :create, :show]
 end

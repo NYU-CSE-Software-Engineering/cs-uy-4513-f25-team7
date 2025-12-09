@@ -13,6 +13,9 @@
       <% if @following %>
         <p>Following</p>
       <% end %>
+      <p>
+        <%= link_to "Send Message", new_message_path(recipient_id: @user.id) %>
+      </p>
     <% end %>
   <% else %>
     <%= button_to "Follow", user_follow_path(@user), method: :post, form: { data: { turbo: false } } %>

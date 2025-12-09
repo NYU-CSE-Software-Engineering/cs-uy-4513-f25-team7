@@ -36,7 +36,7 @@ class UsersController < ApplicationController
       # banner text the Cucumber scenarios look for
       flash[:notice] = "Role updated successfully"
 
-      # detailed message about the specific user, also checked by Cucumber
+      # detailed messages about the specific user, also checked by Cucumber
       if @user.moderator? && previous_role != "moderator"
         flash[:status_message] = "#{@user.email} is now a moderator"
       elsif @user.user? && previous_role != "user"
