@@ -6,7 +6,7 @@
       <% end %>
       
       <span class="vote-score" data-voting-target="score" data-post-id="<%= @post.id %>">
-        <%= @post.vote_score %>
+        <%= @post.vote_score rescue 0 %>
       </span>
       
       <%= form_with url: downvote_post_path(@post), method: :post, local: false, class: 'vote-form' do |form| %>
@@ -18,11 +18,13 @@
       <h1 class="post-title"><%= @post.title %></h1>
       
       <div class="post-meta">
-        <div class="post-tags">
-          <% @post.tags.each do |tag| %>
-            <span class="tag"><%= tag.name %></span>
-          <% end %>
-        </div>
+        <% if @post.tags.any? %>
+          <div class="post-tags">
+            <% @post.tags.each do |tag| %>
+              <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+            <% end %>
+          </div>
+        <% end %>
         <div class="post-info">
           <span class="post-date">Posted on <%= @post.created_at.strftime('%B %d, %Y at %I:%M %p') %></span>
         </div>

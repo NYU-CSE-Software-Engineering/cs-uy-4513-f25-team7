@@ -8,6 +8,5 @@ class CreateVotes < ActiveRecord::Migration[7.1]
     end
     
     add_index :votes, [:post_id, :ip_address], unique: true
-    add_index :votes, :post_id
   end
 end

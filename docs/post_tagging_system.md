@@ -2,23 +2,20 @@
 
 ## user story
 
-As a forum user, I want to categorize my posts with tags so that I can organize content and help others find relevant posts through tag-based filtering and search.
-
-allow forum users to categorize my posts with tags for content organization purposes and to allow other users to find mine or relevant posts via tag based search and filtering. 
+allow forum users to categorize posts with tags for content organization purposes and to allow other users to find mine or relevant posts via tag based search and filtering. 
 
 ## acceptance criteria
 
-1. I can add comma-separated tags when creating a new post, and the tags are automatically normalized and associated with the post.
-
+1.
 new posts allow the addition of comma separated tags, which are automatically associated and linked with the post. 
 
-2. Tags are displayed on each post and are clickable, allowing users to filter posts by that specific tag.
+2. 
 each post has visible and clickable tags which allow users to filter posts with that specific tag
-3. I can filter the posts list by selecting a tag from a dropdown, and only posts with that tag are displayed.
+3.
 users can filter posts by selecting tag(s) from a dropdown menu, displaying only posts with the selected tag(s)
-4. The search functionality includes tag names, so I can find posts by searching for tag names.
+4. 
 search functioanlity includes tag names, allowing users to find posts by searching for specific tags. 
-5. Empty tags are filtered out, and tag names are properly normalized to ensure consistency across the system.
+5.
 filter out empty tags, and tag names are sufficiently normalized to ensure system consistency
 ## mvc components
 

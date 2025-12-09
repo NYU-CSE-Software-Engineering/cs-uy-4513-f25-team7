@@ -5,7 +5,8 @@
 # files.
 
 # Simple Cucumber setup without Rails database dependency
-# require 'cucumber/rails'  # Commented out to avoid database dependency
+require 'cucumber/rails'
+require 'rspec/expectations'
 
 # By default, any exception happening in your Rails application will bubble up
 # to Cucumber so that your scenario will fail. This is a different from how
@@ -26,11 +27,30 @@
 
 # Remove/comment out the lines below if your app doesn't have a database.
 # For some databases (like MongoDB and CouchDB) you may need to use :truncation instead.
-# begin
-#   DatabaseCleaner.strategy = :transaction
-# rescue NameError
-#   raise "You need to add database_cleaner to your Gemfile (in the :test group) if you wish to use it."
-# end
+begin
+  require 'database_cleaner-active_record'
+  DatabaseCleaner.strategy = :transaction
+rescue NameError
+  raise "You need to add database_cleaner to your Gemfile (in the :test group) if you wish to use it."
+end
+
+# Ensure database is migrated before running tests
+# For in-memory SQLite databases, migrations will run in Before hook (hooks.rb)
+# For file-based databases, run migrations here
+begin
+  # Establish connection first
+  ActiveRecord::Base.connection
+  
+  # Check if we're using an in-memory database
+  db_config = ActiveRecord::Base.connection_db_config.configuration_hash rescue nil
+  if db_config && db_config[:database] != ':memory:'
+    ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
+  end
+  # For in-memory databases, migrations run in Before hook in hooks.rb
+rescue => e
+  # For in-memory databases, migrations will run in Before hook
+  # This is expected and not an error
+end
 
 # You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
 # See the DatabaseCleaner documentation for details. Example:

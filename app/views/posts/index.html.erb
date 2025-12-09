@@ -9,7 +9,7 @@
     <div class="search-row">
       <%= form.text_field :search, placeholder: 'Search posts...', value: @search, class: 'search-input' %>
       <%= form.select :tag, options_from_collection_for_select(@all_tags, :name, :name, @tag_filter), 
-                      { prompt: 'Filter by tag...' }, { class: 'tag-filter' } %>
+                      { prompt: 'Filter by tag...', include_blank: true }, { class: 'tag-filter', id: 'tag' } %>
       <%= form.submit 'Search', class: 'btn btn-secondary' %>
       <%= link_to 'Clear', posts_path, class: 'btn btn-outline' %>
     </div>
@@ -17,7 +17,7 @@
 </div>
 
 <div class="posts-list">
-  <% if @posts.any? %>
+  <% if @posts.present? %>
     <% @posts.each do |post| %>
       <div class="post-card">
         <div class="post-voting" data-controller="voting" data-voting-post-id-value="<%= post.id %>">
@@ -26,7 +26,7 @@
           <% end %>
           
           <span class="vote-score" data-voting-target="score" data-post-id="<%= post.id %>">
-            <%= post.vote_score %>
+            <%= post.vote_score rescue 0 %>
           </span>
           
           <%= form_with url: downvote_post_path(post), method: :post, local: false, class: 'vote-form' do |form| %>
@@ -38,16 +38,18 @@
           <h3><%= link_to post.title, post_path(post), class: 'post-title' %></h3>
           <p class="post-preview"><%= truncate(post.content, length: 200) %></p>
           
-          <div class="post-meta">
-            <div class="post-tags">
-              <% post.tags.each do |tag| %>
-                <span class="tag"><%= tag.name %></span>
-              <% end %>
-            </div>
-            <div class="post-info">
-              <span class="post-date"><%= post.created_at.strftime('%B %d, %Y at %I:%M %p') %></span>
-            </div>
-          </div>
+                  <div class="post-meta">
+                    <% if post.tags.any? %>
+                      <div class="post-tags">
+                        <% post.tags.each do |tag| %>
+                          <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+                        <% end %>
+                      </div>
+                    <% end %>
+                    <div class="post-info">
+                      <span class="post-date"><%= post.created_at.strftime('%B %d, %Y at %I:%M %p') %></span>
+                    </div>
+                  </div>
         </div>
       </div>
     <% end %>
