@@ -1,0 +1,29 @@
+<div data-test="species-page">
+  <h2><%= @name %></h2>
+
+  <% if @sprite_url.present? %>
+    <div data-test="species-sprite" style="margin-bottom: 1rem;">
+      <img src="<%= @sprite_url %>"
+           alt="<%= @name %> sprite"
+           style="image-rendering: pixelated; width: 96px; height: 96px;">
+    </div>
+  <% end %>
+
+  <div data-test="follower-count">
+    Followers: <span><%= @follower_count %></span>
+  </div>
+
+  <div>
+    <% if @following %>
+      <%= button_to "Unfollow",
+                    species_follow_path(name: @name),
+                    method: :delete,
+                    "data-test": "follow-button" %>
+    <% else %>
+      <%= button_to "Follow",
+                    species_follow_path(name: @name),
+                    method: :post,
+                    "data-test": "follow-button" %>
+    <% end %>
+  </div>
+</div>

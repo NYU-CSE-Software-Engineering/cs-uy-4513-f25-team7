@@ -72,4 +72,14 @@ Rails.application.configure do
   
   # Disable automatic migration check for in-memory SQLite (Cucumber will handle migrations)
   config.active_record.maintain_test_schema = false
+
+  # Disable Sprockets cache to avoid Windows permission issues
+  config.assets.configure do |env|
+    env.cache = ActiveSupport::Cache.lookup_store(:null_store)
+  end
+
+  # Dummy Keys for testing purposes
+  config.active_record.encryption.primary_key = ENV.fetch("AR_ENC_PRIMARY_KEY", "0" * 32)
+  config.active_record.encryption.deterministic_key = ENV.fetch("AR_ENC_DETERMINISTIC_KEY", "1" * 32)
+  config.active_record.encryption.key_derivation_salt = ENV.fetch("AR_ENC_SALT", "salt-salt-salt-salt")
 end

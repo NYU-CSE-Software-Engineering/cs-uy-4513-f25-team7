@@ -4,8 +4,14 @@
 # or operating system, you probably want to add a global ignore instead:
 #   git config --global core.excludesfile '~/.gitignore_global'
 
+.DS_Store
+
 # Ignore bundler config.
 /.bundle
+
+# IDE and lockfiles (do not track)
+/.idea/
+/Gemfile.lock
 
 # Ignore all environment files (except templates).
 /.env*

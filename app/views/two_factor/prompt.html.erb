@@ -1,0 +1,15 @@
+<h1>Two-Factor Verification</h1>
+
+<% if flash[:alert].present? %>
+  <p class="alert"><%= flash[:alert] %></p>
+<% end %>
+
+<p>Enter authentication code</p>
+
+<%= form_with url: two_factor_verify_path, method: :post, local: true, data: { turbo: false } do %>
+  <div>
+    <%= label_tag :code, "Authentication code" %><br>
+    <%= text_field_tag :code %>
+  </div>
+  <%= button_tag "Verify code", type: "submit", id: "verify_code_button" %>
+<% end %>

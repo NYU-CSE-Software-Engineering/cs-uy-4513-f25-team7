@@ -1,0 +1,15 @@
+<h1>Enable Two-Factor Authentication</h1>
+
+<p>Scan this QR code with your authenticator app</p>
+<p>Then enter the 6-digit code below.</p>
+
+<img alt="2FA QR Code" src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBA==" />
+<p>Or add this manually: <code><%= @provisioning_uri %></code></p>
+
+<%= form_with url: two_factor_path, method: :post do |f| %>
+  <div>
+    <%= label_tag :code, "Authentication code" %><br>
+    <%= text_field_tag :code %>
+  </div>
+  <%= submit_tag "Verify code" %>
+<% end %>

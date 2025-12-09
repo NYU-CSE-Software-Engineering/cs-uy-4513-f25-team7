@@ -1,0 +1,110 @@
+<h1>Pokémon Species</h1>
+
+<!-- Existing/spec-driven list, using @species -->
+<div data-test="species-index">
+  <% @species.each do |species| %>
+    <% name = species.respond_to?(:name) ? species.name : species.to_s %>
+
+    <div data-test="species-row">
+      <span><%= name %></span>
+
+      <% if FollowsController.following_for(name) %>
+        <span data-test="following-badge">Following</span>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<hr>
+
+<!-- New search UI powered by /api/lookup/species -->
+<h2>Lookup & Import Species</h2>
+
+<p>
+  Type a full name like <code>pikachu</code> to fetch it from PokeAPI and save it.
+  Then try a partial like <code>pik</code> to see it come from your Dex.
+</p>
+
+<div style="margin-bottom: 1rem;">
+  <label for="species-query">Search species:</label>
+  <input id="species-query"
+         type="text"
+         placeholder="e.g. pikachu, pelipper, gar..."
+         autocomplete="off"
+         style="min-width: 250px;">
+</div>
+
+<div id="status"
+     style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;"></div>
+
+<ul id="species-results"></ul>
+
+<script>
+    (function() {
+        const input   = document.getElementById("species-query");
+        const results = document.getElementById("species-results");
+        const status  = document.getElementById("status");
+
+        let timeoutId = null;
+
+        function setStatus(text) {
+            status.textContent = text || "";
+        }
+
+        function renderResults(data) {
+            results.innerHTML = "";
+
+            if (!Array.isArray(data) || data.length === 0) {
+                const li = document.createElement("li");
+                li.textContent = "No results";
+                li.style.color = "#888";
+                results.appendChild(li);
+                return;
+            }
+
+            data.forEach((row) => {
+                const li = document.createElement("li");
+
+                const link = document.createElement("a");
+                link.href = "/species/" + encodeURIComponent(row.name);
+                link.textContent = `${row.name} (id: ${row.pokeapi_id || row.id})`;
+
+                li.appendChild(link);
+                results.appendChild(li);
+            });
+        }
+
+        async function fetchSpecies(query) {
+            if (!query.trim()) {
+                results.innerHTML = "";
+                setStatus("");
+                return;
+            }
+
+            try {
+                setStatus("Loading...");
+                const response = await fetch(`/api/lookup/species?q=${encodeURIComponent(query)}`);
+                const json = await response.json();
+                renderResults(json);
+                setStatus(`Found ${json.length} result(s) for "${query}"`);
+            } catch (e) {
+                console.error("Lookup error:", e);
+                results.innerHTML = "";
+                const li = document.createElement("li");
+                li.textContent = "Error loading results";
+                li.style.color = "red";
+                results.appendChild(li);
+                setStatus("Error contacting server");
+            }
+        }
+
+        input.addEventListener("input", () => {
+            clearTimeout(timeoutId);
+            const query = input.value;
+
+            timeoutId = setTimeout(() => {
+                fetchSpecies(query);
+            }, 250);
+        });
+    })();
+</script>

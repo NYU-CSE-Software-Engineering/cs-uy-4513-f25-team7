@@ -1,0 +1,28 @@
+<section data-test="notifications-index">
+  <h1>Notifications</h1>
+  <p>
+    <span class="badge"><%= @unread_count %> unread</span>
+  </p>
+
+  <% if @notifications.any? %>
+    <ul class="notification-list">
+      <% @notifications.each do |notification| %>
+        <li class="notification-item <%= 'unread' unless notification.read? %>">
+          <strong><%= notification.actor.display_name %></strong>
+          <span>
+            <% if notification.event_type == "follow_created" %>
+              started following you.
+            <% elsif notification.event_type == "favorite_created" %>
+              favorited your content.
+            <% else %>
+              sent you a notification.
+            <% end %>
+          </span>
+          <small><%= notification.created_at.strftime('%b %d, %Y %l:%M %p') %></small>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>No notifications yet.</p>
+  <% end %>
+</section>
