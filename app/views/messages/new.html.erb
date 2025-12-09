@@ -13,12 +13,19 @@
 
   <%= form_with(model: @message, local: true) do |form| %>
     <% if @message.recipient.present? %>
-      <p>To: <strong><%= @message.recipient.display_name %></strong></p>
+      <p>
+        To:
+        <strong>
+          <%= @message.recipient.display_name %>
+          (<%= "@#{@message.recipient.username}" if @message.recipient.username.present? %>)
+        </strong>
+      </p>
       <%= form.hidden_field :recipient_id, value: @message.recipient.id %>
+      <%= form.hidden_field :recipient_username, value: @message.recipient.username %>
     <% else %>
       <div class="field">
-        <%= form.label :recipient_id, "Recipient ID" %>
-        <%= form.number_field :recipient_id %>
+        <%= form.label :recipient_username, "To (username)" %>
+        <%= form.text_field :recipient_username %>
       </div>
     <% end %>
 

@@ -2,56 +2,71 @@ class MessagesController < ApplicationController
   before_action :ensure_authenticated
   before_action :set_message, only: [:show]
 
+  # GET /messages
+  # Inbox: only messages where I'm the recipient
   def index
-    # Inbox: only messages where the current user is the recipient
-    @messages = current_user.received_messages.order(created_at: :desc)
+    @messages = current_user
+                  .received_messages
+                  .order(created_at: :desc)
   end
 
   def new
-    if params[:recipient_username].present?
-      @recipient = User.find_by(username: params[:recipient_username])
+    @message = current_user.sent_messages.build
+
+    recipient = nil
+    if params[:recipient_id].present?
+      recipient = User.find_by(id: params[:recipient_id])
+    elsif params[:recipient_username].present?
+      recipient = User.find_by(username: params[:recipient_username])
     end
 
-    @message = Message.new(recipient: @recipient)
+    if recipient
+      @message.recipient          = recipient
+      @message.recipient_username = recipient.username
+    end
   end
 
-
   def create
-    # Sender is always the current signed-in user
-    @message = current_user.sent_messages.build(message_params)
+    username = message_params[:recipient_username].presence
+    rid      = message_params[:recipient_id].presence
+
+    recipient =
+      if username
+        User.find_by(username: username)
+      elsif rid
+        User.find_by(id: rid)
+      end
+
+    @message = current_user.sent_messages.build(
+      recipient: recipient,
+      subject:   message_params[:subject],
+      body:      message_params[:body]
+    )
+
+    # So username-based validation can run if needed
+    @message.recipient_username = username
 
     if @message.save
-      flash[:notice] = "Message sent."
-      redirect_to message_path(@message)
+      redirect_to message_path(@message), notice: "Message sent."
     else
-      flash.now[:alert] = "Unable to send messages."
       render :new, status: :unprocessable_entity
     end
   end
 
   def show
-    # Only sender or recipient can view the messages
-    unless [@message.sender_id, @message.recipient_id].include?(current_user.id)
-      head :not_found and return
-    end
-
-    # Mark as read when the recipient views it
-    if @message.recipient_id == current_user.id && @message.read_at.nil?
-      @message.mark_read!
-    end
+    @message.mark_read! if @message.respond_to?(:mark_read!) && @message.read_at.nil?
   end
 
   private
 
   def set_message
-    # Look up only within messages involving the current user
     @message = Message
-                 .where(sender_id: current_user.id)
-                 .or(Message.where(recipient_id: current_user.id))
+                 .where(sender: current_user)
+                 .or(Message.where(recipient: current_user))
                  .find(params[:id])
   end
 
   def message_params
-    params.require(:message).permit(:recipient_id, :subject, :body)
+    params.require(:message).permit(:recipient_username, :recipient_id, :subject, :body)
   end
 end

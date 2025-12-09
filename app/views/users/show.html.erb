@@ -14,7 +14,7 @@
         <p>Following</p>
       <% end %>
       <p>
-        <%= link_to "Send Message", new_message_path(recipient_username: @user.username) %>
+        <%= link_to "Send Message", new_message_path(recipient_id: @user.id) %>
       </p>
     <% end %>
   <% else %>
