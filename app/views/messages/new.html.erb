@@ -21,11 +21,10 @@
         </strong>
       </p>
       <%= form.hidden_field :recipient_id, value: @message.recipient.id %>
-      <%= form.hidden_field :recipient_username, value: @message.recipient.username %>
     <% else %>
       <div class="field">
-        <%= form.label :recipient_username, "To (username)" %>
-        <%= form.text_field :recipient_username %>
+        <%= form.label :recipient_email, "To (email)" %>
+        <%= form.email_field :recipient_email %>
       </div>
     <% end %>
 
@@ -43,4 +42,5 @@
       <%= form.submit "Send Message" %>
     </div>
   <% end %>
+
 </section>

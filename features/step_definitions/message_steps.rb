@@ -2,7 +2,6 @@
 # Step definitions for direct messaging features
 
 Given('the user {string} has sent me a message {string}') do |name, subject|
-  # Ensure we have a signed-in current user (reuses auth_steps)
   step 'I am signed in'
 
   sender = user_by_name(name) # helper defined in social_graph_notifications_steps.rb

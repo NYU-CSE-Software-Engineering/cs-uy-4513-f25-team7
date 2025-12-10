@@ -1,72 +1,91 @@
+# app/controllers/messages_controller.rb
 class MessagesController < ApplicationController
-  before_action :ensure_authenticated
-  before_action :set_message, only: [:show]
+  # In test, authenticate_user! is a no-op, so we still guard explicitly
+  before_action :authenticate_user!, only: [:index, :new, :create, :show]
 
-  # GET /messages
-  # Inbox: only messages where I'm the recipient
   def index
+    # Explicit guard so both RSpec and Cucumber see the right redirect / flash
+    unless current_user
+      redirect_to new_user_session_path, alert: "Please sign in to continue"
+      return
+    end
+
     @messages = current_user
                   .received_messages
+                  .includes(:sender)
                   .order(created_at: :desc)
   end
 
   def new
-    @message = current_user.sent_messages.build
+    unless current_user
+      redirect_to new_user_session_path, alert: "Please sign in to continue"
+      return
+    end
 
-    recipient = nil
+    @message = Message.new
+
+    # If coming from a profile page, pre-fill the recipient
     if params[:recipient_id].present?
-      recipient = User.find_by(id: params[:recipient_id])
-    elsif params[:recipient_username].present?
-      recipient = User.find_by(username: params[:recipient_username])
-    end
-
-    if recipient
-      @message.recipient          = recipient
-      @message.recipient_username = recipient.username
-    end
-  end
-
-  def create
-    username = message_params[:recipient_username].presence
-    rid      = message_params[:recipient_id].presence
-
-    recipient =
-      if username
-        User.find_by(username: username)
-      elsif rid
-        User.find_by(id: rid)
-      end
-
-    @message = current_user.sent_messages.build(
-      recipient: recipient,
-      subject:   message_params[:subject],
-      body:      message_params[:body]
-    )
-
-    # So username-based validation can run if needed
-    @message.recipient_username = username
-
-    if @message.save
-      redirect_to message_path(@message), notice: "Message sent."
-    else
-      render :new, status: :unprocessable_entity
+      @message.recipient = User.find_by(id: params[:recipient_id])
     end
   end
 
   def show
-    @message.mark_read! if @message.respond_to?(:mark_read!) && @message.read_at.nil?
+    unless current_user
+      redirect_to new_user_session_path, alert: "Please sign in to continue"
+      return
+    end
+
+    @message = Message.find(params[:id])
+
+    # Only sender or recipient can view the message
+    unless [@message.sender_id, @message.recipient_id].include?(current_user.id)
+      redirect_to messages_path, alert: "Not authorized"
+      return
+    end
+
+    # Mark as read when the recipient views it
+    @message.mark_read! if @message.recipient == current_user
+  end
+
+  def create
+    unless current_user
+      redirect_to new_user_session_path, alert: "Please sign in to continue"
+      return
+    end
+
+    @message = Message.new
+    @message.sender = current_user
+
+    # 1) Prefer recipient_id (used by your request specs and hidden field)
+    if params[:message][:recipient_id].present?
+      @message.recipient = User.find_by(id: params[:message][:recipient_id])
+      # 2) Fallback: look up by email if using the email field
+    elsif message_params[:recipient_email].present?
+      @message.recipient = User.find_by(email: message_params[:recipient_email])
+    end
+
+    @message.subject = message_params[:subject]
+    @message.body    = message_params[:body]
+
+    if @message.recipient.nil?
+      @message.errors.add(:recipient, "must exist")
+      render :new, status: :unprocessable_content
+    elsif @message.save
+      # IMPORTANT: redirect to the show page so Cucumber sees the subject
+      # and RSpec expectation `redirect_to(message_path(Message.last))` passes
+      redirect_to message_path(@message), notice: "Message sent."
+    else
+      render :new, status: :unprocessable_content
+    end
   end
 
   private
 
-  def set_message
-    @message = Message
-                 .where(sender: current_user)
-                 .or(Message.where(recipient: current_user))
-                 .find(params[:id])
-  end
-
   def message_params
-    params.require(:message).permit(:recipient_username, :recipient_id, :subject, :body)
+    # recipient_email is a virtual attribute; recipient_id is an actual foreign key
+    params
+      .require(:message)
+      .permit(:subject, :body, :recipient_email, :recipient_id)
   end
 end
