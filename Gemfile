@@ -5,8 +5,11 @@ ruby "3.3.8"
 # --- Core app gems ---
 gem "rails", "~> 7.1.5", ">= 7.1.5.2"
 gem "puma", ">= 5.0"
-gem "sqlite3", ">= 1.4"
 gem "sprockets-rails"
+
+# Database: SQLite for development/test, PostgreSQL for production (Heroku)
+gem "sqlite3", ">= 1.4", group: [:development, :test]
+gem "pg", "~> 1.5", group: :production
 gem "importmap-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
