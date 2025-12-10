@@ -25,6 +25,16 @@
       <div class="quick-link-icon">📰</div>
       <div>My Feed</div>
     <% end %>
+    
+    <%= link_to notifications_path, class: "quick-link" do %>
+      <div class="quick-link-icon">
+        🔔
+        <% if has_unread_notifications? %>
+          <span class="quick-link-badge"><%= unread_notifications_count %></span>
+        <% end %>
+      </div>
+      <div>Inbox</div>
+    <% end %>
   </div>
 
   <hr>

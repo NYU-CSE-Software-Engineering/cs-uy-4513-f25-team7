@@ -34,6 +34,13 @@
           <% if user_signed_in? %>
             <%= link_to "My Teams", root_path, class: "nav-link" %>
             <%= link_to "My Feed", feed_path, class: "nav-link" %>
+            
+            <%= link_to notifications_path, class: "nav-link nav-notifications" do %>
+              🔔 Inbox
+              <% if has_unread_notifications? %>
+                <span class="notification-badge"><%= unread_notifications_count %></span>
+              <% end %>
+            <% end %>
 
             <% if current_user.admin? %>
               <%= link_to "👑 Admin", admin_panel_path, class: "nav-link", style: "color: #fbbf24;" %>
