@@ -1,4 +1,6 @@
 class Post < ApplicationRecord
+  include ProfanityFilter
+
   belongs_to :user
   belongs_to :dex_species, optional: true
   has_many :comments, dependent: :destroy

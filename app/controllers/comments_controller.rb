@@ -9,7 +9,8 @@ class CommentsController < ApplicationController
     if @comment.save
       redirect_to @post, notice: 'Comment posted.'
     else
-      redirect_to @post, alert: 'Comment could not be posted.'
+      flash[:alert] = @comment.errors.full_messages.to_sentence.presence || 'Comment could not be posted.'
+      redirect_to @post
     end
   end
 

@@ -1,5 +1,7 @@
 # app/models/message.rb
 class Message < ApplicationRecord
+  include ProfanityFilter
+
   belongs_to :sender,    class_name: "User"
   belongs_to :recipient, class_name: "User"
 
