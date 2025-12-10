@@ -1,5 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
+  encrypts :google_token, deterministic: false
+  encrypts :google_refresh_token, deterministic: false
 
   has_many :follower_relationships, class_name: "Follow", foreign_key: :followee_id, dependent: :destroy
   has_many :followee_relationships, class_name: "Follow", foreign_key: :follower_id, dependent: :destroy
@@ -30,6 +32,7 @@ class User < ApplicationRecord
                        length: { minimum: 3, maximum: 20, allow_blank: true },
                        format: { with: /\A[a-zA-Z0-9_]+\z/, message: "can only contain letters, numbers, and underscores", allow_blank: true }
   validates :role, presence: true, inclusion: { in: roles.keys }
+  validates :google_uid, uniqueness: true, allow_nil: true
   validate :cannot_remove_final_moderator
   validate :enforce_single_admin
 
@@ -87,4 +90,3 @@ class User < ApplicationRecord
   end
 
 end
-

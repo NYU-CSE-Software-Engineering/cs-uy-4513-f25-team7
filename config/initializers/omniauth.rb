@@ -1,21 +1,31 @@
 require "omniauth"
 require "omniauth-google-oauth2"
 
-Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :google_oauth2, "FAKE_KEY", "FAKE_SECRET"
-end
+OmniAuth.config.allowed_request_methods = %i[post get]
+OmniAuth.config.silence_get_warning = true
+OmniAuth.config.logger = Rails.logger
+OmniAuth.config.test_mode = Rails.env.test?
 
-if Rails.env.test?
-  OmniAuth.config.test_mode = true
-  OmniAuth.config.allowed_request_methods = [:get, :post]
-elsif Rails.env.development?
-  # Provide a working mock in dev so the Google button doesn’t “cancel”
-  OmniAuth.config.test_mode = true
-  OmniAuth.config.allowed_request_methods = [:get, :post]
-  OmniAuth.config.mock_auth[:google_oauth2] ||= OmniAuth::AuthHash.new(
-    provider: "google_oauth2",
-    uid: "dev-uid-123",
-    info: { email: "dev_google_user@example.com", name: "Dev User" },
-    credentials: { token: "dev-token", refresh_token: "dev-refresh", expires_at: (Time.now + 1.hour).to_i }
-  )
+Rails.application.config.middleware.use OmniAuth::Builder do
+  client_id     = ENV["GOOGLE_CLIENT_ID"] || Rails.application.credentials.dig(:google_oauth, :client_id)
+  client_secret = ENV["GOOGLE_CLIENT_SECRET"] || Rails.application.credentials.dig(:google_oauth, :client_secret)
+  redirect_uri  = ENV["GOOGLE_OAUTH_REDIRECT_URI"]
+
+  if client_id.blank? || client_secret.blank?
+    if Rails.env.production?
+      raise "Missing Google OAuth credentials. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET."
+    else
+      Rails.logger.warn("Google OAuth credentials missing. Set GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET to enable real Google SSO.")
+      client_id     = "test"
+      client_secret = "test"
+    end
+  end
+
+  provider :google_oauth2, client_id, client_secret,
+           scope: "email,profile",
+           access_type: "offline",
+           prompt: "consent",
+           redirect_uri: redirect_uri.presence,
+           image_aspect_ratio: "square",
+           image_size: 100
 end
