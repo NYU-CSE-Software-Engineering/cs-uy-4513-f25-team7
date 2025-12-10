@@ -69,6 +69,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_215322) do
     t.index ["follower_id"], name: "index_follows_on_follower_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.integer "sender_id", null: false
+    t.integer "recipient_id", null: false
+    t.string "subject"
+    t.text "body", null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipient_id", "read_at"], name: "index_messages_on_recipient_id_and_read_at"
+    t.index ["recipient_id"], name: "index_messages_on_recipient_id"
+    t.index ["sender_id"], name: "index_messages_on_sender_id"
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "actor_id", null: false
@@ -186,6 +199,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_215322) do
   add_foreign_key "favorites", "users"
   add_foreign_key "follows", "users", column: "followee_id"
   add_foreign_key "follows", "users", column: "follower_id"
+  add_foreign_key "messages", "users", column: "recipient_id"
+  add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "notifications", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "posts", "dex_species", column: "dex_species_id"

@@ -1,0 +1,28 @@
+<section data-test="messages-index">
+  <h1>Inbox</h1>
+
+  <% if @messages.any? %>
+    <table>
+      <thead>
+      <tr>
+        <th>From</th>
+        <th>Subject</th>
+        <th>Message</th>
+        <th>Received</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @messages.each do |message| %>
+        <tr class="<%= 'unread' if message.read_at.nil? %>">
+          <td><%= message.sender.display_name %></td>
+          <td><%= link_to(message.subject.presence || "(no subject)", message_path(message)) %></td>
+          <td><%= message.body %></td>
+          <td><%= message.created_at.strftime('%b %d, %Y %l:%M %p') %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No messages yet.</p>
+  <% end %>
+</section>

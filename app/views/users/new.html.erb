@@ -16,27 +16,40 @@
 
       <div class="form-group">
         <%= f.label :username, "Username" %>
-        <%= f.text_field :username, required: true, placeholder: "Choose a username (3-20 chars)", maxlength: 20 %>
-        <p class="text-muted text-small" style="margin-top: 0.25rem;">This will be shown on your posts and comments</p>
+        <%= f.text_field :username,
+                         required: true,
+                         placeholder: "Choose a username (3-20 chars)",
+                         maxlength: 20 %>
+        <p class="text-muted text-small" style="margin-top: 0.25rem;">
+          This will be shown on your posts and comments
+        </p>
       </div>
 
       <div class="form-group">
         <%= f.label :email, "Email" %>
-        <%= f.email_field :email, required: true, placeholder: "trainer@pokemon.com" %>
+        <%= f.email_field :email,
+                          required: true,
+                          placeholder: "trainer@pokemon.com" %>
       </div>
 
       <div class="form-group">
         <%= f.label :password, "Password" %>
-        <%= f.password_field :password, required: true, placeholder: "Min 6 characters" %>
+        <%= f.password_field :password,
+                             required: true,
+                             placeholder: "Min 6 characters" %>
       </div>
 
       <div class="form-group">
         <%= f.label :password_confirmation, "Password confirmation" %>
-        <%= f.password_field :password_confirmation, required: true, placeholder: "••••••••" %>
+        <%= f.password_field :password_confirmation,
+                             required: true,
+                             placeholder: "••••••••" %>
       </div>
 
       <div style="margin-top: 1.5rem;">
-        <%= f.submit "Sign up", class: "btn btn-primary", style: "width: 100%;" %>
+        <%= f.submit "Sign up",
+                     class: "btn btn-primary",
+                     style: "width: 100%;" %>
       </div>
     <% end %>
 

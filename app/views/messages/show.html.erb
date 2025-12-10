@@ -1,0 +1,28 @@
+<section data-test="messages-show">
+  <% if flash[:notice].present? %>
+    <p><%= flash[:notice] %></p>
+  <% end %>
+
+  <h1><%= @message.subject.presence || "(no subject)" %></h1>
+
+  <p>
+    <strong>From:</strong>
+    <%= @message.sender.display_name %>
+  </p>
+
+  <p>
+    <strong>To:</strong>
+    <%= @message.recipient.display_name %>
+  </p>
+
+  <p>
+    <strong>Sent:</strong>
+    <%= @message.created_at.strftime('%b %d, %Y %l:%M %p') %>
+  </p>
+
+  <article>
+    <p><%= @message.body %></p>
+  </article>
+
+  <p><%= link_to "Back to Inbox", messages_path %></p>
+</section>

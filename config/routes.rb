@@ -64,4 +64,6 @@ Rails.application.routes.draw do
   end
   resources :favorites, only: [:index, :create, :destroy]
   resources :notifications, only: [:index]
+
+  resources :messages, only: [:index, :new, :create, :show]
 end

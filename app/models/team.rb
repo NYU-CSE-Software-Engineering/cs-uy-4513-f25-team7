@@ -40,7 +40,6 @@ class Team < ApplicationRecord
 
       if illegals.any?
         slot.illegal         = true
-        # Generic message for Cucumber, but still includes the specific move name(s)
         slot.illegal_reasons = "Move cannot be learned: #{illegals.join(', ')}"
         any_illegal          = true
       else

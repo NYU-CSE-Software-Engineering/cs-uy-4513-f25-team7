@@ -10,6 +10,9 @@ class User < ApplicationRecord
   has_many :notifications, dependent: :destroy
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy
+
+  has_many :sent_messages, class_name: "Message", foreign_key: :sender_id, dependent: :destroy
+  has_many :received_messages, class_name: "Message", foreign_key: :recipient_id, dependent: :destroy
   has_many :teams, dependent: :destroy
   # Roles used by the moderation feature:
   #   user (default)
@@ -21,7 +24,7 @@ class User < ApplicationRecord
   }
 
   before_validation :ensure_role
-
+  before_validation :downcase_email
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates :username, uniqueness: { case_sensitive: false, allow_blank: true },
                        length: { minimum: 3, maximum: 20, allow_blank: true },
@@ -43,6 +46,9 @@ class User < ApplicationRecord
   end
 
   private
+  def downcase_email
+    self.email = email.to_s.downcase
+  end
 
   def ensure_role
     # default is "user", not "member"
