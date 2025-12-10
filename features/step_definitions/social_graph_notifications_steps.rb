@@ -129,7 +129,7 @@ end
 
 Then('I should see my newest notification listed first') do
   # Keep generic for RED phase; refine when markup exists
-  expect(page).to have_content("notification").or have_css(".notification-item")
+  expect(page).to have_css(".notification-card").or have_css(".notification-item")
 end
 
 Then('the unread badge should be visible') do

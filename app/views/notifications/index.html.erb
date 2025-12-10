@@ -1,28 +1,83 @@
-<section data-test="notifications-index">
-  <h1>Notifications</h1>
-  <p>
-    <span class="badge"><%= @unread_count %> unread</span>
-  </p>
+<section data-test="notifications-index" class="notifications-page">
+  <div class="notifications-header">
+    <h1>🔔 Inbox</h1>
+    <% if @unread_count > 0 %>
+      <span class="badge badge-primary"><%= @unread_count %> new</span>
+    <% end %>
+  </div>
 
   <% if @notifications.any? %>
-    <ul class="notification-list">
+    <div class="notification-list">
       <% @notifications.each do |notification| %>
-        <li class="notification-item <%= 'unread' unless notification.read? %>">
-          <strong><%= notification.actor.display_name %></strong>
-          <span>
-            <% if notification.event_type == "follow_created" %>
-              started following you.
-            <% elsif notification.event_type == "favorite_created" %>
-              favorited your content.
+        <div class="notification-card <%= 'notification-unread' unless notification.read? %>">
+          <div class="notification-icon">
+            <% case notification.event_type %>
+            <% when "follow_created" %>
+              👤
+            <% when "favorite_created" %>
+              ⭐
+            <% when "new_review" %>
+              📝
+            <% when "review_removed" %>
+              🚫
+            <% when "comment_created" %>
+              💬
             <% else %>
-              sent you a notification.
+              📬
             <% end %>
-          </span>
-          <small><%= notification.created_at.strftime('%b %d, %Y %l:%M %p') %></small>
-        </li>
+          </div>
+          
+          <div class="notification-content">
+            <div class="notification-message">
+              <strong><%= notification.actor.display_name %></strong>
+              <% case notification.event_type %>
+              <% when "follow_created" %>
+                started following you.
+              <% when "favorite_created" %>
+                favorited your content.
+              <% when "new_review" %>
+                reviewed your team.
+              <% when "review_removed" %>
+                removed your review.
+              <% when "comment_created" %>
+                commented on your post.
+              <% else %>
+                sent you a notification.
+              <% end %>
+            </div>
+            
+            <div class="notification-meta">
+              <span class="notification-time"><%= time_ago_in_words(notification.created_at) %> ago</span>
+              <% if notification.notifiable.present? %>
+                <% case notification.notifiable_type %>
+                <% when "Team" %>
+                  · <%= link_to "View Team", team_path(notification.notifiable) %>
+                <% when "Review" %>
+                  <% if notification.notifiable.team.present? %>
+                    · <%= link_to "View Team", team_path(notification.notifiable.team) %>
+                  <% end %>
+                <% when "Post" %>
+                  · <%= link_to "View Post", post_path(notification.notifiable) %>
+                <% when "User" %>
+                  · <%= link_to "View Profile", user_path(notification.notifiable) %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+          
+          <% unless notification.read? %>
+            <div class="notification-status">
+              <span class="unread-dot"></span>
+            </div>
+          <% end %>
+        </div>
       <% end %>
-    </ul>
+    </div>
   <% else %>
-    <p>No notifications yet.</p>
+    <div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <h3>No notifications yet</h3>
+      <p class="text-muted">When someone interacts with your content, you'll see it here.</p>
+    </div>
   <% end %>
 </section>
