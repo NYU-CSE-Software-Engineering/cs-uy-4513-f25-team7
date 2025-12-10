@@ -12,9 +12,13 @@ class TwoFactorController < ApplicationController
     secret = current_user.otp_secret
 
     require "cgi"
+    require "rqrcode"
     @provisioning_uri =
       "otpauth://totp/#{CGI.escape(label)}" \
         "?secret=#{secret}&issuer=#{CGI.escape(issuer)}&algorithm=SHA1&digits=6&period=30"
+
+    qr = RQRCode::QRCode.new(@provisioning_uri)
+    @qr_data_uri = qr.as_png(size: 240, border_modules: 4).to_data_url
 
     render :new
   end

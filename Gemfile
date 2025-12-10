@@ -20,6 +20,7 @@ gem "rotp", "~> 6.3"
 gem "omniauth"
 gem "omniauth-google-oauth2"
 gem "devise", "~> 4.9"
+gem "rqrcode", "~> 2.2"
 
 group :development, :test do
   # Test frameworks
