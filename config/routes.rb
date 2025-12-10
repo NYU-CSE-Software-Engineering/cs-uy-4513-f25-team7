@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   get    "/species/:name",         to: "species#show",    as: :species
   post   "/species/:name/follow",  to: "follows#create",  as: :species_follow
   delete "/species/:name/follow",  to: "follows#destroy"
-  get "/feed", to: "feed#show", as: :feed
+  post   "/species/:name/posts",   to: "species#create_post", as: :species_posts
+  # get "/feed", to: "feed#show", as: :feed
+  get "/feed", to: "feed#index", as: :feed
   get "/species", to: "species#index", as: :species_index
 
   namespace :api do
@@ -32,8 +34,16 @@ Rails.application.routes.draw do
   post   "/login",  to: "sessions#create",  as: :user_session
   delete "/logout", to: "sessions#destroy", as: :destroy_user_session
 
-  # For enabling 2 factor
-  get "/settings", to: "accounts#edit", as: :edit_user_registration
+  # For enabling 2 factor and profile settings
+  get   "/settings", to: "accounts#edit",   as: :edit_user_registration
+  patch "/settings", to: "accounts#update", as: :update_profile
+
+  # Admin setup (first admin promotion)
+  get  "/admin/setup",  to: "accounts#admin_setup",  as: :admin_setup
+  post "/admin/setup",  to: "accounts#become_admin", as: :become_admin
+  
+  # Admin panel
+  get "/admin", to: "users#index", as: :admin_panel
 
   get  "/two_factor/new", to: "two_factor#new",    as: :new_two_factor
   post "/two_factor",     to: "two_factor#create", as: :two_factor
@@ -49,7 +59,9 @@ Rails.application.routes.draw do
   end
 
   # team builder
-  resources :teams, only: %i[new create edit update show]
+  resources :teams, only: %i[new create edit update show] do
+    resources :reviews, only: [:create, :edit, :update, :destroy]
+  end
   resources :favorites, only: [:index, :create, :destroy]
   resources :notifications, only: [:index]
 

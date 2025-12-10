@@ -1,33 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>CsUy4513F25Team7</title>
+    <title>PokéForum</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="The ultimate Pokémon community forum">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    
+    <style>
+      body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    </style>
   </head>
 
   <body>
-    <header>
-      <nav>
-        <%= link_to "Home", root_path %>
-        <% if user_signed_in? %>
-          | <%= link_to "Account Settings", edit_user_registration_path %>
-          | <%= button_to "Log out", destroy_user_session_path, method: :delete, form: { style: "display:inline" } %>
-        <% else %>
-          | <%= link_to "Login", new_user_session_path %>
-          | <%= link_to "Register", new_user_registration_path %>
+    <header class="app-header">
+      <div class="nav-container">
+        <%= link_to root_path, class: "nav-brand" do %>
+          <span>⚡</span> PokéForum
         <% end %>
-      </nav>
+        
+        <nav class="nav-links">
+          <%= link_to "Home", root_path, class: "nav-link" %>
+          <%= link_to "Forum", posts_path, class: "nav-link" %>
+          <%= link_to "Species", species_index_path, class: "nav-link" %>
+          
+          <% if user_signed_in? %>
+            <%= link_to "My Teams", root_path, class: "nav-link" %>
+            <%= link_to "My Feed", feed_path, class: "nav-link" %>
+
+            <% if current_user.admin? %>
+              <%= link_to "👑 Admin", admin_panel_path, class: "nav-link", style: "color: #fbbf24;" %>
+            <% end %>
+            <%= link_to "Settings", edit_user_registration_path, class: "nav-link" %>
+            <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "btn btn-secondary btn-small", form: { style: "display:inline-flex" } %>
+          <% else %>
+            <%= link_to "Login", new_user_session_path, class: "btn btn-secondary btn-small" %>
+            <%= link_to "Register", new_user_registration_path, class: "btn btn-primary btn-small" %>
+          <% end %>
+        </nav>
+      </div>
     </header>
 
-    <% flash.each do |key, value| %>
-      <div class="flash <%= key %>"><%= value %></div>
-    <% end %>
+    <main class="app-container main-content">
+      <% flash.each do |key, value| %>
+        <div class="flash <%= key %>"><%= value %></div>
+      <% end %>
 
-    <%= yield %>
+      <%= yield %>
+    </main>
+    
+    <script>
+      // Add smooth page transitions
+      document.addEventListener('turbo:load', function() {
+        document.body.classList.add('loaded');
+      });
+      
+      // Add hover effects to cards
+      document.querySelectorAll('.card, .post-card, .team-item').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+    </script>
   </body>
 </html>

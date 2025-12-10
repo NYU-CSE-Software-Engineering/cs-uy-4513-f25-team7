@@ -1,0 +1,29 @@
+<%# app/views/reviews/edit.html.erb %>
+<h1>Edit Your Review</h1>
+
+<p>Team: <%= link_to @team.name, @team %></p>
+
+<div class="review-form">
+  <%= form_with model: [@team, @review], local: true, data: { turbo: false } do |f| %>
+    <div class="field">
+      <label>Rating (1-5 stars):</label>
+      <div class="star-rating-input">
+        <% (1..5).each do |star| %>
+          <%= f.radio_button :rating, star, id: "rating_#{star}", checked: @review.rating == star %>
+          <label for="rating_<%= star %>" class="star-label"><%= "★" * star %><%= "☆" * (5 - star) %></label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :body, "Review (optional, max 500 characters)" %>
+      <%= f.text_area :body, rows: 4, maxlength: 500 %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit "Update Review", class: "btn btn-primary" %>
+      <%= link_to "Cancel", @team, class: "btn" %>
+    </div>
+  <% end %>
+</div>
+

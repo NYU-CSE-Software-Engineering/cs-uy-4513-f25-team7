@@ -1,110 +1,127 @@
-<h1>Pokémon Species</h1>
+<div style="max-width: 800px; margin: 0 auto;">
+  <div class="text-center" style="margin-bottom: 2rem;">
+    <h1>🔍 Pokémon Species</h1>
+    <p class="text-muted">Search and discover Pokémon from around the world</p>
+  </div>
 
-<!-- Existing/spec-driven list, using @species -->
-<div data-test="species-index">
-  <% @species.each do |species| %>
-    <% name = species.respond_to?(:name) ? species.name : species.to_s %>
+  <!-- Search Card -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <h3 style="margin-bottom: 1rem;">Search Species</h3>
+    <p class="text-muted text-small" style="margin-bottom: 1rem;">
+      Type a Pokémon name to search. Full names (like <code style="background: var(--bg-input); padding: 0.2rem 0.5rem; border-radius: 4px;">pikachu</code>) will import from PokeAPI if not found locally.
+    </p>
 
-    <div data-test="species-row">
-      <span><%= name %></span>
+    <div class="form-group" style="margin-bottom: 0.75rem;">
+      <input id="species-query"
+             type="text"
+             placeholder="Search Pokémon... (e.g. pikachu, charizard, mewtwo)"
+             autocomplete="off">
+    </div>
 
-      <% if FollowsController.following_for(name) %>
-        <span data-test="following-badge">Following</span>
-      <% end %>
+    <div id="status" class="text-muted text-small" style="min-height: 1.5rem;"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="species-results-container">
+    <div id="species-results"></div>
+  </div>
+
+  <!-- Following List -->
+  <% if @species.any? %>
+    <div style="margin-top: 2rem;">
+      <h3>📋 Your Search Results</h3>
+      <div data-test="species-index">
+        <% @species.each do |species| %>
+          <% name = species.respond_to?(:name) ? species.name : species.to_s %>
+          <div data-test="species-row" class="card" style="margin-bottom: 0.5rem; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <span><%= name %></span>
+            <% if FollowsController.following_for(name) %>
+              <span data-test="following-badge" class="badge badge-public">Following</span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
   <% end %>
 </div>
 
-<hr>
-
-<!-- New search UI powered by /api/lookup/species -->
-<h2>Lookup & Import Species</h2>
-
-<p>
-  Type a full name like <code>pikachu</code> to fetch it from PokeAPI and save it.
-  Then try a partial like <code>pik</code> to see it come from your Dex.
-</p>
-
-<div style="margin-bottom: 1rem;">
-  <label for="species-query">Search species:</label>
-  <input id="species-query"
-         type="text"
-         placeholder="e.g. pikachu, pelipper, gar..."
-         autocomplete="off"
-         style="min-width: 250px;">
-</div>
-
-<div id="status"
-     style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;"></div>
-
-<ul id="species-results"></ul>
-
 <script>
-    (function() {
-        const input   = document.getElementById("species-query");
-        const results = document.getElementById("species-results");
-        const status  = document.getElementById("status");
+(function() {
+  const input = document.getElementById("species-query");
+  const resultsContainer = document.getElementById("species-results");
+  const status = document.getElementById("status");
 
-        let timeoutId = null;
+  let timeoutId = null;
 
-        function setStatus(text) {
-            status.textContent = text || "";
-        }
+  function setStatus(text, isError = false) {
+    status.textContent = text || "";
+    status.style.color = isError ? "var(--error)" : "var(--text-muted)";
+  }
 
-        function renderResults(data) {
-            results.innerHTML = "";
+  function renderResults(data) {
+    resultsContainer.innerHTML = "";
 
-            if (!Array.isArray(data) || data.length === 0) {
-                const li = document.createElement("li");
-                li.textContent = "No results";
-                li.style.color = "#888";
-                results.appendChild(li);
-                return;
-            }
+    if (!Array.isArray(data) || data.length === 0) {
+      resultsContainer.innerHTML = `
+        <div class="card text-center" style="padding: 2rem;">
+          <p class="text-muted" style="margin: 0;">No Pokémon found. Try a different search term.</p>
+        </div>
+      `;
+      return;
+    }
 
-            data.forEach((row) => {
-                const li = document.createElement("li");
+    const grid = document.createElement("div");
+    grid.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;";
 
-                const link = document.createElement("a");
-                link.href = "/species/" + encodeURIComponent(row.name);
-                link.textContent = `${row.name} (id: ${row.pokeapi_id || row.id})`;
+    data.forEach((row) => {
+      const card = document.createElement("a");
+      card.href = "/species/" + encodeURIComponent(row.name);
+      card.className = "card";
+      card.style.cssText = "text-decoration: none; text-align: center; padding: 1.5rem;";
+      
+      card.innerHTML = `
+        ${row.sprite_url ? `<img src="${row.sprite_url}" alt="${row.name}" style="width: 80px; height: 80px; image-rendering: pixelated; margin-bottom: 0.5rem;">` : ''}
+        <h4 style="margin: 0;">${row.name}</h4>
+        <p class="text-muted text-small" style="margin: 0.25rem 0 0 0;">#${row.pokeapi_id || row.id}</p>
+      `;
+      
+      grid.appendChild(card);
+    });
 
-                li.appendChild(link);
-                results.appendChild(li);
-            });
-        }
+    resultsContainer.appendChild(grid);
+  }
 
-        async function fetchSpecies(query) {
-            if (!query.trim()) {
-                results.innerHTML = "";
-                setStatus("");
-                return;
-            }
+  async function fetchSpecies(query) {
+    if (!query.trim()) {
+      resultsContainer.innerHTML = "";
+      setStatus("");
+      return;
+    }
 
-            try {
-                setStatus("Loading...");
-                const response = await fetch(`/api/lookup/species?q=${encodeURIComponent(query)}`);
-                const json = await response.json();
-                renderResults(json);
-                setStatus(`Found ${json.length} result(s) for "${query}"`);
-            } catch (e) {
-                console.error("Lookup error:", e);
-                results.innerHTML = "";
-                const li = document.createElement("li");
-                li.textContent = "Error loading results";
-                li.style.color = "red";
-                results.appendChild(li);
-                setStatus("Error contacting server");
-            }
-        }
+    try {
+      setStatus("Searching...");
+      const response = await fetch(`/api/lookup/species?q=${encodeURIComponent(query)}`);
+      const json = await response.json();
+      renderResults(json);
+      setStatus(`Found ${json.length} result(s) for "${query}"`);
+    } catch (e) {
+      console.error("Lookup error:", e);
+      resultsContainer.innerHTML = `
+        <div class="card" style="padding: 1.5rem; border-color: var(--error);">
+          <p style="color: var(--error); margin: 0;">Error loading results. Please try again.</p>
+        </div>
+      `;
+      setStatus("Error contacting server", true);
+    }
+  }
 
-        input.addEventListener("input", () => {
-            clearTimeout(timeoutId);
-            const query = input.value;
+  input.addEventListener("input", () => {
+    clearTimeout(timeoutId);
+    const query = input.value;
+    timeoutId = setTimeout(() => fetchSpecies(query), 300);
+  });
 
-            timeoutId = setTimeout(() => {
-                fetchSpecies(query);
-            }, 250);
-        });
-    })();
+  // Focus input on page load
+  input.focus();
+})();
 </script>

@@ -1,8 +1,18 @@
-<h1>Create your account</h1>
+<div style="max-width: 420px; margin: 3rem auto;">
+  <div class="card">
+    <div class="text-center" style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2rem;">Join PokéForum</h1>
+      <p class="text-muted">Create your trainer account</p>
+    </div>
 
-<% if flash[:alert].present? %>
-  <p class="alert"><%= flash[:alert] %></p>
-<% end %>
+    <%= form_with(model: @user, url: users_path, method: :post) do |f| %>
+      <% if @user&.errors&.any? %>
+        <div class="flash alert" style="margin-bottom: 1.5rem;">
+          <% @user.errors.full_messages.each do |msg| %>
+            <p style="margin: 0;"><%= msg %></p>
+          <% end %>
+        </div>
+      <% end %>
 
 <%= form_with model: @user, local: true do |f| %>
   <% if @user && @user.errors.any? %>
@@ -16,22 +26,37 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :email, "Email" %><br>
-    <%= f.email_field :email, autofocus: true %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password, "Password" %><br>
-    <%= f.password_field :password %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation, "Password confirmation" %><br>
-    <%= f.password_field :password_confirmation %>
-  </div>
-
   <div class="actions">
     <%= f.submit "Sign up" %>
+      <div class="form-group">
+        <%= f.label :username, "Username" %>
+        <%= f.text_field :username, required: true, placeholder: "Choose a username (3-20 chars)", maxlength: 20 %>
+        <p class="text-muted text-small" style="margin-top: 0.25rem;">This will be shown on your posts and comments</p>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :email, "Email" %>
+        <%= f.email_field :email, required: true, placeholder: "trainer@pokemon.com" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password, "Password" %>
+        <%= f.password_field :password, required: true, placeholder: "Min 6 characters" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Password confirmation" %>
+        <%= f.password_field :password_confirmation, required: true, placeholder: "••••••••" %>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <%= f.submit "Sign up", class: "btn btn-primary", style: "width: 100%;" %>
+      </div>
+    <% end %>
+
+    <div style="margin-top: 2rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+      <span class="text-muted">Already have an account?</span>
+      <%= link_to "Sign in", new_user_session_path %>
+    </div>
   </div>
-<% end %>
+</div>

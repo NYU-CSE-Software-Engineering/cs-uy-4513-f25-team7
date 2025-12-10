@@ -2,7 +2,16 @@ class PostsController < ApplicationController
   before_action :authenticate_user!, only: [:new, :create]
 
   def index
-    @posts = Post.all.order(created_at: :desc)
+    @posts = Post.general.order(created_at: :desc)
+    @posts_by_type = @posts.group_by(&:post_type)
+    
+    # Define the order of categories
+    @post_types = [
+      { type: "Announcement", icon: "📢", description: "Important news and updates" },
+      { type: "Strategy", icon: "⚔️", description: "Competitive tips and team building" },
+      { type: "Meta", icon: "📊", description: "Site and community discussion" },
+      { type: "Thread", icon: "💬", description: "General discussion" }
+    ]
   end
 
   def show

@@ -1,17 +1,15 @@
 <%= form_with(model: [post, comment], local: true) do |form| %>
   <% if comment.errors.any? %>
-    <div class="alert alert-danger">
-      <ul>
-        <% comment.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+    <div class="flash alert" style="margin-bottom: 1rem;">
+      <% comment.errors.full_messages.each do |message| %>
+        <p style="margin: 0;"><%= message %></p>
+      <% end %>
     </div>
   <% end %>
 
-  <div class="mb-3">
-    <%= form.label :body, 'Add a comment', class: 'form-label visually-hidden' %>
-    <%= form.text_area :body, rows: 3, class: 'form-control', placeholder: 'Add a comment...' %>
+  <div class="form-group">
+    <%= form.label :body, "Add a comment", style: "display: block; margin-bottom: 0.5rem;" %>
+    <%= form.text_area :body, rows: 3, placeholder: "Share your thoughts..." %>
   </div>
 
   <%= form.submit 'Post Comment', class: 'btn btn-primary' %>

@@ -1,3 +1,5 @@
 class HomeController < ApplicationController
-  def index; end
+  def index
+    @teams = current_user&.teams&.order(updated_at: :desc) || []
+  end
 end

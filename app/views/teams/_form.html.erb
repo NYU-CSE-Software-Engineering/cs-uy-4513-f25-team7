@@ -1,12 +1,12 @@
 <%= form_with model: @team, local: true do |f| %>
   <% if flash[:alert] %>
-    <div class="alert"><%= flash[:alert] %></div>
+    <div class="flash alert"><%= flash[:alert] %></div>
   <% end %>
 
   <% if @team.any_illegal_slots? %>
-    <div id="error-summary" class="error-summary" data-role="error-summary">
-      <h2>Unresolved Issues</h2>
-      <ul>
+    <div id="error-summary" class="flash alert" data-role="error-summary" style="margin-bottom: 1.5rem;">
+      <h4 style="margin-bottom: 0.5rem;">⚠️ Unresolved Issues</h4>
+      <ul style="margin: 0; padding-left: 1.5rem;">
         <% @team.team_slots.each do |slot| %>
           <% if slot.illegal? %>
             <li>Slot <%= slot.slot_index %>: <%= slot.illegality_reason %></li>
@@ -16,49 +16,54 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :name, "Team Name" %>
-    <%= f.text_field :name %>
+  <!-- Team Header Card -->
+  <div class="card" style="margin-bottom: 1.5rem;">
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; align-items: end;">
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= f.label :name, "Team Name" %>
+        <%= f.text_field :name, placeholder: "My Awesome Team" %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <%= f.label :visibility, "Visibility" %>
+        <%= f.select :visibility,
+                     [["🔒 Private", "private_team"], ["🌐 Public", "public_team"]] %>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem; flex-wrap: wrap;">
+      <span class="badge badge-<%= @team.status %>"><%= @team.status.to_s.capitalize %></span>
+      <span class="badge badge-<%= @team.public_team? ? 'public' : 'private' %>"><%= @team.visibility_label %></span>
+      <span class="text-muted text-small">Owned by me</span>
+      <span class="text-muted text-small" data-last-saved="true">
+        Last saved: <%= @team.last_saved_at.present? ? @team.last_saved_at.strftime("%b %d, %Y at %I:%M %p") : "Not yet saved" %>
+      </span>
+    </div>
   </div>
 
-  <div class="field">
-    <%= f.label :visibility, "Visibility" %>
-    <%= f.select :visibility,
-                 [["Private", "private_team"], ["Public", "public_team"]] %>
-  </div>
-
-  <p>
-    <span class="badge">Draft</span>
-    &mdash;
-    <span>Owned by me</span>
-    &mdash;
-    <span>Visibility: <%= @team.visibility_label %></span>
-  </p>
-
-
-
-  <p data-last-saved="true">
-    Last saved:
-    <%= @team.last_saved_at.present? ? @team.last_saved_at.strftime("%Y-%m-%d %H:%M") : "not yet" %>
-  </p>
-
-  <hr>
-
+  <!-- Team Slots -->
+  <h2 style="margin-bottom: 1rem;">⚔️ Team Roster</h2>
   <div class="team-slots">
     <% @team.team_slots.each do |slot| %>
       <%= render "slot_fields", f: f, slot: slot %>
     <% end %>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Add Pokémon" %>
-    <%= f.submit "Validate" %>
-    <%= f.submit "Save" %>
-
+  <!-- Action Buttons -->
+  <div class="flex gap-2" style="margin-top: 1.5rem; flex-wrap: wrap;">
+    <%= f.submit "Save", name: "commit", class: "btn btn-primary" %>
+    <%= f.submit "Validate", name: "commit", class: "btn btn-secondary" %>
+    <%= f.submit "Add Pokémon", name: "commit", class: "btn btn-secondary" %>
+    
     <% publish_disabled = @team.any_illegal_slots? %>
     <%= f.submit "Publish",
+                 name: "commit",
                  data: { action: "publish" },
                  disabled: publish_disabled,
+                 class: "btn btn-success",
+                 style: publish_disabled ? "opacity: 0.5; cursor: not-allowed;" : "",
                  "aria-disabled": (publish_disabled ? "true" : "false") %>
+    
+    <%= link_to "Back to Home", root_path, class: "btn btn-secondary" %>
   </div>
 <% end %>
