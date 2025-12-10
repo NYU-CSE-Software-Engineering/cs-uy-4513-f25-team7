@@ -35,6 +35,21 @@ When('I fill in {string} with {string}') do |field, value|
   end
 end
 
+# More specific step to avoid ambiguity with forum_steps.rb
+When('I fill in the {string} field with {string}') do |field, value|
+  field_name = case field
+               when 'Tags'
+                 'tag_names'
+               when 'Title'
+                 'title'
+               when 'Content'
+                 'content'
+               else
+                 field.downcase.gsub(/\s+/, '_')
+               end
+  fill_in field_name, with: value
+end
+
 When('I leave {string} empty') do |field|
   # Try to find by label first, then by field name
   begin
@@ -55,9 +70,10 @@ When('I leave {string} empty') do |field|
   end
 end
 
-When('I press {string}') do |button|
-  click_button button
-end
+# Removed duplicate - using common_steps.rb instead
+# When('I press {string}') do |button|
+#   click_button button
+# end
 
 When('I select {string} from the tag filter') do |tag_name|
   select tag_name, from: 'tag'
@@ -72,9 +88,10 @@ When('I click on the {string} tag') do |tag_name|
   first(:link, tag_name).click
 end
 
-When('I click {string}') do |link_text|
-  click_link link_text
-end
+# Removed duplicate - using common_steps.rb "I press" instead
+# When('I click {string}') do |link_text|
+#   click_link link_text
+# end
 
 Then('I should be on the post\'s show page') do
   expect(page).to have_css('.post-content, .post-title, [class*="post"]')
@@ -123,13 +140,15 @@ Then('I should not see any tags') do
   expect(page).not_to have_css('.tag, .badge, [class*="tag"]')
 end
 
-Then('I should not see {string}') do |content|
-  expect(page).not_to have_content(content)
-end
+# Removed duplicate - using common_steps.rb instead
+# Then('I should not see {string}') do |content|
+#   expect(page).not_to have_content(content)
+# end
 
-Then('I should see {string}') do |content|
-  expect(page).to have_content(content)
-end
+# Removed duplicate - using common_steps.rb instead
+# Then('I should see {string}') do |content|
+#   expect(page).to have_content(content)
+# end
 
 Then('I should see an error message indicating the title is missing') do
   expect(page).to have_content("Title can't be blank")

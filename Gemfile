@@ -53,10 +53,8 @@ group :test do
   # Clean DB between scenarios (AR adapter)
   gem "database_cleaner-active_record", "~> 2.0"
 
-  # For JS/system features (optional; keep if you’ll test JS)
+  # For JS/system features (optional; keep if you'll test JS)
   gem "selenium-webdriver"
-  gem "database_cleaner-active_record"
-  gem "rspec-expectations"
 end
 
 group :development do

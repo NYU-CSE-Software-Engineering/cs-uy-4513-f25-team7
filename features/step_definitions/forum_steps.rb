@@ -5,13 +5,14 @@ When("I go to the new post page") do
   expect(page).to have_selector("form#new_post")
 end
 
-When('I fill in "Title" with {string}') do |title|
-  fill_in "Title", with: title
-end
+# Removed duplicate step definitions - using post_tagging_steps.rb instead
+# When('I fill in "Title" with {string}') do |title|
+#   fill_in "Title", with: title
+# end
 
-When('I fill in "Body" with {string}') do |body|
-  fill_in "Body", with: body
-end
+# When('I fill in "Body" with {string}') do |body|
+#   fill_in "Body", with: body
+# end
 
 When('I select {string} from "Post Type"') do |value|
   select value, from: "Post Type"

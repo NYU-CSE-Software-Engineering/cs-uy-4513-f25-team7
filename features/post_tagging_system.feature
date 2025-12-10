@@ -108,6 +108,6 @@ Feature: post tagging system
   Scenario: user clears tag filter to see all posts
     Given I have filtered posts by the "ruby" tag
     And I can see only Ruby-related posts
-    When I click "Clear"
+    When I press "Clear"
     Then I should see all posts
     And the tag filter should be empty
