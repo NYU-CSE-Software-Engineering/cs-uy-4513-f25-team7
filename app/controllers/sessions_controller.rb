@@ -36,9 +36,14 @@ class SessionsController < ApplicationController
   end
 
   def google
-    auth  = request.env['omniauth.auth']
-    email = auth&.dig('info', 'email')
-    uid   = auth&.dig('uid')
+    auth = request.env["omniauth.auth"]
+    unless auth
+      flash[:alert] = "Google sign-in failed or was canceled"
+      return redirect_to new_user_session_path
+    end
+
+    email = auth.dig("info", "email").to_s.downcase
+    uid   = auth.dig("uid")
 
     unless email.present?
       flash[:alert] = "Google sign-in failed or was canceled"
@@ -48,13 +53,14 @@ class SessionsController < ApplicationController
     user = User.find_or_initialize_by(email: email)
     user.password = SecureRandom.hex(16) if user.new_record?
 
-    creds = auth['credentials'] || {}
+    creds = auth["credentials"] || {}
     user.google_uid = uid
-    user.google_token = creds['token']
-    user.google_refresh_token = creds['refresh_token'] if creds['refresh_token'].present?
-    user.google_token_expires_at = Time.at(creds['expires_at']) if creds['expires_at']
+    user.google_token = creds["token"] if creds["token"].present?
+    user.google_refresh_token = creds["refresh_token"] if creds["refresh_token"].present?
+    user.google_token_expires_at = Time.at(creds["expires_at"]) if creds["expires_at"]
     user.save!
 
+    reset_session
     session[:user_id] = user.id
     flash[:notice] = "Logged in with Google — Welcome, #{email}"
     redirect_to root_path

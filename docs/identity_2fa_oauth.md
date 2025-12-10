@@ -96,6 +96,22 @@
 - **Google OAuth:** Keep client secrets in env/credentials. Store tokens encrypted; refresh automatically when needed; provide user-initiated disconnect that revokes at provider and deletes stored tokens.
 - **RBAC:** Gate admin routes/actions with server-side checks; hide admin UI from non-admins.
 
+## Developer Setup Notes
+
+- **Google OAuth credentials (safe sharing):**
+  - Add to Rails credentials (`rails credentials:edit`) under:
+    ```yaml
+    google_oauth:
+      client_id: "YOUR_CLIENT_ID"
+      client_secret: "YOUR_CLIENT_SECRET"
+    ```
+  - Commit the encrypted `config/credentials.yml.enc` but **never** commit the `master.key`. Share the master key privately (e.g., 1Password/secret manager) so teammates can decrypt without seeing plaintext secrets.
+  - Alternative: set `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` env vars locally; each teammate can use their own Google OAuth client if preferred.
+  - Required redirect URI for dev: `http://localhost:3000/auth/google_oauth2/callback` (add production URI as needed).
+
+- **2FA QR enrollment UI:**
+  - The enrollment page (`/two_factor/new`) renders a real QR code from the provisioning URI using `rqrcode`. The manual `otpauth://` URI remains visible as a fallback.
+
 ## Deliverables (for this assignment)
 
 - **Design doc (this file).**
