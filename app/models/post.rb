@@ -26,11 +26,13 @@ class Post < ApplicationRecord
   end
 
   def tag_names
+    return '' unless ActiveRecord::Base.connection.table_exists?('tags')
     tags.pluck(:name).join(', ')
   end
 
   def tag_names=(names)
     return if names.blank?
+    return unless ActiveRecord::Base.connection.table_exists?('tags')
     normalized = names.split(',').map { |n| n.strip.downcase }.reject(&:blank?)
     @pending_tag_names = normalized
     self.tags = normalized.map { |n| Tag.find_or_create_by(name: n) }

@@ -46,8 +46,14 @@ class PostsController < ApplicationController
       @posts = Array(@posts.first).compact
     end
 
-    @all_tags = Tag.order(:name)
-    @popular_tags = Tag.respond_to?(:popular) ? Tag.popular(10) : Tag.order(:name).limit(10)
+    # Safely load tags only if tags table exists
+    if ActiveRecord::Base.connection.table_exists?('tags')
+      @all_tags = Tag.order(:name)
+      @popular_tags = Tag.respond_to?(:popular) ? Tag.popular(10) : Tag.order(:name).limit(10)
+    else
+      @all_tags = []
+      @popular_tags = []
+    end
   end
 
   def show

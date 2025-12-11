@@ -16,6 +16,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 gem "tzinfo-data", platforms: %i[windows mingw mswin x64_mingw jruby]
 gem "bootsnap", require: false
+gem "kaminari", "~> 1.2"
 
 # Auth/2FA and OAuth
 gem "bcrypt", "~> 3.1"
