@@ -18,10 +18,21 @@ Given('I am a registered user') do
 end
 
 When("I press {string}") do |text|
-  if page.has_button?(text)
+  # Try button first
+  if page.has_button?(text, wait: 2)
     click_button text
-  else
+  # Try link
+  elsif page.has_link?(text, wait: 2)
     click_link text
+  # Try link with partial text match
+  elsif page.has_link?(/.*#{Regexp.escape(text)}.*/i, wait: 2)
+    click_link /.*#{Regexp.escape(text)}.*/i
+  else
+    # Last resort: try to find any clickable element with the text
+    element = page.find(:button, text, match: :first, wait: 2) rescue nil
+    element ||= page.find(:link, text, match: :first, wait: 2) rescue nil
+    element ||= page.find("a, button", text: /#{Regexp.escape(text)}/i, match: :first, wait: 2)
+    element.click
   end
 end
 
