@@ -1,15 +1,26 @@
 class Post < ApplicationRecord
+  belongs_to :user
   has_many :post_tags, dependent: :destroy
   has_many :tags, through: :post_tags
   has_many :votes, dependent: :destroy
+  has_many :comments, dependent: :destroy
   
   validates :title, presence: true
-  validates :content, presence: true
+  validates :body, presence: true
+  
+  # Alias for compatibility - body is the database column, content is an alias
+  def content
+    body
+  end
+  
+  def content=(value)
+    self.body = value
+  end
   
   def self.search(query)
     if query.present?
       # Use LIKE for SQLite compatibility (ILIKE is PostgreSQL only)
-      where("LOWER(title) LIKE LOWER(?) OR LOWER(content) LIKE LOWER(?)", "%#{query}%", "%#{query}%")
+      where("LOWER(title) LIKE LOWER(?) OR LOWER(body) LIKE LOWER(?)", "%#{query}%", "%#{query}%")
     else
       all
     end
@@ -47,7 +58,7 @@ class Post < ApplicationRecord
     if query.present?
       search_term = "%#{query}%"
       left_joins(:tags)
-        .where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.content) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
+        .where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
                search_term, search_term, search_term)
         .distinct
     else

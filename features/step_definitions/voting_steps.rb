@@ -165,7 +165,9 @@ Given('the post {string} has {int} upvotes') do |title, count|
   post.reload
 end
 
-# Removed duplicate - using pagination_steps.rb version
+When('I visit the posts index page') do
+  visit posts_path
+end
 
 Then('I should see a vote score of {int} for {string}') do |expected_score, post_title|
   # Reload the page to ensure we have the latest data

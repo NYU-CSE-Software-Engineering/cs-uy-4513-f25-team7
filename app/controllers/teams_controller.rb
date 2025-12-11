@@ -2,10 +2,9 @@ class TeamsController < ApplicationController
   before_action :authenticate_user!
 
   def new
-    @team = Team.new(
-      visibility: :private_team,
-      status: :draft
-    )
+    @team = Team.new
+    @team.visibility = :private_team
+    @team.status = :draft
     build_slots_to_six(@team)
   end
 def create

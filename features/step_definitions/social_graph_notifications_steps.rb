@@ -20,12 +20,13 @@ def user_by_name(name)
 end
 
 def ensure_team!(title:, owner:)
-  # Adjust attrs to match current Team schema (uses name/visibility/status)
-  Team.find_or_create_by!(name: title, user: owner) do |t|
-    t.visibility = :public_team if t.respond_to?(:visibility=)
-    t.status = :published if t.respond_to?(:status=)
-    t.legal = true if t.respond_to?(:legal=)
-  end
+  # The schema shows 'name' column exists
+  team = Team.find_or_initialize_by(name: title, user: owner)
+  team.visibility = :public_team
+  team.status = :published
+  team.legal = true
+  team.save!
+  team
 end
 
 # ---------- Background / Auth ----------

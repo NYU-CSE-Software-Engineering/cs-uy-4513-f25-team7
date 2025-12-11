@@ -28,9 +28,27 @@ require 'rspec/rails'
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
-  ActiveRecord::Migration.maintain_test_schema!
+  # For in-memory SQLite, we need to run migrations explicitly
+  db_config = ActiveRecord::Base.connection_db_config.configuration_hash rescue nil
+  if db_config && db_config[:database] == ':memory:'
+    # Ensure connection is established
+    ActiveRecord::Base.connection
+    # Run all migrations
+    ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
+  else
+    ActiveRecord::Migration.maintain_test_schema!
+  end
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
+rescue => e
+  # For in-memory databases, migrations might fail if tables don't exist yet
+  # Try to run migrations anyway
+  begin
+    ActiveRecord::Base.connection
+    ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
+  rescue => migration_error
+    Rails.logger.warn "Migration warning: #{migration_error.message}" if defined?(Rails.logger)
+  end
 end
 
 RSpec.configure do |config|

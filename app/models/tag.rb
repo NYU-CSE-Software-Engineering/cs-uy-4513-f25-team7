@@ -14,6 +14,10 @@ class Tag < ApplicationRecord
       .limit(limit)
   end
   
+  def usage_count
+    posts.count
+  end
+  
   private
   
   def normalize_name
