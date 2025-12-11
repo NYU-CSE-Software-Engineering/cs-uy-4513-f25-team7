@@ -34,15 +34,16 @@
       </div>
       
       <div class="post-body">
-        <%= simple_format(@post.content) %>
+        <%= simple_format(@post.body) %>
       </div>
     </div>
   </div>
   
   <div class="post-actions">
-    <%= link_to 'Edit', edit_post_path(@post), class: 'btn btn-secondary' %>
-    <%= link_to 'Delete', post_path(@post), method: :delete, 
-                confirm: 'Are you sure?', class: 'btn btn-danger' %>
+    <%= link_to 'Edit', edit_post_path(@post), class: 'btn btn-secondary', id: 'edit-post-link' %>
+    <%= link_to 'Delete', post_path(@post), method: :delete,
+                data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' },
+                class: 'btn btn-danger', id: 'delete-post-link' %>
     <%= link_to 'Back to Forum', posts_path, class: 'btn btn-outline' %>
   </div>
   
