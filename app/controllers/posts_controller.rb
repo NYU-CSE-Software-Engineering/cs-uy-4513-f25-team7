@@ -6,24 +6,28 @@ class PostsController < ApplicationController
     @search = params[:search]
     @tag_filter = params[:tag]
 
-    @posts = Post.includes(:tags)
+    @posts = Post.all
+    @posts = @posts.includes(:tags) if ActiveRecord::Base.connection.table_exists?('tags')
     @posts = @posts.includes(:votes) if ActiveRecord::Base.connection.table_exists?('votes')
 
-    if @tag_filter.present?
+    if @tag_filter.present? && ActiveRecord::Base.connection.table_exists?('tags')
       @posts = @posts.joins(:tags).where(tags: { name: @tag_filter })
     end
 
     if @search.present?
       search_term = "%#{@search}%"
-      if @tag_filter.present?
+      if @tag_filter.present? && ActiveRecord::Base.connection.table_exists?('tags')
         @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?)",
                               search_term, search_term)
                        .distinct
-      else
+      elsif ActiveRecord::Base.connection.table_exists?('tags')
         @posts = @posts.left_joins(:tags)
                        .where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)",
                               search_term, search_term, search_term)
                        .distinct
+      else
+        @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?)",
+                              search_term, search_term)
       end
     end
 
@@ -105,7 +109,12 @@ class PostsController < ApplicationController
   private
 
   def set_post
-    scope = Post.includes(:tags, comments: :user)
+    scope = Post.all
+    if ActiveRecord::Base.connection.table_exists?('tags')
+      scope = scope.includes(:tags, comments: :user)
+    else
+      scope = scope.includes(comments: :user)
+    end
     scope = scope.includes(:votes) if ActiveRecord::Base.connection.table_exists?('votes')
     @post = scope.find(params[:id])
   end

@@ -25,10 +25,17 @@ export default class extends Controller {
     }
 
     // In production, use AJAX
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+    if (!csrfToken) {
+      // Fallback to form submission if CSRF token not found
+      form.submit()
+      return
+    }
+
     fetch(form.action, {
       method: 'POST',
       headers: {
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'X-CSRF-Token': csrfToken,
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },

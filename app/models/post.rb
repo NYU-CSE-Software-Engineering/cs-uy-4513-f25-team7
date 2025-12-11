@@ -72,6 +72,7 @@ class Post < ApplicationRecord
   private
 
   def validate_tag_lengths
+    return unless ActiveRecord::Base.connection.table_exists?('tags')
     names = @pending_tag_names || tags&.map(&:name) || []
     too_long = names.find { |n| n.length > 50 }
     if too_long
