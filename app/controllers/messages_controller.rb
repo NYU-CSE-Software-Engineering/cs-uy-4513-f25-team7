@@ -70,13 +70,13 @@ class MessagesController < ApplicationController
 
     if @message.recipient.nil?
       @message.errors.add(:recipient, "must exist")
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     elsif @message.save
       # IMPORTANT: redirect to the show page so Cucumber sees the subject
       # and RSpec expectation `redirect_to(message_path(Message.last))` passes
       redirect_to message_path(@message), notice: "Message sent."
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

@@ -22,7 +22,7 @@ RSpec.describe "Posts profanity guard", type: :request do
       }
     }.not_to change(Post, :count)
 
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
     expect(response.body).to include("Body contains inappropriate language")
   end
 
@@ -39,7 +39,7 @@ RSpec.describe "Posts profanity guard", type: :request do
       }
     }.not_to change(Post, :count)
 
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
     expect(response.body).to include("Title contains inappropriate language")
   end
 end

@@ -61,7 +61,7 @@ RSpec.describe "Messages", type: :request do
         }
       }.not_to change(Message, :count)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("contains inappropriate language")
     end
 
