@@ -1,7 +1,8 @@
-Given('the forum is running') do
-  # Rails app should be running - no action needed for Cucumber
-  # This step is just a placeholder
-end
+# Removed duplicate - using common_steps.rb instead
+# Given('the forum is running') do
+#   # Rails app should be running - no action needed for Cucumber
+#   # This step is just a placeholder
+# end
 
 Given('I am on the forum homepage') do
   visit posts_path
