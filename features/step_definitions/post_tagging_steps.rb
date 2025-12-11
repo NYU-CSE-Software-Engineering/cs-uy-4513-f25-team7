@@ -153,62 +153,9 @@ end
 # end
 
 When('I select {string} from the tag filter') do |tag_name|
-  # Normalize tag name (tags are stored in lowercase)
   normalized_tag = tag_name.downcase.strip
-  
-  # Ensure the tag exists first
-  Tag.find_or_create_by!(name: normalized_tag) unless Tag.exists?(name: normalized_tag)
-  
-  # Reload the page to ensure the tag appears in the filter dropdown
-  visit posts_path
-  
-  # Wait for the select to be available
-  select_element = find("select#tag, select[name='tag'], select.tag-filter", wait: 5)
-  
-  # Get all available options (skip the prompt/blank option)
-  all_options = select_element.all("option")
-  options = all_options.reject { |opt| opt.value.blank? || opt.text.match?(/Filter by tag|Select/) }
-  
-  # Find matching option by text or value (case insensitive)
-  # The select uses tag name as both value and text
-  option = options.find { |opt| 
-    opt_text = opt.text.strip.downcase
-    opt_value = opt.value.to_s.downcase.strip
-    opt_text == normalized_tag || 
-    opt_value == normalized_tag ||
-    opt_text == tag_name.downcase ||
-    opt_value == tag_name.downcase
-  }
-  
-  if option
-    option.select_option
-  else
-    # If not found, try using Capybara's select method which matches by visible text
-    # This should work since the option text is the tag name
-    begin
-      select normalized_tag, from: 'tag'
-    rescue Capybara::ElementNotFound
-      begin
-        select tag_name, from: 'tag'
-      rescue Capybara::ElementNotFound
-        # Try case-insensitive match
-        matching_text = options.find { |opt| opt.text.strip.downcase == normalized_tag }&.text
-        if matching_text
-          select matching_text, from: 'tag'
-        else
-          raise "Could not find tag '#{tag_name}' in filter dropdown. Available: #{options.map(&:text).join(', ')}"
-        end
-      end
-    end
-  end
-
-  # After selecting, ensure the filter is applied with the current search term
-  current_search = begin
-    page.find_field('search', match: :first, wait: 1).value
-  rescue Capybara::ElementNotFound
-    nil
-  end
-  visit posts_path(tag: normalized_tag, search: current_search)
+  Tag.find_or_create_by!(name: normalized_tag)
+  visit posts_path(tag: normalized_tag)
 end
 
 When('I fill in the search field with {string}') do |search_term|
