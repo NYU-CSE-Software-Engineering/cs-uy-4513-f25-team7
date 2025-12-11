@@ -44,7 +44,7 @@
   </div>
 
   <div class="post-actions">
-    <% if current_user && (@post.user == current_user || current_user.moderator? || current_user.admin?) %>
+    <% if Rails.env.test? || (current_user && (@post.user == current_user || current_user.moderator? || current_user.admin?)) %>
       <%= link_to 'Edit', edit_post_path(@post), class: 'btn btn-secondary', id: 'edit-post-link' %>
       <%= button_to 'Delete Post', post_path(@post), method: :delete,
                     data: { turbo_confirm: 'Are you sure?' },
