@@ -26,24 +26,14 @@ When('I click the upvote button') do
   # Get current post ID from the page
   post_id = page.current_url.match(/\/posts\/(\d+)/)&.[](1) || @post&.id
   
-  # Find the form and click its submit button
-  form = page.find("form[action*='upvote']", match: :first, wait: 2) rescue nil
-  if form
-    # Find and click the submit button within the form
-    submit_btn = form.find("input[type='submit'], button[type='submit']", wait: 2) rescue nil
-    submit_btn.click if submit_btn
-  else
-    # Fallback: find and click the button directly
-    upvote_btn = page.find('.upvote-btn, [class*="upvote"], button[data-action*="upvote"], input[type="submit"][value="▲"]', match: :first, wait: 2) rescue nil
-    if upvote_btn
-      upvote_btn.click
-    else
-      find("button, input[type='submit']", text: /▲|upvote/i, match: :first).click
-    end
+  # Find the upvote button and click it
+  within('.post-voting') do
+    button = page.find('.upvote-btn', match: :first)
+    button.click
   end
   
-  # Wait for the request to complete
-  sleep(2)
+  # Wait for request to complete
+  sleep(1)
   
   # Ensure vote was created (for test reliability - AJAX might not work in tests)
   if post_id
@@ -60,7 +50,7 @@ When('I click the upvote button') do
     end
   end
   
-  # Reload the page to see updated vote score
+  # Reload the page to see updated vote score and flash message
   visit page.current_path
   expect(page).to have_css('.vote-score, [data-voting-target="score"]', wait: 5)
 end
@@ -69,24 +59,14 @@ When('I click the downvote button') do
   # Get current post ID from the page
   post_id = page.current_url.match(/\/posts\/(\d+)/)&.[](1) || @post&.id
   
-  # Find the form and click its submit button
-  form = page.find("form[action*='downvote']", match: :first, wait: 2) rescue nil
-  if form
-    # Find and click the submit button within the form
-    submit_btn = form.find("input[type='submit'], button[type='submit']", wait: 2) rescue nil
-    submit_btn.click if submit_btn
-  else
-    # Fallback: find and click the button directly
-    downvote_btn = page.find('.downvote-btn, [class*="downvote"], button[data-action*="downvote"], input[type="submit"][value="▼"]', match: :first, wait: 2) rescue nil
-    if downvote_btn
-      downvote_btn.click
-    else
-      find("button, input[type='submit']", text: /▼|downvote/i, match: :first).click
-    end
+  # Find the downvote button and click it
+  within('.post-voting') do
+    button = page.find('.downvote-btn', match: :first)
+    button.click
   end
   
-  # Wait for the request to complete
-  sleep(2)
+  # Wait for request to complete
+  sleep(1)
   
   # Ensure vote was created/updated (for test reliability - AJAX might not work in tests)
   if post_id
@@ -95,7 +75,6 @@ When('I click the downvote button') do
       ip = "127.0.0.1"
       existing_vote = post.votes.find_by(ip_address: ip)
       if existing_vote
-        # Change from upvote to downvote (or create downvote if none exists)
         existing_vote.update!(value: -1)
       else
         post.votes.create!(ip_address: ip, value: -1)
@@ -104,7 +83,7 @@ When('I click the downvote button') do
     end
   end
   
-  # Reload the page to see updated vote score
+  # Reload the page to see updated vote score and flash message
   visit page.current_path
   expect(page).to have_css('.vote-score, [data-voting-target="score"]', wait: 5)
 end
@@ -113,17 +92,14 @@ When('I click the upvote button again') do
   # Get current post ID from the page
   post_id = page.current_url.match(/\/posts\/(\d+)/)&.[](1) || @post&.id
   
-  # Find the form and click its submit button
-  form = page.find("form[action*='upvote']", match: :first, wait: 2) rescue nil
-  if form
-    submit_btn = form.find("input[type='submit'], button[type='submit']", wait: 2) rescue nil
-    submit_btn.click if submit_btn
-  else
-    upvote_btn = page.find('.upvote-btn, [class*="upvote"], button[data-action*="upvote"], input[type="submit"][value="▲"]', match: :first, wait: 2) rescue nil
-    upvote_btn.click if upvote_btn
+  # Same as clicking upvote button - it will toggle
+  within('.post-voting') do
+    button = page.find('.upvote-btn', match: :first)
+    button.click
   end
   
-  sleep(2)
+  # Wait for request to complete
+  sleep(1)
   
   # Remove the vote (clicking again removes it - toggle behavior)
   if post_id
@@ -138,7 +114,7 @@ When('I click the upvote button again') do
     end
   end
   
-  # Reload the page to see updated vote score
+  # Reload the page to see updated vote score and flash message
   visit page.current_path
   expect(page).to have_css('.vote-score, [data-voting-target="score"]', wait: 5)
 end
@@ -200,20 +176,13 @@ When('I click the upvote button for {string}') do |post_title|
   post = Post.find_by!(title: post_title)
   
   # Find the post card and click its upvote button
-  post_card = page.find('.post-card, .post, [class*="post"]', text: /#{Regexp.escape(post_title)}/i, match: :first, wait: 5) rescue nil
-  if post_card
-    form = post_card.find("form[action*='upvote']", match: :first) rescue nil
-    if form
-      submit_btn = form.find("input[type='submit'], button[type='submit']", wait: 2) rescue nil
-      submit_btn.click if submit_btn
-    else
-      upvote_btn = post_card.find('.upvote-btn, [class*="upvote"], button[data-action*="upvote"]', match: :first) rescue nil
-      upvote_btn.click if upvote_btn
-    end
+  within(".post-card", text: post_title) do
+    button = page.find('.upvote-btn', match: :first)
+    button.click
   end
   
-  # Wait for request and ensure vote is created
-  sleep(2)
+  # Wait for request to complete
+  sleep(1)
   
   # Ensure vote exists for test reliability
   ip = "127.0.0.1"
@@ -225,6 +194,6 @@ When('I click the upvote button for {string}') do |post_title|
   end
   post.reload
   
-  # Reload the page to see updated vote score
+  # Reload the page to see updated vote score and flash message
   visit page.current_path
 end

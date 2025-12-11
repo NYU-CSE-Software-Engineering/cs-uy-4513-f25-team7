@@ -21,7 +21,10 @@
     <h3>Popular Tags</h3>
     <div class="tag-list">
       <% @popular_tags.each do |tag| %>
-        <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+        <div class="tag-item">
+          <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+          <span class="tag-stats">(<%= tag.posts.count %> posts)</span>
+        </div>
       <% end %>
     </div>
   </div>
