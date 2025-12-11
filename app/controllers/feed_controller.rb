@@ -5,7 +5,7 @@
 class FeedController < ApplicationController
   def index
     # Names of species the current user is following (from the in-memory FollowsController)
-    @followed_names = FollowsController.followed_species
+    @followed_names = FollowsController.followed_species(user_id: current_user&.id)
 
     # In Cucumber tests this store is populated and should be used as-is
     posts = FakePostStore.all

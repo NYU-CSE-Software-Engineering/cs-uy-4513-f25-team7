@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   root "home#index"
 
   # User registration + moderation (role management)
-  resources :users, only: [:new, :create, :index, :update]
+  resources :users, only: [:new, :create, :index, :update, :destroy]
   # Registration (aliased path name so cucumber steps work)
   get  "/register", to: "users#new",    as: :new_user_registration
 

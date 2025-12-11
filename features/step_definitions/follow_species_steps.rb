@@ -49,7 +49,9 @@ module FollowStepsHelpers
   def seed_species_follow!(name)
     FakeSpeciesRegistry.add(name)
     # Seed the in-memory controller so the page renders "Unfollow" and a nonzero count.
-    FollowsController.seed_follow(name, count: 1)
+    # Pass the current user's ID so the follow is associated with the logged-in user
+    user_id = @current_user&.id || @user&.id || @me&.id
+    FollowsController.seed_follow(name, count: 1, user_id: user_id)
   end
 
   def ensure_social_follow!(name)
@@ -87,10 +89,19 @@ end
 World(FollowStepsHelpers)
 
 # ----------------------------
+# Hooks
+# ----------------------------
+Before do
+  # Reset species follow state before each scenario to ensure clean state
+  FollowsController.reset!
+  FakeSpeciesRegistry.reset!
+  FakePostStore.reset! if defined?(FakePostStore)
+end
+
+# ----------------------------
 # Givens (MODEL-FREE)
 # ----------------------------
 Given("the following species exist:") do |table|
-  FakeSpeciesRegistry.reset!
   table.hashes.each { |row| FakeSpeciesRegistry.add(row.fetch("name")) }
   @follow_species_context = true
 end

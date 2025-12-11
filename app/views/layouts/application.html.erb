@@ -29,22 +29,21 @@
         <nav class="nav-links">
           <%= link_to "Home", root_path, class: "nav-link" %>
           <%= link_to "Forum", posts_path, class: "nav-link" %>
-          <%= link_to "Inbox", messages_path, class: "nav-link" %>
           <%= link_to "Species", species_index_path, class: "nav-link" %>
           
           <% if user_signed_in? %>
-            <%= link_to "My Teams", root_path, class: "nav-link" %>
-            <%= link_to "My Feed", feed_path, class: "nav-link" %>
-            
+            <%= link_to "Teams", root_path, class: "nav-link" %>
+            <%= link_to "Feed", feed_path, class: "nav-link" %>
+            <%= link_to "Messages", messages_path, class: "nav-link" %>
             <%= link_to notifications_path, class: "nav-link nav-notifications" do %>
-              🔔 Inbox
+              Inbox
               <% if has_unread_notifications? %>
                 <span class="notification-badge"><%= unread_notifications_count %></span>
               <% end %>
             <% end %>
 
             <% if current_user.admin? %>
-              <%= link_to "👑 Admin", admin_panel_path, class: "nav-link", style: "color: #fbbf24;" %>
+              <%= link_to "Admin", admin_panel_path, class: "nav-link", style: "color: #fbbf24;" %>
             <% end %>
             <%= link_to "Settings", edit_user_registration_path, class: "nav-link" %>
             <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "btn btn-secondary btn-small", form: { style: "display:inline-flex" } %>
