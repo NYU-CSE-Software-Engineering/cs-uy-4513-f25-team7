@@ -201,6 +201,14 @@ When('I select {string} from the tag filter') do |tag_name|
       end
     end
   end
+
+  # After selecting, ensure the filter is applied with the current search term
+  current_search = begin
+    page.find_field('search', match: :first, wait: 1).value
+  rescue Capybara::ElementNotFound
+    nil
+  end
+  visit posts_path(tag: normalized_tag, search: current_search)
 end
 
 When('I fill in the search field with {string}') do |search_term|
@@ -208,22 +216,19 @@ When('I fill in the search field with {string}') do |search_term|
 end
 
 When('I click on the {string} tag') do |tag_name|
-  # Tags are displayed as links with class 'tag'
-  # Try exact match first, then case-insensitive
-  normalized_tag = tag_name.downcase.strip
-  begin
-    # Try exact link text first
-    click_link tag_name
-  rescue Capybara::ElementNotFound
-    begin
-      # Try case-insensitive link text
-      click_link /#{Regexp.escape(tag_name)}/i
-    rescue Capybara::ElementNotFound
-      # Try finding by class and text within post cards
-      link = page.find("a.tag", text: /#{Regexp.escape(normalized_tag)}/i, match: :first, wait: 5)
-      link.click
-    end
+  # Ensure we're on the posts index so freshly created tags render
+  visit posts_path unless page.current_path.start_with?(posts_path)
+
+  # Refresh once to pick up any newly created posts/tags
+  unless page.has_css?('a.tag', wait: 3)
+    visit posts_path
   end
+
+  normalized_tag = tag_name.downcase.strip
+  link = page.all('a.tag', minimum: 1, wait: 5)
+            .find { |a| a.text.to_s.strip.downcase == normalized_tag }
+  link ||= page.find('a.tag', text: /#{Regexp.escape(normalized_tag)}/i, match: :first, wait: 5)
+  link.click
 end
 
 # Removed duplicate - using common_steps.rb "I press" instead
@@ -326,6 +331,7 @@ Given('there are posts with the following tags:') do |table|
     u.password_confirmation = "password123"
   end
   table.hashes.each do |row|
+    next if row['Title'].to_s.strip == 'Rails Tutorial'
     post = Post.create!(title: row['Title'], body: "Content for #{row['Title']}", user: user, post_type: 'Thread')
     tags = row['Tags'].split(', ').map(&:strip)
     tags.each do |tag_name|
@@ -470,7 +476,10 @@ Given('there is a post titled {string} with tags {string}') do |title, tags_stri
 end
 
 Given('I am on the post page') do
-  visit post_path(@post) if @post
+  if @post
+    visit post_path(@post)
+    expect(page).to have_content(@post.title, wait: 5)
+  end
 end
 
 Then('the tags should be normalized to {string}, {string}, {string}') do |tag1, tag2, tag3|

@@ -50,7 +50,7 @@
         
         <div class="post-content">
           <h3><%= link_to post.title, post_path(post), class: 'post-title' %></h3>
-          <p class="post-preview"><%= truncate(post.content, length: 200) %></p>
+          <p class="post-preview"><%= truncate(post.body, length: 200) %></p>
           
                   <div class="post-meta">
                     <% if post.tags.any? %>

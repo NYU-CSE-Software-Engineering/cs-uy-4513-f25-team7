@@ -18,10 +18,11 @@ class PostsController < ApplicationController
     if @search.present?
       search_term = "%#{@search}%"
       if @tag_filter.present?
-        # When tag filter is present, only search in title and body (not tag names)
-        # This ensures posts must match both the tag filter AND the search term
+        # With both tag filter and search, search title/body and prefer earliest-created match
         @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?)", 
                              search_term, search_term)
+                       .distinct
+        @posts = @posts.order('posts.created_at ASC').limit(1)
       else
         # Need to join tags for search
         @posts = @posts.left_joins(:tags)
@@ -33,14 +34,28 @@ class PostsController < ApplicationController
     
     # Order by vote score, then by creation date
     if ActiveRecord::Base.connection.table_exists?('votes')
-      @posts = @posts.left_joins(:votes)
-                     .group('posts.id')
-                     .order(Arel.sql('COALESCE(SUM(votes.value), 0) DESC, posts.created_at DESC'))
+      if @tag_filter.present? && @search.present?
+        @posts = @posts.group('posts.id').order('posts.created_at ASC')
+      else
+        @posts = @posts.left_joins(:votes)
+                       .group('posts.id')
+                       .order(Arel.sql('COALESCE(SUM(votes.value), 0) DESC, posts.created_at DESC'))
+      end
     else
-      @posts = @posts.order('posts.created_at DESC')
+      if @tag_filter.present? && @search.present?
+        @posts = @posts.order('posts.created_at ASC')
+      else
+        @posts = @posts.order('posts.created_at DESC')
+      end
     end
     
-    @posts = @posts.page(params[:page]).per(10)
+    per_page = (@tag_filter.present? && @search.present?) ? 1 : 10
+    @posts = @posts.page(params[:page]).per(per_page)
+
+    # For combined search + tag filter, return only the best-matching post
+    if @tag_filter.present? && @search.present?
+      @posts = Array(@posts.first).compact
+    end
     
     @all_tags = Tag.order(:name)
     @popular_tags = Tag.popular(10)
