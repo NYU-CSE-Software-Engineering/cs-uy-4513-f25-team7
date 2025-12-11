@@ -39,6 +39,8 @@ group :development, :test do
 end
 
 group :test do
+  gem "simplecov", require: false
+
   # Clean DB between scenarios (AR adapter)
   gem "database_cleaner-active_record", "~> 2.0"
 

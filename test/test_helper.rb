@@ -1,3 +1,6 @@
+ENV["SIMPLECOV_COMMAND_NAME"] ||= "Minitest"
+require_relative "../simplecov_setup"
+
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
