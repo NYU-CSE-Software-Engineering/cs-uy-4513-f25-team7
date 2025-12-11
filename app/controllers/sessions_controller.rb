@@ -61,9 +61,15 @@ class SessionsController < ApplicationController
     user.save!
 
     reset_session
-    session[:user_id] = user.id
-    flash[:notice] = "Logged in with Google — Welcome, #{email}"
-    redirect_to root_path
+    if user.otp_enabled?
+      session[:pending_user_id] = user.id
+      flash[:notice] = "Enter authentication code"
+      redirect_to two_factor_verify_path
+    else
+      session[:user_id] = user.id
+      flash[:notice] = "Logged in with Google — Welcome, #{email}"
+      redirect_to root_path
+    end
   end
 
   def failure
