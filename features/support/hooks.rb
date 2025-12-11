@@ -9,9 +9,10 @@ Before do
     ActiveRecord::Base.connection
     
     db_config = ActiveRecord::Base.connection_db_config.configuration_hash rescue {}
+    database_path = db_config[:database] rescue nil
     
     # Handle in-memory SQLite databases
-    if db_config[:adapter] == 'sqlite3' && db_config[:database] == ':memory:'
+    if db_config[:adapter] == 'sqlite3' && database_path == ':memory:'
       # Enable foreign keys
       ActiveRecord::Base.connection.execute("PRAGMA foreign_keys = ON") rescue nil
       
@@ -24,10 +25,22 @@ Before do
       migration_context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
       migration_context.migrate
     else
-      # For file-based databases (like in CI), db:prepare should have already run migrations
-      # Just verify that the users table exists (critical for most tests)
+      # For file-based databases (like in CI), ensure migrations are up to date
+      # CI runs db:prepare, but we need to ensure all migrations are applied
+      begin
+        migration_context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
+        # Check if migrations are pending
+        if migration_context.needs_migration?
+          migration_context.migrate
+        end
+      rescue => migration_error
+        # If migration fails, try to continue - db:prepare should have handled it
+        Rails.logger.warn "Migration check warning: #{migration_error.message}" if defined?(Rails.logger)
+      end
+      
+      # Verify critical tables exist
       unless ActiveRecord::Base.connection.table_exists?('users')
-        # If users table doesn't exist, try to run migrations
+        # If users table doesn't exist, force migration
         migration_context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
         migration_context.migrate
       end
