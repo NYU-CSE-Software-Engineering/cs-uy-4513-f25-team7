@@ -32,6 +32,7 @@ Feature: Identity management with 2FA and Google SSO
     And I should see instructions to scan the code with an authenticator app  
     When I enter a valid authentication code from my authenticator  
     Then I should see a message "Two-factor authentication enabled"  
+    And I should see my backup codes  
     And 2FA should be active on my account
 
   Scenario: Enable two-factor authentication with incorrect code (sad path)  
@@ -41,6 +42,42 @@ Feature: Identity management with 2FA and Google SSO
     And I enter an invalid authentication code  
     Then I should see an error "Incorrect code. Please try again."  
     And 2FA should not be enabled on my account
+
+  Scenario: Regenerate two-factor authentication after losing my authenticator  
+    Given a user exists with email "ash@poke.example" and password "pikachu123" and 2FA enabled  
+    When I log in with email "ash@poke.example" and password "pikachu123"  
+    And I enter a valid authentication code  
+    Then I should be logged in successfully  
+    And I navigate to my account settings  
+    When I regenerate my two-factor authentication  
+    Then I should see a QR code for 2FA setup  
+    When I enter a valid authentication code  
+    Then I should see a message "Two-factor authentication enabled"  
+    And I should see my backup codes  
+    And 2FA should be active on my account
+
+  Scenario: Login using a backup code (happy path)  
+    Given a user exists with email "ash@poke.example" and password "pikachu123" and 2FA enabled  
+    And that user has backup codes  
+    When I log in with email "ash@poke.example" and password "pikachu123"  
+    Then I should be prompted for my 2FA code  
+    When I enter a valid backup code  
+    Then I should be logged in successfully  
+    And 2FA should be active on my account
+
+  Scenario: Backup codes cannot be reused (sad path)  
+    Given a user exists with email "ash@poke.example" and password "pikachu123" and 2FA enabled  
+    And that user has backup codes  
+    When I log in with email "ash@poke.example" and password "pikachu123"  
+    Then I should be prompted for my 2FA code  
+    When I enter a valid backup code  
+    Then I should be logged in successfully  
+    And I log out  
+    When I log in with email "ash@poke.example" and password "pikachu123"  
+    Then I should be prompted for my 2FA code  
+    When I reuse the same backup code  
+    Then I should see an error "Invalid two-factor code"  
+    And I should be returned to the 2FA code prompt (not logged in)
 
   Scenario: Login with 2FA enabled (happy path)  
     # Assume Ash has 2FA enabled from a previous step  

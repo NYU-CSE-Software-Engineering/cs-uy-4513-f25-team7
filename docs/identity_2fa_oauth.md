@@ -25,6 +25,7 @@
 - **Wrong code (sad):** Given I’m enabling 2FA, when I enter an invalid code, then 2FA is not enabled and I see “Invalid authentication code”.
 - **Login with 2FA (happy):** Given my account has 2FA enabled, when I log in with correct email/password and then enter a valid TOTP code, then I’m logged in successfully.
 - **Missing/invalid 2FA at login (sad):** Given 2FA is enabled, when I fail to provide a valid code, then login is denied with an error.
+- **Regenerate 2FA (recovery):** Given I have 2FA enabled, when I regenerate my 2FA secret from settings, then the old secret is replaced and I must scan a new QR and confirm a code to re-enable 2FA.
 
 ### C. Google SSO
 
@@ -39,10 +40,11 @@
 
 ### E. 2FA Recovery Codes
 
-- **Issue codes (happy):** After enabling 2FA, when I finish setup, then I see exactly 10 one-time recovery codes and a warning to save them; the system stores only hashed codes.
+- **Issue codes (happy):** After enabling (or re-enabling) 2FA, when I finish setup, then I see exactly 10 one-time recovery codes and a warning to save them; the system stores only hashed codes.
 - **Login with backup code (happy):** Given I’m at the 2FA prompt, when I enter a valid unused backup code, then I’m logged in and that code is invalidated.
 - **Reuse blocked (sad):** Given a backup code was used, when I try it again, then I see “Invalid authentication code” and I’m not logged in.
-- **Regenerate codes (happy):** Given I’m logged in with 2FA, when I regenerate recovery codes, then I see a new set and all old codes are invalid.
+- **Regenerate codes (happy):** When I reset and re-enable 2FA, I’m shown a new set of backup codes and all old codes are invalid. Backup codes are only issued during 2FA setup/reset, not on-demand.
+  - Implemented via `/two_factor/recovery_codes` display immediately after enabling/re-enabling; hashes stored in `backup_code_digests`.
 
 ### F. Admin Role Management
 

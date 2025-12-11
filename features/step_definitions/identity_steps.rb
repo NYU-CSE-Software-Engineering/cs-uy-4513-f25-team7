@@ -32,6 +32,8 @@ Before do
 
   # keep track of the email under test so we can fetch the user record
   @current_email = nil
+  @backup_codes = []
+  @last_backup_code = nil
 end
 
 After do
@@ -54,6 +56,7 @@ Given('a user exists with email {string} and password {string} and 2FA enabled')
 
   secret = ROTP::Base32.random_base32
   user.update!(otp_secret: secret, otp_enabled: true)
+  @current_email ||= email
 end
 
 
@@ -110,6 +113,21 @@ When("I enable two-factor authentication") do
   end
 end
 
+Given("that user has backup codes") do
+  email = @current_email || "ash@poke.example"
+  user = User.find_by!(email: email)
+  @backup_codes = user.issue_backup_codes!
+  @last_backup_code = nil
+end
+
+When("I regenerate my two-factor authentication") do
+  if page.has_button?("Regenerate 2FA")
+    click_button "Regenerate 2FA"
+  else
+    click_button(/Regenerate.*2FA/i)
+  end
+end
+
 When("I enter a valid authentication code") do
   # Use Ash by default unless @current_email set earlier
   email = @current_email || "ash@poke.example"
@@ -126,6 +144,46 @@ When("I enter a valid authentication code") do
     click_button "Verify code"
   else
     click_button(/Verify/i)
+  end
+end
+
+When("I enter a valid backup code") do
+  email = @current_email || "ash@poke.example"
+  user  = User.find_by!(email: email)
+  @backup_codes = user.issue_backup_codes! if @backup_codes.empty?
+  @last_backup_code = @backup_codes.shift
+
+  fill_in "Authentication code", with: @last_backup_code
+  if page.has_button?("Verify code")
+    click_button "Verify code"
+  else
+    click_button(/Verify|Confirm|Submit/i)
+  end
+end
+
+When("I reuse the same backup code") do
+  email = @current_email || "ash@poke.example"
+  user  = User.find_by!(email: email)
+  @last_backup_code ||= begin
+    @backup_codes = user.issue_backup_codes! if @backup_codes.empty?
+    @backup_codes.first
+  end
+
+  fill_in "Authentication code", with: @last_backup_code
+  if page.has_button?("Verify code")
+    click_button "Verify code"
+  else
+    click_button(/Verify|Confirm|Submit/i)
+  end
+end
+
+When("I log out") do
+  if page.has_button?("Log out")
+    click_button "Log out"
+  elsif page.has_link?("Log out")
+    click_link "Log out"
+  else
+    page.driver.submit :delete, destroy_user_session_path, {}
   end
 end
 
@@ -216,6 +274,10 @@ Then("I should see a message {string}") do |message|
   expect(page).to have_content(message)
 end
 
+Then("I should see my backup codes") do
+  expect(page).to have_content(/\d{4}-\d{4}/)
+end
+
 Then("2FA should be active on my account") do
   user = current_user_by_email!
   expect(user_2fa_enabled?(user)).to be true
@@ -259,4 +321,3 @@ end
 When("I attempt to log in with email {string} and password {string}") do |email, password|
   step %(I log in with email "#{email}" and password "#{password}")
 end
-

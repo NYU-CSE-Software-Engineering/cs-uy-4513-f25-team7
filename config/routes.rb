@@ -47,6 +47,8 @@ Rails.application.routes.draw do
 
   get  "/two_factor/new", to: "two_factor#new",    as: :new_two_factor
   post "/two_factor",     to: "two_factor#create", as: :two_factor
+  post "/two_factor/reset", to: "two_factor#reset", as: :reset_two_factor
+  get  "/two_factor/recovery_codes", to: "two_factor#recovery_codes", as: :two_factor_recovery_codes
   get  "/two_factor/verify", to: "two_factor#prompt",      as: :two_factor_verify
   post "/two_factor/verify", to: "two_factor#verify_login"
 

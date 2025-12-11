@@ -76,22 +76,9 @@ end
 
 # Note: "I click {string}" is defined in social_graph_notifications_steps.rb
 
-When("I log out") do
-  if page.has_link?("Log out")
-    click_link "Log out"
-  elsif page.has_button?("Log out")
-    click_button "Log out"
-  elsif page.has_link?("Logout")
-    click_link "Logout"
-  else
-    visit destroy_user_session_path
-  end
-end
-
 # ------- Then Steps -------
 # Note: "I should see {string}" and "I should not see {string}" are defined in common_steps.rb
 
 Then("I should see {string} reviews") do |count|
   expect(page).to have_content("#{count} review")
 end
-

@@ -1,0 +1,18 @@
+<h1>Save Your Backup Codes</h1>
+
+<div class="alert alert-warning" role="alert" style="margin-bottom: 1rem;">
+  <strong>Warning:</strong> Store these codes securely (e.g., in a password manager) and do not share them.
+  You will not see them again. Losing these codes and your 2FA token may lock you out of your account.
+</div>
+
+<div style="padding: 1rem; background: var(--bg-input); border-radius: var(--radius-md); margin-bottom: 1rem;">
+  <ul style="list-style: none; padding: 0; margin: 0; columns: 2; gap: 1rem;">
+    <% @backup_codes.each do |code| %>
+      <li style="padding: 0.4rem 0; font-family: monospace; font-size: 1rem;"><%= code %></li>
+    <% end %>
+  </ul>
+</div>
+
+<div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+  <%= link_to "Back to Settings", edit_user_registration_path, class: "btn btn-secondary" %>
+</div>

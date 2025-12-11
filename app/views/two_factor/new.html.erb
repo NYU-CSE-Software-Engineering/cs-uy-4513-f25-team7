@@ -2,6 +2,7 @@
 
 <p>Scan this QR code with your authenticator app</p>
 <p>Then enter the 6-digit code below.</p>
+<p class="text-muted">After verification, we'll show one-time backup codes. Save them somewhere safe.</p>
 
 <%= image_tag(@qr_data_uri || "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBA==", alt: "2FA QR Code") %>
 <p>Or add this manually: <code><%= @provisioning_uri %></code></p>

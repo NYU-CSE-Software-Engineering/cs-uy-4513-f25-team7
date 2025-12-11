@@ -1,5 +1,5 @@
 class TwoFactorController < ApplicationController
-  before_action :require_login, only: [:new, :create]
+  before_action :require_login, only: [:new, :create, :reset, :recovery_codes]
   def new
     # Ensure user has a secret for enrollment
     unless current_user.otp_secret.present?
@@ -32,9 +32,28 @@ class TwoFactorController < ApplicationController
     totp = ROTP::TOTP.new(current_user.otp_secret)
     if totp.verify(code, drift_ahead: 1, drift_behind: 1)
       current_user.update!(otp_enabled: true)
-      redirect_to edit_user_registration_path, notice: "Two-factor authentication enabled"
+      backup_codes = current_user.issue_backup_codes!
+      session[:backup_codes] = backup_codes
+      redirect_to two_factor_recovery_codes_path, notice: "Two-factor authentication enabled"
     else
       redirect_to edit_user_registration_path, alert: "Incorrect code. Please try again."
+    end
+  end
+
+  def reset
+    unless current_user&.otp_enabled?
+      redirect_to edit_user_registration_path, alert: "Two-factor authentication is not enabled" and return
+    end
+
+    current_user.update!(otp_secret: ROTP::Base32.random_base32, otp_enabled: false, backup_code_digests: [])
+    session.delete(:backup_codes)
+    redirect_to new_two_factor_path, notice: "New two-factor setup generated. Scan the QR code to re-enable 2FA."
+  end
+
+  def recovery_codes
+    @backup_codes = session.delete(:backup_codes)
+    unless @backup_codes.present?
+      redirect_to edit_user_registration_path, alert: "No backup codes to display" and return
     end
   end
 
@@ -53,10 +72,15 @@ class TwoFactorController < ApplicationController
     end
 
     code = params[:code].to_s.strip
-    if ROTP::TOTP.new(user.otp_secret).verify(code, drift_ahead: 1, drift_behind: 1)
+    totp = user.otp_secret.present? ? ROTP::TOTP.new(user.otp_secret) : nil
+    if totp&.verify(code, drift_ahead: 1, drift_behind: 1)
       session[:pending_user_id] = nil
       session[:user_id] = user.id
       redirect_to root_path, notice: "Signed in"
+    elsif user.use_backup_code!(code)
+      session[:pending_user_id] = nil
+      session[:user_id] = user.id
+      redirect_to root_path, notice: "Signed in with backup code"
     else
       flash.now[:alert] = "Invalid two-factor code"
       @pending_user = user
