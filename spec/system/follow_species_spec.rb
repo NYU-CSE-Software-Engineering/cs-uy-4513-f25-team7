@@ -7,8 +7,7 @@ RSpec.describe "Follow a species", type: :system do
     driven_by(:rack_test) if respond_to?(:driven_by)
 
     # Reset the in-memory state used by FollowsController between examples
-    FollowsController.class_variable_set(:@@state,  Hash.new(false))
-    FollowsController.class_variable_set(:@@counts, Hash.new(0))
+    FollowsController.reset!
   end
 
   it "allows following from the species page and increments the follower count" do

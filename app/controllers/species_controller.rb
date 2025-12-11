@@ -23,7 +23,7 @@ class SpeciesController < ApplicationController
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{@dex_species.pokeapi_id}.png"
       end
 
-    @following = FollowsController.following_for(@name)
+    @following = FollowsController.following_for(@name, user_id: current_user&.id)
     @follower_count = FollowsController.count_for(@name)
 
     # Load discussion posts for this species
@@ -49,7 +49,7 @@ class SpeciesController < ApplicationController
     else
       # Reload data for the show page
       @sprite_url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{@dex_species.pokeapi_id}.png" if @dex_species&.pokeapi_id
-      @following = FollowsController.following_for(@name)
+      @following = FollowsController.following_for(@name, user_id: current_user&.id)
       @follower_count = FollowsController.count_for(@name)
       @posts = Post.for_species(@dex_species.id).includes(:user, :comments).order(created_at: :desc)
       @new_post = @post

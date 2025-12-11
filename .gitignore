@@ -11,7 +11,7 @@
 
 # IDE and lockfiles (do not track)
 /.idea/
-/Gemfile.lock
+# /Gemfile.lock
 
 # Ignore all environment files (except templates).
 /.env*

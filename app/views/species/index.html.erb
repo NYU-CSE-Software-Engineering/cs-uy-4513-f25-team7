@@ -35,7 +35,7 @@
           <% name = species.respond_to?(:name) ? species.name : species.to_s %>
           <div data-test="species-row" class="card" style="margin-bottom: 0.5rem; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
             <span><%= name %></span>
-            <% if FollowsController.following_for(name) %>
+            <% if FollowsController.following_for(name, user_id: current_user&.id) %>
               <span data-test="following-badge" class="badge badge-public">Following</span>
             <% end %>
           </div>
