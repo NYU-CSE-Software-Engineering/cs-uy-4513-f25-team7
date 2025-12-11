@@ -35,6 +35,7 @@ RSpec.describe FeedController, type: :controller do
     end
 
     it "includes followed users and prioritizes own posts with other comments" do
+      Follow.create!(follower: user, followee: friend)
       friend_post = Post.create!(user: friend, title: "Friend post", body: "From friend", post_type: "Thread", created_at: 2.hours.ago)
 
       own_post = Post.create!(user: user, title: "My post", body: "Original body", post_type: "Thread", created_at: 1.hour.ago)
