@@ -134,23 +134,32 @@ class PostsController < ApplicationController
       return redirect_to @post, alert: "Voting is currently unavailable."
     end
 
-    ip_address = request.remote_ip || "127.0.0.1"
-    existing_vote = @post.votes.find_by(ip_address: ip_address)
-
-    if existing_vote
-      if existing_vote.value == value
-        existing_vote.destroy
-        message = "Vote removed"
-      else
-        existing_vote.update(value: value)
-        message = value == 1 ? "Upvoted!" : "Downvoted!"
-      end
-    else
-      @post.votes.create(value: value, ip_address: ip_address)
-      message = value == 1 ? "Upvoted!" : "Downvoted!"
+    unless @post.respond_to?(:votes)
+      return redirect_to @post, alert: "Voting is currently unavailable."
     end
 
-    @post.reload
-    redirect_to @post, notice: message
+    begin
+      ip_address = request.remote_ip || "127.0.0.1"
+      existing_vote = @post.votes.find_by(ip_address: ip_address)
+
+      if existing_vote
+        if existing_vote.value == value
+          existing_vote.destroy
+          message = "Vote removed"
+        else
+          existing_vote.update(value: value)
+          message = value == 1 ? "Upvoted!" : "Downvoted!"
+        end
+      else
+        @post.votes.create(value: value, ip_address: ip_address)
+        message = value == 1 ? "Upvoted!" : "Downvoted!"
+      end
+
+      @post.reload
+      redirect_to @post, notice: message
+    rescue ActiveRecord::StatementInvalid, NoMethodError => e
+      Rails.logger.error "Vote error: #{e.message}"
+      redirect_to @post, alert: "Voting is currently unavailable."
+    end
   end
 end
