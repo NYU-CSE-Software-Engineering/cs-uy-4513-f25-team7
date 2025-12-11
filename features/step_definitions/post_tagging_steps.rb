@@ -5,6 +5,8 @@ end
 
 Given('I am on the forum homepage') do
   visit posts_path
+  # Wait for the page to load (CI is slower)
+  expect(page).to have_content(/Forum|Posts|New Post/i, wait: 5)
 end
 
 Given('I am on the new post page') do
@@ -16,14 +18,31 @@ Given('I am on the new post page') do
   @user = @current_user
   
   # Sign in if not already signed in
-  unless page.has_content?("Log out") || page.has_content?("Logout")
+  # Check multiple ways to see if user is signed in
+  signed_in = begin
+    page.has_content?("Log out", wait: 2) || 
+    page.has_content?("Logout", wait: 2) || 
+    page.has_link?("Log out", wait: 2) ||
+    page.has_link?("Logout", wait: 2) ||
+    page.current_path.include?('/posts') && page.has_content?("New Post", wait: 2)
+  rescue
+    false
+  end
+  
+  unless signed_in
     visit new_user_session_path
+    # Wait for the form to load
+    expect(page).to have_field("Email", wait: 5)
     fill_in "Email", with: @current_user.email
     fill_in "Password", with: "password123"
     click_button "Log in"
+    # Wait for redirect after login
+    sleep(1)
   end
   
   visit new_post_path
+  # Wait for the form to load
+  expect(page).to have_field("Title", wait: 5)
 end
 
 Given('I am on the posts index page') do
@@ -49,6 +68,9 @@ When(/^I fill in "(?!Add a comment)([^"]*)" with "([^"]*)"$/) do |field, value|
                else
                  field.downcase.gsub(/\s+/, '_')
                end
+  
+  # Wait for the page to be ready (CI is slower)
+  sleep(0.5)
   
   # Try multiple strategies to find the field
   begin
