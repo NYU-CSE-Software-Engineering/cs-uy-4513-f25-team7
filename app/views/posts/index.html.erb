@@ -16,6 +16,7 @@
   <% end %>
 </div>
 
+<<<<<<< HEAD
 <% if defined?(@popular_tags) && @popular_tags.present? %>
   <div class="popular-tags">
     <h3>Popular Tags</h3>
@@ -25,6 +26,14 @@
           <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
           <span class="tag-stats">(<%= tag.posts.count %> posts)</span>
         </div>
+=======
+<% if @popular_tags.present? %>
+  <div class="popular-tags">
+    <h3>Popular Tags</h3>
+    <div class="tag-list">
+      <% @popular_tags.each do |tag| %>
+        <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+>>>>>>> feature/advanced-tagging
       <% end %>
     </div>
   </div>
@@ -69,9 +78,11 @@
     <% end %>
     
     <% if @posts.total_pages > 1 %>
+    <% if @posts.total_pages > 1 %>
       <div class="pagination">
         <%= paginate @posts %>
       </div>
+    <% end %>
     <% end %>
   <% else %>
     <div class="no-posts">
