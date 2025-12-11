@@ -18,7 +18,7 @@ class UsersController < ApplicationController
       redirect_to after_sign_up_path_for(@user), notice: "Welcome, #{@user.email}"
     else
       flash.now[:alert] = @user.errors.full_messages.to_sentence
-      render :new, status: :unprocessable_content
+      render :new, status: 422
     end
   end
 

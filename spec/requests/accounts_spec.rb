@@ -49,7 +49,7 @@ RSpec.describe "Accounts", type: :request do
 
       post become_admin_path, params: { admin_code: "wrong" }
 
-      expect(response).to have_http_status(:unprocessable_content)
+      expect(response).to have_http_status(422)
       expect(flash[:alert]).to eq("Invalid admin code")
       expect(user.reload.admin?).to be false
     end

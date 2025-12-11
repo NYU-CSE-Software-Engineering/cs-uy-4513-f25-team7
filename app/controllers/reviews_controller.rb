@@ -38,7 +38,7 @@ class ReviewsController < ApplicationController
     if @review.update(review_params)
       redirect_to @team, notice: "Review updated successfully!"
     else
-      render :edit, status: :unprocessable_content
+      render :edit, status: 422
     end
   end
 
