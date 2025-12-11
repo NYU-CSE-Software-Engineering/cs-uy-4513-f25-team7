@@ -1,6 +1,11 @@
 # Shared step definitions used across multiple features
 # This prevents ambiguous step definition errors
 
+Given('the forum is running') do
+  # Rails app should be running - no action needed for Cucumber
+  # This step is just a placeholder
+end
+
 Then('I should see {string}') do |text|
   expect(page).to have_content(text)
 end
