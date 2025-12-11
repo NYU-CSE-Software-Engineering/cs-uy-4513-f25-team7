@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILS_ENV: test
+      COVERAGE: false
       # Dummy Keys for testing purposes from test.rb
       SECRET_KEY_BASE: "test_only_change_in_prod"
       AR_ENC_PRIMARY_KEY: "00000000000000000000000000000000"
@@ -83,6 +84,7 @@ jobs:
         include: ${{ fromJson(needs.discover-features.outputs.feature_matrix) }}
     env:
       RAILS_ENV: test
+      COVERAGE: false
       SECRET_KEY_BASE: "test_only_change_in_prod"
       AR_ENC_PRIMARY_KEY: "00000000000000000000000000000000"
       AR_ENC_DETERMINISTIC_KEY: "11111111111111111111111111111111"
