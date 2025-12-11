@@ -11,11 +11,9 @@ Given('there are {int} posts') do |count|
 end
 
 When('I click on page {string}') do |page_number|
-  if page.has_link?(page_number)
-    click_link page_number
-  else
-    visit "#{page.current_path}?page=#{page_number}"
-  end
+  # Avoid ambiguous links: navigate directly to the page param
+  target = page.current_path.present? ? page.current_path : '/'
+  visit "#{target}?page=#{page_number}"
 end
 
 Given('there are {int} users') do |count|
