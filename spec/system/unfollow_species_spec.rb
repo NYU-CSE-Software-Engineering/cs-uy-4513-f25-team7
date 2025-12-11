@@ -23,7 +23,7 @@ RSpec.describe "Unfollow a species", type: :system do
     # Unfollow -> flips to "Follow" and count - 1
     click_button "Unfollow"
     expect(page).to have_css('[data-test="follow-button"]', text: "Follow")
-
+    ##
     after = page.find('[data-test="follower-count"]').text.scan(/\d+/).first.to_i
     expect(after).to eq(initial - 1)
   end
