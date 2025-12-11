@@ -2,8 +2,7 @@
 # This prevents ambiguous step definition errors
 
 Given('the forum is running') do
-  # Rails app should be running - no action needed for Cucumber
-  # This step is just a placeholder
+  # Placeholder to indicate app is up; nothing to do for in-process tests
 end
 
 Then('I should see {string}') do |text|

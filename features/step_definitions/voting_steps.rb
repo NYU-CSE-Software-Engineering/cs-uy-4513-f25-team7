@@ -1,25 +1,12 @@
-# Voting System step definitions - Independent feature
-# This feature focuses on upvote/downvote functionality
-# Note: "a post titled {string} exists" and "I view the post {string}" are defined in forum_steps.rb to avoid ambiguity
+# Voting system step definitions
+# Note: "a post titled {string} exists" and "I view the post {string}" are defined in forum_steps.rb
 
 Then('I should see a vote score of {int}') do |expected_score|
-  # Reload the page to ensure we have the latest data
-  visit page.current_path unless page.current_path.include?('posts/')
-  
-  # Look for vote score display - try multiple selectors
-  score_element = nil
-  ['[data-voting-target="score"]', '.vote-score', '[class*="vote-score"]', '[class*="vote"]'].each do |selector|
-    score_element = page.find(selector, match: :first, wait: 2) rescue nil
-    break if score_element
-  end
-  
-  if score_element
-    actual_score = score_element.text.strip.to_i
-    expect(actual_score).to eq(expected_score), "Expected vote score of #{expected_score}, but found #{actual_score}. Element text: '#{score_element.text}'"
-  else
-    # Fallback: check if the score appears anywhere on the page
-    expect(page).to have_content(expected_score.to_s), "Expected to see vote score #{expected_score} on page, but page content: #{page.text[0..200]}"
-  end
+  # Wait for the page to load and find the vote score element
+  expect(page).to have_css('.vote-score', wait: 5)
+  score_element = page.find('.vote-score')
+  actual_score = score_element.text.to_i
+  expect(actual_score).to eq(expected_score)
 end
 
 When('I click the upvote button') do
@@ -32,22 +19,11 @@ When('I click the upvote button') do
     button.click
   end
   
-  # Wait for redirect and page load (CI is slower, so use Capybara's waiting)
-  # In test mode, forms submit normally and redirect, so wait for the redirect
-  begin
-    # Wait for either redirect or flash message to appear
-    page.has_content?('Upvoted!', wait: 5) || page.has_content?('Downvoted!', wait: 5) || 
-    page.has_content?('Vote removed', wait: 5) || 
-    # Or wait for URL change (redirect happened)
-    sleep(2)
-  rescue
-    # If waiting fails, just sleep and continue
-    sleep(2)
-  end
-  
-  # Reload the page to ensure we have the latest state
-  visit page.current_path
-  expect(page).to have_css('.vote-score, [data-voting-target="score"]', wait: 5)
+  # Wait for flash or score to update; avoid forcing a reload to not miss flash
+  page.has_content?('Upvoted!', wait: 5) ||
+    page.has_content?('Downvoted!', wait: 2) ||
+    page.has_content?('Vote removed', wait: 2) ||
+    page.has_css?('.vote-score', wait: 5)
 end
 
 When('I click the downvote button') do
@@ -60,18 +36,10 @@ When('I click the downvote button') do
     button.click
   end
   
-  # Wait for redirect and page load (CI is slower, so use Capybara's waiting)
-  begin
-    page.has_content?('Upvoted!', wait: 5) || page.has_content?('Downvoted!', wait: 5) || 
-    page.has_content?('Vote removed', wait: 5) || 
-    sleep(2)
-  rescue
-    sleep(2)
-  end
-  
-  # Reload the page to ensure we have the latest state
-  visit page.current_path
-  expect(page).to have_css('.vote-score, [data-voting-target="score"]', wait: 5)
+  page.has_content?('Downvoted!', wait: 5) ||
+    page.has_content?('Upvoted!', wait: 2) ||
+    page.has_content?('Vote removed', wait: 2) ||
+    page.has_css?('.vote-score', wait: 5)
 end
 
 When('I click the upvote button again') do
@@ -84,38 +52,19 @@ When('I click the upvote button again') do
     button.click
   end
   
-  # Wait for redirect and page load
-  begin
-    page.has_content?('Upvoted!', wait: 5) || page.has_content?('Downvoted!', wait: 5) || 
-    page.has_content?('Vote removed', wait: 5) || 
-    sleep(2)
-  rescue
-    sleep(2)
-  end
-  
-  # Reload the page to ensure we have the latest state
-  visit page.current_path
-  expect(page).to have_css('.vote-score, [data-voting-target="score"]', wait: 5)
+  page.has_content?('Vote removed', wait: 5) ||
+    page.has_content?('Upvoted!', wait: 2) ||
+    page.has_content?('Downvoted!', wait: 2) ||
+    page.has_css?('.vote-score', wait: 5)
 end
-
-# Note: "I should see {string}" is defined in common_steps.rb to avoid ambiguity
 
 Given('the post {string} has {int} upvotes') do |title, count|
   post = Post.find_by!(title: title)
-  
-  # Clear existing votes for this post to start fresh
+  # Clear existing votes for this post
   post.votes.destroy_all
-  
-  # Create votes for the post
-  # Use the same IP (127.0.0.1) that the voting steps use for consistency in tests
-  if count > 0
-    # For single vote, use the test IP
-    post.votes.create!(ip_address: "127.0.0.1", value: 1)
-    # For multiple votes, add additional votes with different IPs
-    (count - 1).times do |i|
-      ip_address = "192.168.1.#{i + 1}"
-      post.votes.create!(ip_address: ip_address, value: 1)
-    end
+  # Create the specified number of upvotes
+  count.times do |i|
+    post.votes.create!(value: 1, ip_address: "127.0.0.#{i + 1}")
   end
   post.reload
 end
@@ -185,3 +134,4 @@ When('I click the upvote button for {string}') do |title|
     visit page.current_path
   end
 end
+

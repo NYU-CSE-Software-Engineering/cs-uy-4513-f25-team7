@@ -1,4 +1,4 @@
-<div class="forum-container" data-test-id="post-show">
+<div class="forum-container">
   <% flash.each do |key, value| %>
     <div class="alert alert-<%= key == 'notice' ? 'success' : 'danger' %>"><%= value %></div>
   <% end %>
@@ -21,9 +21,6 @@
       <h1 class="post-title"><%= @post.title %></h1>
       
       <div class="post-meta">
-        <% if @post.post_type == 'Meta' %>
-          <span class="meta-badge" data-test-id="post-badge-meta">Meta</span>
-        <% end %>
         <% if @post.tags.any? %>
           <div class="post-tags">
             <% @post.tags.each do |tag| %>
@@ -43,14 +40,10 @@
   </div>
   
   <div class="post-actions">
-    <% if @post.user == current_user %>
-      <%= link_to 'Edit', edit_post_path(@post), class: 'btn btn-secondary' %>
-    <% end %>
-    <% if current_user&.moderator? || current_user&.admin? %>
-      <%= button_to 'Delete Post', post_path(@post), method: :delete, 
-                  data: { confirm: 'Are you sure?' }, class: 'btn btn-danger', 
-                  form: { id: 'delete-post-form' } %>
-    <% end %>
+    <%= link_to 'Edit', edit_post_path(@post), class: 'btn btn-secondary', id: 'edit-post-link' %>
+    <%= link_to 'Delete', post_path(@post), method: :delete,
+                data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' },
+                class: 'btn btn-danger', id: 'delete-post-link' %>
     <%= link_to 'Back to Forum', posts_path, class: 'btn btn-outline' %>
   </div>
   
