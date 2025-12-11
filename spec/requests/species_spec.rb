@@ -3,8 +3,12 @@
 require "rails_helper"
 
 RSpec.describe "Species pages", type: :request do
-  let(:user)        { User.create!(email: "user@example.com", password: "password") }
-  let!(:dex_species) { DexSpecies.create!(name: "Pelipper", pokeapi_id: 279) }
+  let(:user) { User.create!(email: "user@example.com", password: "password") }
+  let!(:dex_species) do
+    DexSpecies.find_or_create_by!(name: "Pelipper") do |species|
+      species.pokeapi_id = 279
+    end
+  end
 
   def sign_in(user)
     post user_session_path, params: { email: user.email, password: "password" }
@@ -62,4 +66,3 @@ RSpec.describe "Species pages", type: :request do
     end
   end
 end
-
