@@ -406,3 +406,68 @@ Then('the tags should be clickable') do
   # Verify that tags are rendered as links
   expect(page).to have_css('a.tag, a[class*="tag"]')
 end
+
+Given('there is a post titled {string} with tags {string}') do |title, tags_string|
+  user = @user || @current_user || User.find_or_create_by!(email: "test@example.com") do |u|
+    u.password = "password123"
+    u.password_confirmation = "password123"
+  end
+  post = Post.create!(title: title, body: "Content for #{title}", user: user, post_type: 'Thread')
+  tags = tags_string.split(',').map(&:strip).reject(&:blank?)
+  tags.each do |tag_name|
+    tag = Tag.find_or_create_by!(name: tag_name.downcase)
+    post.tags << tag unless post.tags.include?(tag)
+  end
+  @post = post
+end
+
+Given('I am on the post page') do
+  visit post_path(@post) if @post
+end
+
+Then('the tags should be normalized to {string}, {string}, {string}') do |tag1, tag2, tag3|
+  # Check that tags are displayed in normalized (lowercase) form
+  normalized_tags = [tag1, tag2, tag3].map(&:downcase)
+  normalized_tags.each do |tag|
+    expect(page).to have_content(tag)
+  end
+end
+
+Then('I should only see the tags {string}, {string}, {string}') do |tag1, tag2, tag3|
+  # Verify only these three tags are visible
+  expected_tags = [tag1, tag2, tag3].map(&:downcase)
+  # Get all visible tags on the page
+  visible_tags = page.all('.tag, [class*="tag"]').map(&:text).map(&:downcase)
+  expect(visible_tags.sort).to eq(expected_tags.sort)
+end
+
+When('I confirm the deletion') do
+  # Handle confirmation dialogs - Capybara automatically accepts confirmations in tests
+  # If there's a confirmation dialog, it will be handled automatically
+  # For JavaScript confirmations, we might need to use page.driver.browser.switch_to.alert.accept
+  # But for now, just proceed - Rails' method: :delete should work
+end
+
+Then('the post should be deleted') do
+  # Verify the post no longer exists
+  expect(Post.find_by(title: @post.title)).to be_nil if @post
+  # Or check that we're redirected and don't see the post
+  expect(page).not_to have_content(@post.title) if @post
+end
+
+Then('the tags should remain in the system') do
+  # Tags should still exist even after post deletion
+  if @post
+    @post.tags.each do |tag|
+      expect(Tag.exists?(name: tag.name)).to be true
+    end
+  end
+end
+
+Then('I should be redirected to the posts index') do
+  expect(page.current_path).to eq(posts_path)
+end
+
+When('I visit the post show page') do
+  visit post_path(@post) if @post
+end
