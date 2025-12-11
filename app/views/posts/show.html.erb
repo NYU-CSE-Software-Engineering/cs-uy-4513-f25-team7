@@ -54,9 +54,9 @@
               <%= simple_format(comment.body) %>
             </div>
             <div class="comment-meta">
-              <span class="comment-author">By <%= comment.user.email %></span>
+              <span class="comment-author">By <%= comment.user&.email || 'Unknown' %></span>
               <span class="comment-date"><%= comment.created_at.strftime('%B %d, %Y at %I:%M %p') %></span>
-              <% if current_user && (current_user == comment.user || current_user.moderator? || current_user.admin?) %>
+              <% if current_user && comment.user && (current_user == comment.user || current_user.moderator? || current_user.admin?) %>
                 <%= link_to 'Delete Comment', post_comment_path(@post, comment), method: :delete, 
                             confirm: 'Are you sure?', class: 'btn btn-danger btn-sm' %>
               <% end %>
