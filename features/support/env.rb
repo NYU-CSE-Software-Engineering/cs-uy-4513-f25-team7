@@ -44,11 +44,24 @@ begin
   
   # Check if we're using an in-memory database
   db_config = ActiveRecord::Base.connection_db_config.configuration_hash rescue nil
-  if db_config && db_config[:database] != ':memory:'
-    # For file-based databases, db:prepare should have already run migrations
-    # Just verify that critical tables exist
+  database_path = db_config[:database] rescue nil
+  
+  if db_config && database_path != ':memory:'
+    # For file-based databases (like in CI), ensure migrations are up to date
+    begin
+      migration_context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
+      # Check if migrations are pending and run them
+      if migration_context.needs_migration?
+        migration_context.migrate
+      end
+    rescue => migration_error
+      # If migration check fails, try to continue - db:prepare should have handled it
+      Rails.logger.warn "Migration check in env.rb: #{migration_error.message}" if defined?(Rails.logger)
+    end
+    
+    # Verify critical tables exist
     unless ActiveRecord::Base.connection.table_exists?('users')
-      # If users table doesn't exist, try to run migrations
+      # If users table doesn't exist, force migration
       migration_context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
       migration_context.migrate
     end
@@ -59,6 +72,7 @@ rescue => e
   # This is expected and not an error
   # For file-based databases, db:prepare should have handled migrations
   # Don't fail here - let the Before hook handle it
+  Rails.logger.warn "Database setup in env.rb: #{e.message}" if defined?(Rails.logger)
 end
 
 # You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
