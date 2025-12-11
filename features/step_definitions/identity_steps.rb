@@ -110,6 +110,14 @@ When("I enable two-factor authentication") do
   end
 end
 
+When("I regenerate my two-factor authentication") do
+  if page.has_button?("Regenerate 2FA")
+    click_button "Regenerate 2FA"
+  else
+    click_button(/Regenerate.*2FA/i)
+  end
+end
+
 When("I enter a valid authentication code") do
   # Use Ash by default unless @current_email set earlier
   email = @current_email || "ash@poke.example"
@@ -259,4 +267,3 @@ end
 When("I attempt to log in with email {string} and password {string}") do |email, password|
   step %(I log in with email "#{email}" and password "#{password}")
 end
-

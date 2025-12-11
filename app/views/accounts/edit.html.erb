@@ -63,6 +63,13 @@
           <% end %>
         </div>
       </div>
+
+      <% if current_user.otp_enabled %>
+        <div style="margin-top: 1rem; padding: 1rem; border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); background: rgba(255,255,255,0.03);">
+          <p class="text-muted text-small" style="margin-bottom: 0.5rem;">Lost your authenticator app? Generate a new QR code and re-enable 2FA.</p>
+          <%= button_to "Regenerate 2FA", reset_two_factor_path, method: :post, class: "btn btn-secondary btn-small", form: { data: { turbo_confirm: "This will replace your current 2FA secret and require you to scan a new code. Continue?" } } %>
+        </div>
+      <% end %>
     </div>
 
     <!-- Admin Section -->

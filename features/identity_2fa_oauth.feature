@@ -42,6 +42,18 @@ Feature: Identity management with 2FA and Google SSO
     Then I should see an error "Incorrect code. Please try again."  
     And 2FA should not be enabled on my account
 
+  Scenario: Regenerate two-factor authentication after losing my authenticator  
+    Given a user exists with email "ash@poke.example" and password "pikachu123" and 2FA enabled  
+    When I log in with email "ash@poke.example" and password "pikachu123"  
+    And I enter a valid authentication code  
+    Then I should be logged in successfully  
+    And I navigate to my account settings  
+    When I regenerate my two-factor authentication  
+    Then I should see a QR code for 2FA setup  
+    When I enter a valid authentication code  
+    Then I should see a message "Two-factor authentication enabled"  
+    And 2FA should be active on my account
+
   Scenario: Login with 2FA enabled (happy path)  
     # Assume Ash has 2FA enabled from a previous step  
     Given a user exists with email "ash@poke.example" and password "pikachu123" and 2FA enabled  

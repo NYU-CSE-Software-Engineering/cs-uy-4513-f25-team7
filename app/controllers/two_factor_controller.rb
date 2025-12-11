@@ -1,5 +1,5 @@
 class TwoFactorController < ApplicationController
-  before_action :require_login, only: [:new, :create]
+  before_action :require_login, only: [:new, :create, :reset]
   def new
     # Ensure user has a secret for enrollment
     unless current_user.otp_secret.present?
@@ -36,6 +36,15 @@ class TwoFactorController < ApplicationController
     else
       redirect_to edit_user_registration_path, alert: "Incorrect code. Please try again."
     end
+  end
+
+  def reset
+    unless current_user&.otp_enabled?
+      redirect_to edit_user_registration_path, alert: "Two-factor authentication is not enabled" and return
+    end
+
+    current_user.update!(otp_secret: ROTP::Base32.random_base32, otp_enabled: false)
+    redirect_to new_two_factor_path, notice: "New two-factor setup generated. Scan the QR code to re-enable 2FA."
   end
 
   def prompt
