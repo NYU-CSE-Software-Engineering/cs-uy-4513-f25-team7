@@ -25,7 +25,7 @@ end
 
 Then('I should see {int} notifications per page') do |int|
   rows = page.all('[data-test-id="notification-row"], .notification-row, .notification-card', minimum: 0)
-  expect(rows.size).to be >= 0
+  expect(rows.size).to be >= int
 end
 
 Then('I should not see pagination controls') do
