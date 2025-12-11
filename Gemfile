@@ -61,3 +61,443 @@ group :development do
   gem "web-console"
   gem "spring"  # optional; safe to keep, CI won’t load it
 end
+
+
+gem "kaminari"
+
+
+
+# Search functionality
+
+gem "ransack"
+
+
+
+group :development, :test do
+
+  # Test frameworks
+
+  gem "rspec-rails", "~> 7.1"
+
+  gem "cucumber-rails", require: false
+
+  gem "capybara", "~> 3.40"
+
+
+
+  # Useful expectations when writing plain Ruby tests/helpers
+
+  gem "rspec-expectations"
+
+
+
+  # Debugger
+
+  gem "debug", platforms: %i[mri windows]
+
+end
+
+
+
+group :test do
+
+  # Clean DB between scenarios (AR adapter)
+
+  gem "database_cleaner-active_record", "~> 2.0"
+
+
+
+  # For JS/system features (optional; keep if you'll test JS)
+
+  gem "selenium-webdriver"
+
+end
+
+
+
+group :development do
+
+  gem "web-console"
+
+  gem "spring"  # optional; safe to keep, CI won’t load it
+
+end
+
+
+
+
+gem "kaminari"
+
+
+
+# Search functionality
+
+gem "ransack"
+
+
+
+group :development, :test do
+
+  # Test frameworks
+
+  gem "rspec-rails", "~> 7.1"
+
+  gem "cucumber-rails", require: false
+
+  gem "capybara", "~> 3.40"
+
+
+
+  # Useful expectations when writing plain Ruby tests/helpers
+
+  gem "rspec-expectations"
+
+
+
+  # Debugger
+
+  gem "debug", platforms: %i[mri windows]
+
+end
+
+
+
+group :test do
+
+  # Clean DB between scenarios (AR adapter)
+
+  gem "database_cleaner-active_record", "~> 2.0"
+
+
+
+  # For JS/system features (optional; keep if you'll test JS)
+
+  gem "selenium-webdriver"
+
+end
+
+
+
+group :development do
+
+  gem "web-console"
+
+  gem "spring"  # optional; safe to keep, CI won’t load it
+
+end
+
+
+
+
+gem "kaminari"
+
+
+
+# Search functionality
+
+gem "ransack"
+
+
+
+group :development, :test do
+
+  # Test frameworks
+
+  gem "rspec-rails", "~> 7.1"
+
+  gem "cucumber-rails", require: false
+
+  gem "capybara", "~> 3.40"
+
+
+
+  # Useful expectations when writing plain Ruby tests/helpers
+
+  gem "rspec-expectations"
+
+
+
+  # Debugger
+
+  gem "debug", platforms: %i[mri windows]
+
+end
+
+
+
+group :test do
+
+  # Clean DB between scenarios (AR adapter)
+
+  gem "database_cleaner-active_record", "~> 2.0"
+
+
+
+  # For JS/system features (optional; keep if you'll test JS)
+
+  gem "selenium-webdriver"
+
+end
+
+
+
+group :development do
+
+  gem "web-console"
+
+  gem "spring"  # optional; safe to keep, CI won’t load it
+
+end
+
+
+
+
+gem "kaminari"
+
+
+
+# Search functionality
+
+gem "ransack"
+
+
+
+group :development, :test do
+
+  # Test frameworks
+
+  gem "rspec-rails", "~> 7.1"
+
+  gem "cucumber-rails", require: false
+
+  gem "capybara", "~> 3.40"
+
+
+
+  # Useful expectations when writing plain Ruby tests/helpers
+
+  gem "rspec-expectations"
+
+
+
+  # Debugger
+
+  gem "debug", platforms: %i[mri windows]
+
+end
+
+
+
+group :test do
+
+  # Clean DB between scenarios (AR adapter)
+
+  gem "database_cleaner-active_record", "~> 2.0"
+
+
+
+  # For JS/system features (optional; keep if you'll test JS)
+
+  gem "selenium-webdriver"
+
+end
+
+
+
+group :development do
+
+  gem "web-console"
+
+  gem "spring"  # optional; safe to keep, CI won’t load it
+
+end
+
+
+
+
+gem "kaminari"
+
+
+
+# Search functionality
+
+gem "ransack"
+
+
+
+group :development, :test do
+
+  # Test frameworks
+
+  gem "rspec-rails", "~> 7.1"
+
+  gem "cucumber-rails", require: false
+
+  gem "capybara", "~> 3.40"
+
+
+
+  # Useful expectations when writing plain Ruby tests/helpers
+
+  gem "rspec-expectations"
+
+
+
+  # Debugger
+
+  gem "debug", platforms: %i[mri windows]
+
+end
+
+
+
+group :test do
+
+  # Clean DB between scenarios (AR adapter)
+
+  gem "database_cleaner-active_record", "~> 2.0"
+
+
+
+  # For JS/system features (optional; keep if you'll test JS)
+
+  gem "selenium-webdriver"
+
+end
+
+
+
+group :development do
+
+  gem "web-console"
+
+  gem "spring"  # optional; safe to keep, CI won’t load it
+
+end
+
+
+
+
+gem "kaminari"
+
+
+
+# Search functionality
+
+gem "ransack"
+
+
+
+group :development, :test do
+
+  # Test frameworks
+
+  gem "rspec-rails", "~> 7.1"
+
+  gem "cucumber-rails", require: false
+
+  gem "capybara", "~> 3.40"
+
+
+
+  # Useful expectations when writing plain Ruby tests/helpers
+
+  gem "rspec-expectations"
+
+
+
+  # Debugger
+
+  gem "debug", platforms: %i[mri windows]
+
+end
+
+
+
+group :test do
+
+  # Clean DB between scenarios (AR adapter)
+
+  gem "database_cleaner-active_record", "~> 2.0"
+
+
+
+  # For JS/system features (optional; keep if you'll test JS)
+
+  gem "selenium-webdriver"
+
+end
+
+
+
+group :development do
+
+  gem "web-console"
+
+  gem "spring"  # optional; safe to keep, CI won’t load it
+
+end
+
+
+
+
+gem "kaminari"
+
+
+
+# Search functionality
+
+gem "ransack"
+
+
+
+group :development, :test do
+
+  # Test frameworks
+
+  gem "rspec-rails", "~> 7.1"
+
+  gem "cucumber-rails", require: false
+
+  gem "capybara", "~> 3.40"
+
+
+
+  # Useful expectations when writing plain Ruby tests/helpers
+
+  gem "rspec-expectations"
+
+
+
+  # Debugger
+
+  gem "debug", platforms: %i[mri windows]
+
+end
+
+
+
+group :test do
+
+  # Clean DB between scenarios (AR adapter)
+
+  gem "database_cleaner-active_record", "~> 2.0"
+
+
+
+  # For JS/system features (optional; keep if you'll test JS)
+
+  gem "selenium-webdriver"
+
+end
+
+
+
+group :development do
+
+  gem "web-console"
+
+  gem "spring"  # optional; safe to keep, CI won’t load it
+
+end
+
