@@ -221,6 +221,22 @@ When("I click {string} and approve access") do |link_text|
   @current_email = "oak@pokemon.com"
 end
 
+When("I click {string} as {string} and approve access") do |link_text, email|
+  OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+    provider: 'google_oauth2',
+    uid: '123545',
+    info: { email: email, name: 'Google User' }
+  )
+  if page.has_link?(link_text)
+    click_link link_text
+  elsif page.has_button?(link_text)
+    click_button link_text
+  else
+    click_link(/Google|Sign in with Google/i)
+  end
+  @current_email = email
+end
+
 When("I click {string} and deny the authorization") do |link_text|
   OmniAuth.config.mock_auth[:google_oauth2] = :access_denied
   if page.has_link?(link_text)

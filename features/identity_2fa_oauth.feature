@@ -107,3 +107,12 @@ Feature: Identity management with 2FA and Google SSO
     When I click "Sign in with Google" and deny the authorization  
     Then I should see an error "Google sign-in failed or was canceled"  
     And I should remain on the login page not logged in
+
+  Scenario: Google OAuth login with 2FA enabled requires code  
+    Given a user exists with email "ash@poke.example" and password "pikachu123" and 2FA enabled  
+    And I am on the login page  
+    When I click "Sign in with Google" as "ash@poke.example" and approve access  
+    Then I should be prompted for my 2FA code  
+    When I enter a valid authentication code  
+    Then I should be logged in successfully  
+    And I should see my forum username or profile
