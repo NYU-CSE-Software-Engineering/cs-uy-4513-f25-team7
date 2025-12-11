@@ -189,11 +189,17 @@ When('I click on the {string} tag') do |tag_name|
   # Try exact match first, then case-insensitive
   normalized_tag = tag_name.downcase.strip
   begin
+    # Try exact link text first
     click_link tag_name
   rescue Capybara::ElementNotFound
-    # Try finding by class and text
-    link = page.find("a.tag", text: /#{Regexp.escape(normalized_tag)}/i, match: :first)
-    link.click
+    begin
+      # Try case-insensitive link text
+      click_link /#{Regexp.escape(tag_name)}/i
+    rescue Capybara::ElementNotFound
+      # Try finding by class and text within post cards
+      link = page.find("a.tag", text: /#{Regexp.escape(normalized_tag)}/i, match: :first, wait: 5)
+      link.click
+    end
   end
 end
 
@@ -454,10 +460,10 @@ end
 
 Then('I should only see the tags {string}, {string}, {string}') do |tag1, tag2, tag3|
   # Verify only these three tags are visible
-  expected_tags = [tag1, tag2, tag3].map(&:downcase)
-  # Get all visible tags on the page
-  visible_tags = page.all('.tag, [class*="tag"]').map(&:text).map(&:downcase)
-  expect(visible_tags.sort).to eq(expected_tags.sort)
+  expected_tags = [tag1, tag2, tag3].map(&:downcase).sort
+  # Get all visible tag links on the page (only actual tag links, not containers)
+  visible_tags = page.all('a.tag', wait: 2).map(&:text).map(&:downcase).sort
+  expect(visible_tags).to eq(expected_tags), "Expected tags #{expected_tags.inspect}, but found #{visible_tags.inspect}"
 end
 
 When('I confirm the deletion') do

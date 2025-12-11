@@ -35,20 +35,8 @@ When('I click the upvote button') do
   # Wait for request to complete
   sleep(1)
   
-  # Ensure vote was created (for test reliability - AJAX might not work in tests)
-  if post_id
-    post = Post.find_by(id: post_id)
-    if post
-      ip = "127.0.0.1"
-      existing_vote = post.votes.find_by(ip_address: ip)
-      if existing_vote
-        existing_vote.update!(value: 1) unless existing_vote.value == 1
-      else
-        post.votes.create!(ip_address: ip, value: 1)
-      end
-      post.reload
-    end
-  end
+  # Wait for form submission to complete (in test mode, forms submit normally, not via AJAX)
+  sleep(1)
   
   # Reload the page to see updated vote score and flash message
   visit page.current_path

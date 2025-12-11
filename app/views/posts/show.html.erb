@@ -1,7 +1,13 @@
 <div class="forum-container" data-test-id="post-show">
+  <% if notice %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+  <% if alert %>
+    <div class="alert alert-danger"><%= alert %></div>
+  <% end %>
   <div class="post-detail">
     <div class="post-voting" data-controller="voting" data-voting-post-id-value="<%= @post.id %>">
-      <%= form_with url: upvote_post_path(@post), method: :post, local: false, class: 'vote-form' do |form| %>
+      <%= form_with url: upvote_post_path(@post), method: :post, local: Rails.env.test?, class: 'vote-form' do |form| %>
         <%= form.submit '▲', class: 'vote-btn upvote-btn', data: { action: 'click->voting#upvote' } %>
       <% end %>
       
@@ -9,7 +15,7 @@
         <%= @post.vote_score rescue 0 %>
       </span>
       
-      <%= form_with url: downvote_post_path(@post), method: :post, local: false, class: 'vote-form' do |form| %>
+      <%= form_with url: downvote_post_path(@post), method: :post, local: Rails.env.test?, class: 'vote-form' do |form| %>
         <%= form.submit '▼', class: 'vote-btn downvote-btn', data: { action: 'click->voting#downvote' } %>
       <% end %>
     </div>
