@@ -1,10 +1,10 @@
-# PokéForum
+# PokéForum 🎮🧬
 
 PokéForum is a Pokémon-themed community forum where trainers can share strategies, discuss their favorite species, build competitive teams, and keep up with friends via a personalized **My Feed**. It is a Ruby on Rails web application built as a course project and includes social, moderation, and security features such as following trainers and species, role-based permissions, team reviews, and two-factor authentication.
 
 ---
 
-## Table of Contents
+## Table of Contents 📚
 
 1. [Features](#features)  
 2. [Core Domain Concepts](#core-domain-concepts)  
@@ -19,9 +19,9 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
 
 ---
 
-## Features
+## Features ✨
 
-### Authentication, Sessions & Security
+### Authentication, Sessions & Security 🔐
 
 - Users can register, log in, and log out.
 - `ApplicationController` exposes `current_user` and `user_signed_in?` helpers for views and controllers.
@@ -33,12 +33,12 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
   - Email/password login using `has_secure_password`.
   - Account lockout via `Identity::LockoutTracker` after a configurable number of failed attempts (default 5 attempts, 15-minute lockout).
   - Google OAuth login (create or link a `User` via Google profile, with token persistence).
-- `TwoFactorController` implements TOTP-based two-factor authentication:
+- `TwoFactorController` implements TOTP-based two-factor authentication (2FA):
   - Users can enroll in 2FA (QR code provisioning using `ROTP` and `rqrcode`).
   - A dedicated 2FA login prompt is shown when OTP is enabled.
-  - Login flow supports “pending user” state until OTP is verified.
+  - Login flow supports a “pending user” state until OTP is verified.
 
-### Accounts & Role Management
+### Accounts & Role Management 👤👑
 
 - **Profile / Accounts**
   - `AccountsController#edit` / `#update` allow users to update their profile (currently username) and see 2FA / OAuth options.
@@ -51,15 +51,15 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
   - Admin-only **Role Management** page (`UsersController#index`) lists users and allows role updates.
   - `UsersController#update` sets flash messages tailored for Cucumber scenarios (e.g., "Role updated successfully", "`email` is now a moderator").
 
-### Forum Posts & Comments
+### Forum Posts & Comments 💬
 
 - **Forum Posts**
   - General forum posts are handled by `PostsController`.
   - Posts belong to a `User` and support four high-level categories via `post_type`:
-    - `Announcement`
-    - `Strategy`
-    - `Meta`
-    - `Thread`
+    - `Announcement` 📢
+    - `Strategy` ⚔️
+    - `Meta` 📊
+    - `Thread` 💭
   - The forum index groups posts by `post_type` and displays a styled list for each category with icons and descriptions.
   - Individual post pages show the full body, comments, and (for authorized users) a delete button.
 - **Comments**
@@ -68,7 +68,7 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
   - Only the comment author, a moderator, or an admin can delete a comment.
   - User-friendly flash messages are shown when comment creation fails.
 
-### Species Discussions
+### Species Discussions 🧪🐉
 
 - Species lookups are handled by `SpeciesController`.
 - Uses a `DexSpecies` model plus a `Dex::PokeapiImporter` to lazily import species details when needed.
@@ -78,7 +78,7 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
   - A list of discussion posts for that species (`Post.for_species(dex_species_id)`).
   - A form for signed-in users to create a new species-specific post.
 
-### Teams, Favorites & Reviews
+### Teams, Favorites & Reviews 🧩⭐
 
 - **Team Builder**
   - `TeamsController` provides a rich team-builder flow:
@@ -92,16 +92,16 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
   - Legality and visibility fields (e.g., `status`, `visibility`, `legal`, `last_saved_at`) are updated consistently.
 - **Favorites**
   - `FavoritesController` lets users favorite certain resources (currently teams via polymorphic `favoritable`).
-  - Prevents duplicate favorites and offers “Already favorited” feedback.
+  - Prevents duplicate favorites and offers an "Already favorited" message when applicable.
   - On create, attempts to notify the owner of the favorited resource via a `Notification` (`event_type: "favorite_created"`).
 - **Reviews**
   - `ReviewsController` enables rating and reviewing teams:
     - Reviews belong to a `Team` and a `User`.
     - The team owner receives a `Notification` when a new review is created.
     - Review authors can edit or delete their own reviews.
-    - Moderators/admins can soft-delete any review and notify the reviewer (`event_type: "review_removed"`).
+    - Moderators/admins can soft-delete any review and notify the reviewer (`event_type: "review_removed").
 
-### Messaging & Notifications
+### Messaging & Notifications ✉️🔔
 
 - **Direct Messages**
   - `MessagesController` implements private, inbox-style messaging:
@@ -118,7 +118,7 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
     - `new_review` when your team receives a review.
     - `review_removed` when a moderator removes your review.
 
-### Following Trainers & Species
+### Following Trainers & Species 🤝🐾
 
 - **Following Trainers**
   - `UserFollowsController` manages follow relationships between users.
@@ -132,7 +132,7 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
     - `FollowsController.followed_species` – list of all followed species names (used by the feed).
   - This in-memory approach keeps existing Cucumber scenarios working without persisting species follows to the database.
 
-### My Feed
+### My Feed 📰
 
 - Personalized feed for each user at `/feed` (`FeedController#index`).
 - Shows recent activity from:
@@ -154,7 +154,7 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
 
 ---
 
-## Core Domain Concepts
+## Core Domain Concepts 🧱
 
 - **User**
   - Has authentication fields, optional 2FA (`otp_secret`, `otp_enabled`), and optional Google OAuth linkage.
@@ -194,7 +194,7 @@ PokéForum is a Pokémon-themed community forum where trainers can share strateg
 
 ---
 
-## Navigation Overview
+## Navigation Overview 🧭
 
 The main navigation (in `app/views/layouts/application.html.erb`) includes:
 
@@ -214,7 +214,7 @@ The header is shared via the `application` layout and uses a dark theme with `Pl
 
 ---
 
-## My Feed
+## My Feed 🔄
 
 The **My Feed** feature is implemented primarily in:
 
@@ -267,11 +267,11 @@ The **My Feed** feature is implemented primarily in:
   where `in <Species>` is shown only for species posts and links to the species show page.
 - Empty states:
   - If there are feed items, a “no more posts to show” card appears after the last one.
-  - If there are no feed items at all, an “Your feed is empty” card encourages following trainers or starting discussions.
+  - If there are no feed items at all, a “Your feed is empty” card encourages following trainers or starting discussions.
 
 ---
 
-## Following Trainers, Teams, and Species
+## Following Trainers, Teams, and Species 🌐
 
 ### Trainers (`UserFollowsController`)
 
@@ -286,8 +286,8 @@ The **My Feed** feature is implemented primarily in:
 ### Teams (`FavoritesController` & `ReviewsController`)
 
 - Users can:
-  - Favorite teams for quick access and to support their creators.
-  - Review teams with a rating and feedback.
+  - Favorite teams for quick access and to support their creators. ⭐
+  - Review teams with a rating and feedback. 📝
 - Team owners receive notifications for:
   - New favorites.
   - New reviews.
@@ -301,7 +301,7 @@ The **My Feed** feature is implemented primarily in:
 
 ---
 
-## Architecture Notes
+## Architecture Notes 🏗️
 
 - **Layout**
   - Global layout in `app/views/layouts/application.html.erb`.
@@ -327,7 +327,7 @@ The **My Feed** feature is implemented primarily in:
 
 ---
 
-## Getting Started
+## Getting Started 🚀
 
 > These steps assume you already have Ruby, Bundler, and a supported database (e.g., PostgreSQL or SQLite) installed.
 
@@ -371,7 +371,7 @@ The **My Feed** feature is implemented primarily in:
 
 ---
 
-## Running the App
+## Running the App 🏃‍♂️
 
 Start the Rails server:
 
@@ -393,7 +393,7 @@ Create a test user account (or log in with seeded credentials) to explore My Fee
 
 ---
 
-## Testing
+## Testing ✅
 
 The project uses both automated tests and Cucumber feature tests (as indicated by `FakePostStore` and the in-memory `FollowsController`).
 
@@ -408,7 +408,7 @@ Refer to your course or project instructions for the exact testing setup and exp
 
 ---
 
-## Future Improvements
+## Future Improvements 🔮
 
 Some ideas for future iterations of PokéForum:
 
@@ -422,4 +422,4 @@ Some ideas for future iterations of PokéForum:
 
 ---
 
-Happy training and enjoy using **My Feed** to keep up with your favorite trainers, teams, and Pokémon species!
+Happy training and enjoy using **My Feed** to keep up with your favorite trainers, teams, and Pokémon species! 🎉🐾
