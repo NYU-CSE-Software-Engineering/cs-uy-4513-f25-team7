@@ -46,9 +46,10 @@ class PostsController < ApplicationController
   end
   
   def show
-    @post = Post.includes(:tags)
+    @post = Post.includes(:tags, :comments)
     @post = @post.includes(:votes) if ActiveRecord::Base.connection.table_exists?('votes')
     @post = @post.find(params[:id])
+    @comment = @post.comments.build
   end
   
   def new

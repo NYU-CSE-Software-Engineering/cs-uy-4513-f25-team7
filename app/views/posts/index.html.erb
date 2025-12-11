@@ -16,6 +16,17 @@
   <% end %>
 </div>
 
+<% if @popular_tags.present? %>
+  <div class="popular-tags">
+    <h3>Popular Tags</h3>
+    <div class="tag-list">
+      <% @popular_tags.each do |tag| %>
+        <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
 <div class="posts-list">
   <% if @posts.present? %>
     <% @posts.each do |post| %>

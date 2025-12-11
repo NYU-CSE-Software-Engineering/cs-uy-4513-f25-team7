@@ -30,6 +30,12 @@ Given('I am on the posts index page') do
   visit posts_path
 end
 
+# Handle string multiplication in Gherkin (e.g., "a" * 256)
+When(/^I fill in "(?!Add a comment)([^"]*)" with "([^"]*)" \* (\d+)(?:\s*#.*)?$/) do |field, char, count|
+  value = char * count.to_i
+  step %Q{I fill in "#{field}" with "#{value}"}
+end
+
 # Generic step for filling in form fields, but NOT for "Add a comment" (handled by forum_steps.rb)
 When(/^I fill in "(?!Add a comment)([^"]*)" with "([^"]*)"$/) do |field, value|
   # Map field names to actual form field names
@@ -197,7 +203,10 @@ end
 # end
 
 Then('I should be on the post\'s show page') do
+  # Check that we're on a post show page by looking for post content
   expect(page).to have_css('.post-content, .post-title, [class*="post"]')
+  # Also verify the path matches a post show page pattern
+  expect(page.current_path).to match(/\/posts\/\d+/)
 end
 
 Then('I should see the message {string}') do |message|
@@ -405,6 +414,16 @@ end
 Then('the tags should be clickable') do
   # Verify that tags are rendered as links
   expect(page).to have_css('a.tag, a[class*="tag"]')
+end
+
+Then('each tag should be clickable') do
+  # Verify that all tags are rendered as clickable links
+  tags = page.all('a.tag, a[class*="tag"]')
+  expect(tags.count).to be > 0, "Expected at least one clickable tag"
+  tags.each do |tag|
+    expect(tag).to be_a(Capybara::Node::Element)
+    expect(tag['href']).to be_present, "Tag '#{tag.text}' should have an href attribute"
+  end
 end
 
 Given('there is a post titled {string} with tags {string}') do |title, tags_string|
