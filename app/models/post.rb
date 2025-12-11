@@ -11,6 +11,7 @@ class Post < ApplicationRecord
   validates :title, presence: true
   validates :body, presence: true
   validates :post_type, presence: true, inclusion: { in: %w[Thread Meta Strategy Announcement] }
+  validate :validate_tag_lengths
 
   scope :for_species, ->(species_id) { where(dex_species_id: species_id) }
   scope :general, -> { where(dex_species_id: nil) }
@@ -31,6 +32,7 @@ class Post < ApplicationRecord
   def tag_names=(names)
     return if names.blank?
     normalized = names.split(',').map { |n| n.strip.downcase }.reject(&:blank?)
+    @pending_tag_names = normalized
     self.tags = normalized.map { |n| Tag.find_or_create_by(name: n) }
   end
 
@@ -63,5 +65,15 @@ class Post < ApplicationRecord
     return false unless user
     return false unless ActiveRecord::Base.connection.table_exists?('votes')
     votes.exists?(user: user)
+  end
+
+  private
+
+  def validate_tag_lengths
+    names = @pending_tag_names || tags&.map(&:name) || []
+    too_long = names.find { |n| n.length > 50 }
+    if too_long
+      errors.add(:base, "Tag '#{too_long}' is too long")
+    end
   end
 end

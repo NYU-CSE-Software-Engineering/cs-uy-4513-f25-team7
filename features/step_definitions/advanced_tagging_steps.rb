@@ -103,5 +103,10 @@ end
 
 Then('the post should not be created') do
   expect(page).to have_current_path(/posts/)
+  expect(page).not_to have_content("Post was successfully created")
+end
+
+When('I am on the forum homepage for advanced tagging') do
+  visit posts_path
 end
 

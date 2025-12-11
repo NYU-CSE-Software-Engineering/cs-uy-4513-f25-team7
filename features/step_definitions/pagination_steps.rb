@@ -22,14 +22,27 @@ Given('there are {int} users') do |count|
       u.role = 0 if u.respond_to?(:role=)
     end
   end
+  # ensure admin user exists for viewing users index if restricted
+  @admin ||= User.find_or_create_by!(email: "admin+paginate@example.com") do |u|
+    u.password = "password123"
+    u.password_confirmation = "password123"
+    u.role = 1 if u.respond_to?(:role=)
+  end
 end
 
 When('I visit the users index page') do
+  # sign in admin if needed
+  if page.has_link?("Login") || page.has_button?("Login") || page.current_path.blank?
+    visit new_user_session_path
+    fill_in "Email", with: "admin+paginate@example.com"
+    fill_in "Password", with: "password123"
+    click_button "Log in"
+  end
   visit users_path
 end
 
 Then('I should see {int} users per page') do |count|
-  rows = page.all('.user-row, [data-test-id="user-row"]', minimum: 0)
+  rows = page.all('.user-row, [data-test-id="user-row"], table tbody tr, .user-card, .list-group-item', minimum: 0)
   expect(rows.size).to eq(count)
 end
 
@@ -41,7 +54,11 @@ Given('there are {int} notifications for the current user') do |count|
   count.times do |i|
     Notification.create!(user: user, actor: user, event_type: "event_#{i}", notifiable: user)
   end
-  login_as(user, scope: :user)
+  # sign in via UI
+  visit new_user_session_path
+  fill_in "Email", with: user.email
+  fill_in "Password", with: "password123"
+  click_button "Log in"
 end
 
 When('I visit the notifications page for pagination') do
