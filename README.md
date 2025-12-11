@@ -2,8 +2,6 @@
 
 PokéForum is a Pokémon-themed community forum where trainers can share strategies, discuss their favorite species, build competitive teams, and keep up with friends via a personalized **My Feed**. It is a Ruby on Rails web application built as a course project and includes social, moderation, and security features such as following trainers and species, role-based permissions, team reviews, and two-factor authentication.
 
-We are online 🚀  https://pokeforum-9a8c59f0af40.herokuapp.com/
-
 ---
 
 ## Table of Contents 📚
@@ -451,7 +449,15 @@ This skips coverage tracking and report generation, which can significantly spee
 
 #### Continuous Integration
 
-Coverage reports are automatically generated and published on every push to `main` or `ci/**` branches. The published reports are available at: https://nyu-cse-software-engineering.github.io/cs-uy-4513-f25-team7/docs/
+Coverage reports are automatically generated and published on every push to `main` or `ci/**` branches. The published reports are available at:
+
+```
+https://nyu-cse-software-engineering.github.io/cs-uy-4513-f25-team7/docs/
+```
+
+If GitHub Pages is configured differently for your fork or deployment, adjust the URL accordingly.
+
+Refer to your course or project instructions for the exact testing setup and expectations.
 
 ---
 
