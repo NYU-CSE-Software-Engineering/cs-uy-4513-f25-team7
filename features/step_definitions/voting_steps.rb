@@ -19,21 +19,11 @@ When('I click the upvote button') do
     button.click
   end
   
-  # Wait for redirect and page load (CI is slower, so use Capybara's waiting)
-  # In test mode, forms submit normally and redirect, so wait for the redirect
-  begin
-    # Wait for either redirect or flash message to appear
-    page.has_content?('Upvoted!', wait: 5) || page.has_content?('Downvoted!', wait: 5) || 
-    page.has_content?('Vote removed', wait: 5) || 
-    # Or wait for URL change (redirect happened)
-    sleep(2)
-  rescue
-    # If waiting fails, just sleep and continue
-    sleep(2)
-  end
-  
-  # Reload the page to ensure we have the latest state
-  visit page.current_path
+  # Wait for flash or score to update; avoid forcing a reload to not miss flash
+  page.has_content?('Upvoted!', wait: 5) ||
+    page.has_content?('Downvoted!', wait: 2) ||
+    page.has_content?('Vote removed', wait: 2) ||
+    page.has_css?('.vote-score', wait: 5)
 end
 
 When('I click the downvote button') do
@@ -46,17 +36,10 @@ When('I click the downvote button') do
     button.click
   end
   
-  # Wait for redirect and page load (CI is slower, so use Capybara's waiting)
-  begin
-    page.has_content?('Upvoted!', wait: 5) || page.has_content?('Downvoted!', wait: 5) || 
-    page.has_content?('Vote removed', wait: 5) || 
-    sleep(2)
-  rescue
-    sleep(2)
-  end
-  
-  # Reload the page to ensure we have the latest state
-  visit page.current_path
+  page.has_content?('Downvoted!', wait: 5) ||
+    page.has_content?('Upvoted!', wait: 2) ||
+    page.has_content?('Vote removed', wait: 2) ||
+    page.has_css?('.vote-score', wait: 5)
 end
 
 When('I click the upvote button again') do
@@ -69,17 +52,10 @@ When('I click the upvote button again') do
     button.click
   end
   
-  # Wait for redirect and page load
-  begin
-    page.has_content?('Upvoted!', wait: 5) || page.has_content?('Downvoted!', wait: 5) || 
-    page.has_content?('Vote removed', wait: 5) || 
-    sleep(2)
-  rescue
-    sleep(2)
-  end
-  
-  # Reload the page to ensure we have the latest state
-  visit page.current_path
+  page.has_content?('Vote removed', wait: 5) ||
+    page.has_content?('Upvoted!', wait: 2) ||
+    page.has_content?('Downvoted!', wait: 2) ||
+    page.has_css?('.vote-score', wait: 5)
 end
 
 Given('the post {string} has {int} upvotes') do |title, count|

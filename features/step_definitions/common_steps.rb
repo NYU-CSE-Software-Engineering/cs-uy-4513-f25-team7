@@ -2,8 +2,7 @@
 # This prevents ambiguous step definition errors
 
 Given('the forum is running') do
-  # Rails app should be running - no action needed for Cucumber
-  # This step is just a placeholder
+  # Placeholder to indicate app is up; nothing to do for in-process tests
 end
 
 Then('I should see {string}') do |text|
@@ -27,11 +26,8 @@ Given('I am a registered user') do
 end
 
 When("I press {string}") do |text|
-  # Try button first (exact match)
-  if page.has_button?(text, exact: true, wait: 2)
-    click_button text, exact: true
-  # Try button with partial match
-  elsif page.has_button?(text, wait: 2)
+  # Try button first
+  if page.has_button?(text, wait: 2)
     click_button text
   # Try link
   elsif page.has_link?(text, wait: 2)
@@ -39,25 +35,6 @@ When("I press {string}") do |text|
   # Try link with partial text match
   elsif page.has_link?(/.*#{Regexp.escape(text)}.*/i, wait: 2)
     click_link /.*#{Regexp.escape(text)}.*/i
-  # Try to find submit button in a form (button_to creates forms with submit buttons)
-  elsif page.has_css?("input[type='submit'][value='#{text}']", wait: 2)
-    find("input[type='submit'][value='#{text}']").click
-  # Try to find button with matching text (case insensitive)
-  elsif page.has_css?("button", text: /#{Regexp.escape(text)}/i, wait: 2)
-    find("button", text: /#{Regexp.escape(text)}/i).click
-  # Try to find within button_to forms - button_to creates a form with a submit input
-  elsif page.has_css?("form input[type='submit']", text: /#{Regexp.escape(text)}/i, wait: 2)
-    find("form input[type='submit']", text: /#{Regexp.escape(text)}/i).click
-  # Try finding by form action and button text
-  elsif text.include?("Delete")
-    # For delete buttons, try to find the form and its submit button
-    form = page.find("form", text: /#{Regexp.escape(text)}/i, match: :first, wait: 2) rescue nil
-    if form
-      form.find("input[type='submit']").click
-    else
-      # Try finding any submit button with the text
-      find("input[type='submit']", text: /#{Regexp.escape(text)}/i, match: :first, wait: 2).click
-    end
   else
     # Last resort: try to find any clickable element with the text
     element = page.find(:button, text, match: :first, wait: 2) rescue nil
@@ -66,7 +43,4 @@ When("I press {string}") do |text|
     element.click
   end
 end
-
-# Removed duplicate - using social_graph_notifications_steps.rb version
-# This prevents ambiguous match errors
 

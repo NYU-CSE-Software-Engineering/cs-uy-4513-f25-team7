@@ -62,10 +62,6 @@ Given('there are {int} notifications for the current user') do |count|
   end
 end
 
-When('I visit the posts index page') do
-  visit posts_path
-end
-
 When('I visit the users index page') do
   # Ensure current user is an admin to access users index
   user = @current_user || @user
@@ -108,19 +104,9 @@ end
 Then('I should see {int} posts per page') do |count|
   # Wait for posts to load
   expect(page).to have_css('.post-card, .post', wait: 5)
-  
-  # Count post cards, excluding pagination elements
-  post_cards = page.all('.post-card', wait: 2)
-  if post_cards.empty?
-    post_cards = page.all('.post', wait: 2)
-  end
-  
-  # Filter to only actual post cards (those with titles)
-  actual_count = post_cards.count { |card| 
-    card.has_css?('.post-title, h3, [class*="title"]', wait: 1) rescue false
-  }
-  
-  expect(actual_count).to eq(count), "Expected #{count} posts, but found #{actual_count}. Page content: #{page.text[0..200]}"
+  cards = page.all('.post-card, .post', wait: 2)
+  actual = cards.count { |card| card.has_css?('.post-title, h3, [class*="title"]', wait: 1) rescue false }
+  expect(actual).to eq(count), "Expected #{count} posts, but found #{actual}. Page content: #{page.text[0..200]}"
 end
 
 Then('I should see {int} users per page') do |count|
