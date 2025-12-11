@@ -39,7 +39,7 @@ def create
       render :new
     else
       build_slots_to_six(@team)
-      render :new, status: 422
+      render :new, status: :unprocessable_entity
     end
 
   when "Publish"
@@ -56,13 +56,13 @@ def create
         return redirect_to @team  # => /teams/:id
       else
         build_slots_to_six(@team)
-        return render :new, status: 422
+        return render :new, status: :unprocessable_entity
       end
     else
       @team.status = :draft if @team.respond_to?(:status=)
       flash.now[:alert] = "Cannot publish: unresolved legality issues"
       build_slots_to_six(@team)
-      return render :new, status: 422
+      return render :new, status: :unprocessable_entity
     end
 
   when "Add Pokémon"
@@ -116,7 +116,7 @@ end
         render :edit
       else
         build_slots_to_six(@team)
-        render :edit, status: 422
+        render :edit, status: :unprocessable_entity
       end
 
     when "Publish"
@@ -131,13 +131,13 @@ end
           return redirect_to @team
         else
           build_slots_to_six(@team)
-          return render :edit, status: 422
+          return render :edit, status: :unprocessable_entity
         end
       else
         @team.status = :draft if @team.respond_to?(:status=)
         flash.now[:alert] = "Cannot publish: unresolved legality issues"
         build_slots_to_six(@team)
-        return render :edit, status: 422
+        return render :edit, status: :unprocessable_entity
       end
 
     when "Add Pokémon"
