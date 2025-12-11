@@ -61,7 +61,7 @@
                       </div>
                     <% end %>
                     <div class="post-info">
-                      <span class="post-date"><%= post.created_at.strftime('%B %d, %Y at %I:%M %p') %></span>
+                      <span class="post-date"><%= post.created_at&.strftime('%B %d, %Y at %I:%M %p') || 'Date not available' %></span>
                     </div>
                   </div>
         </div>

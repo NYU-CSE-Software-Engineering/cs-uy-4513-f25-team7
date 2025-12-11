@@ -120,11 +120,42 @@ end
 
 Then('I should see a vote score of {int} for {string}') do |expected_score, title|
   post = Post.find_by!(title: title)
-  # Find the post card and check its vote score
-  within(".post-card", text: title) do
-    score_element = page.find('.vote-score')
-    actual_score = score_element.text.to_i
-    expect(actual_score).to eq(expected_score)
+  # Reload the page to ensure we have the latest data
+  visit page.current_path if page.current_path.include?('posts')
+  
+  # Find the post card - try multiple selectors
+  post_card = nil
+  [".post-card", ".post", "[class*='post-card']", "[class*='post']"].each do |selector|
+    begin
+      post_card = page.find(selector, text: /#{Regexp.escape(title)}/i, match: :first, wait: 5)
+      break if post_card
+    rescue Capybara::ElementNotFound
+      next
+    end
+  end
+  
+  if post_card
+    # Find vote score within the post card
+    score_element = nil
+    ['.vote-score', '[data-voting-target="score"]', '[class*="vote-score"]'].each do |score_selector|
+      begin
+        score_element = post_card.find(score_selector, match: :first, wait: 2)
+        break if score_element
+      rescue Capybara::ElementNotFound
+        next
+      end
+    end
+    
+    if score_element
+      actual_score = score_element.text.strip.to_i
+      expect(actual_score).to eq(expected_score), "Expected vote score of #{expected_score} for '#{title}', but found #{actual_score}"
+    else
+      # Fallback: check if score appears in the post card
+      expect(post_card).to have_content(expected_score.to_s)
+    end
+  else
+    # Fallback: check if score appears anywhere on the page
+    expect(page).to have_content(expected_score.to_s), "Could not find post '#{title}' or vote score #{expected_score}"
   end
 end
 

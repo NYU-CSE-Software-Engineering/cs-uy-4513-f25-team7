@@ -103,11 +103,29 @@ Then('the post should not be created') do
 end
 
 When('I create a post with the tag {string}') do |tag_name|
+  # Ensure user exists and is signed in
+  @current_user ||= User.find_or_create_by!(email: "test@example.com") do |u|
+    u.password = "password123"
+    u.password_confirmation = "password123"
+  end
+  @user = @current_user
+  
+  # Sign in if not already signed in
+  unless page.has_content?("Log out") || page.has_content?("Logout")
+    visit new_user_session_path
+    fill_in "Email", with: @current_user.email
+    fill_in "Password", with: "password123"
+    click_button "Log in"
+  end
+  
   visit new_post_path
   fill_in "Title", with: "Test Post with #{tag_name}"
   fill_in "Body", with: "Content for test post"
   fill_in "Tags", with: tag_name
   click_button "Create Post"
+  
+  # Wait for redirect and ensure post was created
+  expect(page).to have_content("Post was successfully created").or have_content("Test Post with #{tag_name}")
 end
 
 Then('the post should be associated with the existing {string} tag') do |tag_name|
@@ -126,6 +144,4 @@ Given('there is already a tag named {string}') do |tag_name|
   Tag.find_or_create_by!(name: tag_name.downcase.strip)
 end
 
-Then('I should be on the post\'s show page') do
-  expect(page.current_path).to match(/\/posts\/\d+/)
-end
+# Removed duplicate - using post_tagging_steps.rb definition instead
