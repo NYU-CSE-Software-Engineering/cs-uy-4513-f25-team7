@@ -65,9 +65,11 @@
       </div>
     <% end %>
     
-    <div class="pagination">
-      <%= paginate @posts %>
-    </div>
+    <% if @posts.total_pages > 1 %>
+      <div class="pagination">
+        <%= paginate @posts %>
+      </div>
+    <% end %>
   <% else %>
     <div class="no-posts">
       <p>No posts found. <%= link_to 'Create the first post!', new_post_path %></p>

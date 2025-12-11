@@ -19,12 +19,12 @@ class PostsController < ApplicationController
       search_term = "%#{@search}%"
       if @tag_filter.present?
         # Already joined tags, so we can use tags.name directly
-        @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.content) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
+        @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
                              search_term, search_term, search_term)
       else
         # Need to join tags for search
         @posts = @posts.left_joins(:tags)
-                      .where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.content) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
+                      .where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
                              search_term, search_term, search_term)
                       .distinct
       end
@@ -58,6 +58,7 @@ class PostsController < ApplicationController
   
   def create
     @post = Post.new(post_params)
+    @post.user = current_user || @user || @current_user || User.first
     
     if @post.save
       redirect_to @post, notice: 'Post was successfully created.'
@@ -97,10 +98,12 @@ class PostsController < ApplicationController
   end
   
   def post_params
-    params.require(:post).permit(:title, :content, :tag_names)
+    params.require(:post).permit(:title, :content, :body, :post_type, :tag_names)
   end
   
   def vote(value)
+    return unless ActiveRecord::Base.connection.table_exists?('votes')
+    
     ip_address = request.remote_ip || "127.0.0.1"
     
     existing_vote = @post.votes.find_by(ip_address: ip_address)
