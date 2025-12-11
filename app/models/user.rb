@@ -16,6 +16,15 @@ class User < ApplicationRecord
   has_many :sent_messages, class_name: "Message", foreign_key: :sender_id, dependent: :destroy
   has_many :received_messages, class_name: "Message", foreign_key: :recipient_id, dependent: :destroy
   has_many :teams, dependent: :destroy
+  scope :lookup_query, ->(q) do
+    term = q.to_s.strip
+    return none if term.blank?
+
+    where(
+      "LOWER(username) LIKE :term OR LOWER(email) LIKE :term",
+      term: "%#{term.downcase}%"
+    ).order(:username, :email)
+  end
   # Roles used by the moderation feature:
   #   user (default)
   #   moderator

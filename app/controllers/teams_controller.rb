@@ -1,13 +1,20 @@
 class TeamsController < ApplicationController
-  before_action :authenticate_user!
+before_action :authenticate_user!
 
-  def new
-    @team = Team.new(
-      visibility: :private_team,
-      status: :draft
-    )
-    build_slots_to_six(@team)
-  end
+def new
+  @team = Team.new(
+    visibility: :private_team,
+    status: :draft
+  )
+  build_slots_to_six(@team)
+end
+
+def destroy
+  @team = current_user.teams.find(params[:id])
+  @team.destroy
+  redirect_to root_path, notice: "Team deleted."
+end
+
 def create
   @team = Team.new(team_params)
   @team.user = current_user if @team.respond_to?(:user=) && current_user
