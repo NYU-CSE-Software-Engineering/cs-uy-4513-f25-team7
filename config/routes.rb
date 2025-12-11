@@ -59,7 +59,7 @@ Rails.application.routes.draw do
   end
 
   # team builder
-  resources :teams, only: %i[new create edit update show] do
+  resources :teams, only: %i[new destroy create edit update show] do
     resources :reviews, only: [:create, :edit, :update, :destroy]
   end
   resources :favorites, only: [:index, :create, :destroy]
