@@ -451,7 +451,7 @@ This skips coverage tracking and report generation, which can significantly spee
 
 #### Continuous Integration
 
-Coverage reports are automatically generated and published on every push to `main` or `ci/**` branches. The published reports are available at: https://nyu-cse-software-engineering.github.io/cs-uy-4513-f25-team7/docs/
+Coverage reports are automatically generated and published on every push to `main` or `ci/**` branches. The published reports are available at: https://nyu-cse-software-engineering.github.io/cs-uy-4513-f25-team7/
 
 ---
 
