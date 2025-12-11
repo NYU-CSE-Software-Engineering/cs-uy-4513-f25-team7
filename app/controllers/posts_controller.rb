@@ -18,9 +18,10 @@ class PostsController < ApplicationController
     if @search.present?
       search_term = "%#{@search}%"
       if @tag_filter.present?
-        # Already joined tags, so we can use tags.name directly
-        @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
-                             search_term, search_term, search_term)
+        # When tag filter is present, only search in title and body (not tag names)
+        # This ensures posts must match both the tag filter AND the search term
+        @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?)", 
+                             search_term, search_term)
       else
         # Need to join tags for search
         @posts = @posts.left_joins(:tags)
