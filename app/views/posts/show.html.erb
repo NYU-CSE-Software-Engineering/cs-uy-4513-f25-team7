@@ -1,4 +1,4 @@
-<div class="forum-container">
+<div class="forum-container" data-test-id="post-show">
   <div class="post-detail">
     <div class="post-voting" data-controller="voting" data-voting-post-id-value="<%= @post.id %>">
       <%= form_with url: upvote_post_path(@post), method: :post, local: false, class: 'vote-form' do |form| %>
@@ -18,6 +18,9 @@
       <h1 class="post-title"><%= @post.title %></h1>
       
       <div class="post-meta">
+        <% if @post.post_type == 'Meta' %>
+          <span class="meta-badge" data-test-id="post-badge-meta">Meta</span>
+        <% end %>
         <% if @post.tags.any? %>
           <div class="post-tags">
             <% @post.tags.each do |tag| %>
@@ -31,15 +34,43 @@
       </div>
       
       <div class="post-body">
-        <%= simple_format(@post.content) %>
+        <%= simple_format(@post.body) %>
       </div>
     </div>
   </div>
   
   <div class="post-actions">
-    <%= link_to 'Edit', edit_post_path(@post), class: 'btn btn-secondary' %>
-    <%= link_to 'Delete', post_path(@post), method: :delete, 
-                confirm: 'Are you sure?', class: 'btn btn-danger' %>
+    <% if @post.user == current_user %>
+      <%= link_to 'Edit', edit_post_path(@post), class: 'btn btn-secondary' %>
+    <% end %>
+    <% if current_user&.moderator? || current_user&.admin? %>
+      <%= button_to 'Delete Post', post_path(@post), method: :delete, 
+                  data: { confirm: 'Are you sure?' }, class: 'btn btn-danger', 
+                  form: { id: 'delete-post-form' } %>
+    <% end %>
     <%= link_to 'Back to Forum', posts_path, class: 'btn btn-outline' %>
+  </div>
+  
+  <div class="comments-section">
+    <h2>Comments</h2>
+    <% if @post.comments.any? %>
+      <% @post.comments.each do |comment| %>
+        <% next if comment.id.nil? %>
+        <div class="comment">
+          <p><strong><%= comment.user&.email || 'Unknown' %></strong>: <%= comment.body %></p>
+          <% if comment.user == current_user || current_user&.moderator? || current_user&.admin? %>
+            <%= button_to 'Delete Comment', post_comment_path(@post, comment), method: :delete, 
+                        data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger',
+                        form: { class: 'delete-comment-form' } %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+    
+    <% if user_signed_in? %>
+      <%= render 'comments/form', post: @post, comment: @post.comments.build %>
+    <% else %>
+      <p>Please sign in to comment.</p>
+    <% end %>
   </div>
 </div>
