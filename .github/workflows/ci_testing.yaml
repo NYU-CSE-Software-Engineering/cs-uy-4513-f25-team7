@@ -28,9 +28,7 @@ jobs:
           bundler-cache: true
 
       - name: Prepare DB
-        run: |
-          bin/rails db:create RAILS_ENV=test || true
-          bin/rails db:schema:load RAILS_ENV=test
+        run: bin/rails db:prepare
 
       - name: Run RSpec
         env:
@@ -100,9 +98,7 @@ jobs:
           bundler-cache: true
 
       - name: Prepare DB
-        run: |
-          bin/rails db:create RAILS_ENV=test || true
-          bin/rails db:schema:load RAILS_ENV=test
+        run: bin/rails db:prepare
 
       - name: Run Cucumber
         env:
