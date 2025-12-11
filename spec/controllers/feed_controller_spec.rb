@@ -16,7 +16,8 @@ RSpec.describe FeedController, type: :controller do
 
       get :index
 
-      titles = assigns(:ordered_posts).map(&:title)
+      ordered = controller.instance_variable_get(:@ordered_posts)
+      titles = ordered.map(&:title)
       expect(titles.first).to eq("Followed species post")
       expect(titles.last).to eq("Other species post")
     end
@@ -41,15 +42,15 @@ RSpec.describe FeedController, type: :controller do
 
       get :index
 
-      ordered = assigns(:ordered_posts)
+      ordered = controller.instance_variable_get(:@ordered_posts)
       expect(ordered).to include(friend_post, own_post)
       expect(ordered.first).to eq(own_post) # newest activity from another user
     end
 
     it "returns an empty ordered list when there are no posts" do
       get :index
-      expect(assigns(:ordered_posts)).to be_empty
+      ordered = controller.instance_variable_get(:@ordered_posts)
+      expect(ordered).to be_empty
     end
   end
 end
-
