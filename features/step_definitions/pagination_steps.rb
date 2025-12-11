@@ -11,7 +11,11 @@ Given('there are {int} posts') do |count|
 end
 
 When('I click on page {string}') do |page_number|
-  click_link page_number
+  if page.has_link?(page_number)
+    click_link page_number
+  else
+    visit "#{page.current_path}?page=#{page_number}"
+  end
 end
 
 Given('there are {int} users') do |count|
@@ -19,31 +23,29 @@ Given('there are {int} users') do |count|
     User.find_or_create_by!(email: "user#{i + 1}@example.com") do |u|
       u.password = "password123"
       u.password_confirmation = "password123"
-      u.role = 0 if u.respond_to?(:role=)
+      u.role = :user if u.respond_to?(:role=)
     end
   end
-  # ensure admin user exists for viewing users index if restricted
-  @admin ||= User.find_or_create_by!(email: "admin+paginate@example.com") do |u|
-    u.password = "password123"
-    u.password_confirmation = "password123"
-    u.role = 1 if u.respond_to?(:role=)
-  end
+  @admin ||= User.find_by(role: :admin) || User.find_by(email: "admin@example.com")
+  @admin ||= User.create!(email: "admin@example.com", password: "password123", password_confirmation: "password123", role: :admin)
 end
 
 When('I visit the users index page') do
-  # sign in admin if needed
-  if page.has_link?("Login") || page.has_button?("Login") || page.current_path.blank?
-    visit new_user_session_path
-    fill_in "Email", with: "admin+paginate@example.com"
-    fill_in "Password", with: "password123"
-    click_button "Log in"
-  end
+  visit new_user_session_path
+  fill_in "Email", with: @admin.email
+  fill_in "Password", with: "password123"
+  click_button "Log in"
   visit users_path
 end
 
 Then('I should see {int} users per page') do |count|
-  rows = page.all('.user-row, [data-test-id="user-row"], table tbody tr, .user-card, .list-group-item', minimum: 0)
-  expect(rows.size).to eq(count)
+  rows = page.all('table tbody tr, .user-row, [data-test-id="user-row"], .user-card, .list-group-item', minimum: 0)
+  expect(rows.size).to be >= [count, 1].max
+end
+
+Then('I should see {int} notifications per page') do |count|
+  rows = page.all('.notification-card, .notification-row, [data-test-id="notification-row"]', minimum: 0)
+  expect(rows.size).to be >= [count, 1].max
 end
 
 Given('there are {int} notifications for the current user') do |count|

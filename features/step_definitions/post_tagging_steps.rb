@@ -368,7 +368,6 @@ Then('I should see posts with the {string} tag') do |tag_name|
 end
 
 Then('I should see both tags displayed properly') do
-  # Just verify that tags are visible on the page
   expect(page).to have_css('.tag, .badge, [class*="tag"]')
 end
 
