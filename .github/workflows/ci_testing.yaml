@@ -24,6 +24,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: 3.4.6
           bundler-cache: true
 
       - name: Prepare DB
@@ -93,6 +94,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: 3.4.6
           bundler-cache: true
 
       - name: Prepare DB
