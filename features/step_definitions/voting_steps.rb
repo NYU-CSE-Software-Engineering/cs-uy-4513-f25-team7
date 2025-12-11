@@ -10,12 +10,10 @@ Then('I should see a vote score of {int}') do |expected_score|
 end
 
 When('I click the upvote button') do
-  # Find the upvote form and submit it
-  # For AJAX forms in tests, we need to submit the form directly
+  # Find the upvote button and click it
   within('.post-voting') do
-    form = page.find('form.vote-form', match: :first)
-    # Submit the form directly (works for both AJAX and regular forms)
-    form.submit
+    button = page.find('.upvote-btn', match: :first)
+    button.click
   end
   # Wait for request to complete
   sleep(1)
@@ -24,11 +22,10 @@ When('I click the upvote button') do
 end
 
 When('I click the downvote button') do
-  # Find the downvote form and submit it
+  # Find the downvote button and click it
   within('.post-voting') do
-    # Find the form with downvote button
-    form = page.all('form.vote-form').find { |f| f.has_css?('.downvote-btn') }
-    form.submit
+    button = page.find('.downvote-btn', match: :first)
+    button.click
   end
   # Wait for request to complete
   sleep(1)
@@ -39,8 +36,8 @@ end
 When('I click the upvote button again') do
   # Same as clicking upvote button - it will toggle
   within('.post-voting') do
-    form = page.find('form.vote-form', match: :first)
-    form.submit
+    button = page.find('.upvote-btn', match: :first)
+    button.click
   end
   # Wait for request to complete
   sleep(1)
@@ -77,8 +74,8 @@ When('I click the upvote button for {string}') do |title|
   post = Post.find_by!(title: title)
   # Find the specific post's voting section
   within(".post-card", text: title) do
-    form = page.find('form.vote-form', match: :first)
-    form.submit
+    button = page.find('.upvote-btn', match: :first)
+    button.click
   end
   # Wait for request to complete
   sleep(1)

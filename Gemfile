@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.4.6"
+ruby "~> 3.4.6"
 
 # Fix for Windows psych gem compilation issues
 gem "psych", "~> 3.3.0"
