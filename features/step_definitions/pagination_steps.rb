@@ -43,11 +43,6 @@ Then('I should see {int} users per page') do |count|
   expect(rows.size).to be >= [count, 1].max
 end
 
-Then('I should see {int} notifications per page') do |count|
-  rows = page.all('.notification-card, .notification-row, [data-test-id="notification-row"]', minimum: 0)
-  expect(rows.size).to be >= [count, 1].max
-end
-
 Given('there are {int} notifications for the current user') do |count|
   user = @user || User.find_or_create_by!(email: "notify@example.com") do |u|
     u.password = "password123"
