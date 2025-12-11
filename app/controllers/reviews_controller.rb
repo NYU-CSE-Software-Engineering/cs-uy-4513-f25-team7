@@ -38,7 +38,7 @@ class ReviewsController < ApplicationController
     if @review.update(review_params)
       redirect_to @team, notice: "Review updated successfully!"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -82,4 +82,3 @@ class ReviewsController < ApplicationController
     params.require(:review).permit(:rating, :body)
   end
 end
-

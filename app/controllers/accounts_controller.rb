@@ -13,7 +13,7 @@ class AccountsController < ApplicationController
       redirect_to edit_user_registration_path, notice: "Profile updated successfully!"
     else
       flash.now[:alert] = current_user.errors.full_messages.to_sentence
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -27,11 +27,11 @@ class AccountsController < ApplicationController
         redirect_to edit_user_registration_path, notice: "🎉 You are now an admin!"
       else
         flash.now[:alert] = current_user.errors.full_messages.to_sentence
-        render :admin_setup, status: :unprocessable_entity
+        render :admin_setup, status: :unprocessable_content
       end
     else
       flash.now[:alert] = "Invalid admin code"
-      render :admin_setup, status: :unprocessable_entity
+      render :admin_setup, status: :unprocessable_content
     end
   end
 
