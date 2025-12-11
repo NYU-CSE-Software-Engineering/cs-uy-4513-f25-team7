@@ -43,7 +43,7 @@
             <% end %>
 
             <% if current_user.admin? %>
-              <%= link_to "👑 Admin", admin_panel_path, class: "nav-link", style: "color: #fbbf24;" %>
+              <%= link_to "Admin", admin_panel_path, class: "nav-link", style: "color: #fbbf24;" %>
             <% end %>
             <%= link_to "Settings", edit_user_registration_path, class: "nav-link" %>
             <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "btn btn-secondary btn-small", form: { style: "display:inline-flex" } %>

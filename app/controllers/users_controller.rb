@@ -1,9 +1,10 @@
 class UsersController < ApplicationController
-  before_action :require_login, only: [:index, :update]
-  before_action :require_admin, only: [:index, :update]
-    def new
-      @user = User.new
-    end
+  before_action :require_login, only: [:index, :update, :destroy]
+  before_action :require_admin, only: [:index, :update, :destroy]
+
+  def new
+    @user = User.new
+  end
 
   def show
     @user = User.find(params[:id])
@@ -27,7 +28,6 @@ class UsersController < ApplicationController
   end
 
   # Promote / demote a user
-
   def update
     @user = User.find(params[:id])
     previous_role = @user.role
@@ -53,11 +53,27 @@ class UsersController < ApplicationController
 
     redirect_to users_path
   end
-  #private methods
+
+  def destroy
+    @user = User.find(params[:id])
+
+    # Prevent admin from deleting themselves
+    if @user.id == current_user.id
+      flash[:alert] = "You cannot delete yourself"
+      redirect_to users_path and return
+    end
+
+    # Prevent deleting other admins
+    if @user.admin?
+      flash[:alert] = "You cannot delete another admin"
+      redirect_to users_path and return
+    end
+
+    email = @user.email
+    @user.destroy
+    flash[:notice] = "User #{email} has been deleted"
+    redirect_to users_path
   end
-
-
-  # Role Management page (list users + roles)
 
   private
 
@@ -68,3 +84,4 @@ class UsersController < ApplicationController
   def role_params
     params.require(:user).permit(:role)
   end
+end
