@@ -14,6 +14,10 @@ Then("I should not see {string}") do |text|
   expect(page).not_to have_content(text)
 end
 
+When('I visit the posts index page') do
+  visit posts_path
+end
+
 Given('I am a registered user') do
   @current_user ||= User.find_or_create_by!(email: "test@example.com") do |u|
     u.password = "password123"
