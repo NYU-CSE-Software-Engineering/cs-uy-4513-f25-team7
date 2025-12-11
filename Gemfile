@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.4.6"
+ruby "~> 3.4.6"
 
 # Fix for Windows psych gem compilation issues
 gem "psych", "~> 3.3.0"
@@ -500,4 +500,3 @@ group :development do
   gem "spring"  # optional; safe to keep, CI won’t load it
 
 end
-
