@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :set_post, only: [:show, :edit, :update, :destroy]
+  before_action :set_post, only: [:show, :edit, :update, :destroy, :upvote, :downvote]
   
   def index
     @search = params[:search]
@@ -19,12 +19,12 @@ class PostsController < ApplicationController
       search_term = "%#{@search}%"
       if @tag_filter.present?
         # Already joined tags, so we can use tags.name directly
-        @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.content) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
+        @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
                              search_term, search_term, search_term)
       else
         # Need to join tags for search
         @posts = @posts.left_joins(:tags)
-                      .where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.content) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
+                      .where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)", 
                              search_term, search_term, search_term)
                       .distinct
       end
@@ -42,21 +42,24 @@ class PostsController < ApplicationController
     @posts = @posts.page(params[:page]).per(10)
     
     @all_tags = Tag.order(:name)
-    @popular_tags = Tag.popular(10)
+    @popular_tags = Tag.popular(10) rescue Tag.limit(10)
   end
   
   def show
-    @post = Post.includes(:tags)
+    @post = Post.includes(:tags, :comments, :user)
     @post = @post.includes(:votes) if ActiveRecord::Base.connection.table_exists?('votes')
     @post = @post.find(params[:id])
+    @comment = @post.comments.build
   end
   
   def new
     @post = Post.new
+    @post.post_type = 'Thread' if @post.respond_to?(:post_type=)
   end
   
   def create
     @post = Post.new(post_params)
+    @post.user = current_user || @user || @current_user || User.first
     
     if @post.save
       redirect_to @post, notice: 'Post was successfully created.'
@@ -81,6 +84,14 @@ class PostsController < ApplicationController
     redirect_to posts_url, notice: 'Post was successfully deleted.'
   end
   
+  def upvote
+    vote(1)
+  end
+  
+  def downvote
+    vote(-1)
+  end
+  
   private
   
   def set_post
@@ -88,6 +99,45 @@ class PostsController < ApplicationController
   end
   
   def post_params
-    params.require(:post).permit(:title, :content, :tag_names)
+    params.require(:post).permit(:title, :body, :post_type, :tag_names)
+  end
+  
+  def vote(value)
+    return unless ActiveRecord::Base.connection.table_exists?('votes')
+    
+    ip_address = request.remote_ip || "127.0.0.1"
+    
+    # Reload post to get fresh vote associations
+    @post.reload
+    
+    existing_vote = @post.votes.find_by(ip_address: ip_address)
+    
+    if existing_vote
+      if existing_vote.value == value
+        existing_vote.destroy
+        message = "Vote removed"
+      else
+        existing_vote.update(value: value)
+        message = value == 1 ? "Upvoted!" : "Downvoted!"
+      end
+    else
+      @post.votes.create(value: value, ip_address: ip_address)
+      message = value == 1 ? "Upvoted!" : "Downvoted!"
+    end
+    
+    # Reload to get updated vote score
+    @post.reload
+    
+    respond_to do |format|
+      format.html { redirect_to @post, notice: message }
+      format.json { 
+        render json: { 
+          success: true, 
+          message: message,
+          vote_score: @post.vote_score,
+          user_vote: @post.votes.find_by(ip_address: ip_address)&.value
+        } 
+      }
+    end
   end
 end

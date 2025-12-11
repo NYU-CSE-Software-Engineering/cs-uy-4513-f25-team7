@@ -2,8 +2,8 @@ class NotificationsController < ApplicationController
   before_action :require_login
 
   def index
-    @notifications = current_user.notifications.order(created_at: :desc)
-    @unread_count = @notifications.unread.count
+    @notifications = current_user.notifications.order(created_at: :desc).page(params[:page]).per(20)
+    @unread_count = current_user.notifications.unread.count
     mark_unread_as_read!
   end
 

@@ -16,6 +16,20 @@
   <% end %>
 </div>
 
+<% if defined?(@popular_tags) && @popular_tags.present? %>
+  <div class="popular-tags">
+    <h3>Popular Tags</h3>
+    <div class="tag-list">
+      <% @popular_tags.each_with_index do |tag, index| %>
+        <div class="tag-item">
+          <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+          <span class="tag-stats">(<%= tag.posts.count %> posts)</span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
 <div class="posts-list">
   <% if @posts.present? %>
     <% @posts.each do |post| %>
@@ -54,9 +68,11 @@
       </div>
     <% end %>
     
-    <div class="pagination">
-      <%= paginate @posts %>
-    </div>
+    <% if @posts.total_pages > 1 %>
+      <div class="pagination">
+        <%= paginate @posts %>
+      </div>
+    <% end %>
   <% else %>
     <div class="no-posts">
       <p>No posts found. <%= link_to 'Create the first post!', new_post_path %></p>

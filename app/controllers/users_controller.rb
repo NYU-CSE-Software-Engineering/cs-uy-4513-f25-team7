@@ -23,7 +23,7 @@ class UsersController < ApplicationController
   end
 
   def index
-    @users = User.order(:email)
+    @users = User.order(:email).page(params[:page]).per(20)
   end
 
   # Promote / demote a user

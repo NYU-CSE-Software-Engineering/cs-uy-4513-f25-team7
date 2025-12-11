@@ -22,6 +22,12 @@
         </li>
       <% end %>
     </ul>
+    
+    <% if @notifications.total_pages > 1 %>
+      <div class="pagination">
+        <%= paginate @notifications %>
+      </div>
+    <% end %>
   <% else %>
     <p>No notifications yet.</p>
   <% end %>
