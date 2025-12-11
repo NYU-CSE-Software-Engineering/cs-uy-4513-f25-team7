@@ -23,8 +23,9 @@ class SpeciesController < ApplicationController
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{@dex_species.pokeapi_id}.png"
       end
 
-    @following = FollowsController.following_for(@name)
+    @following      = FollowsController.following_for(@name, current_user)
     @follower_count = FollowsController.count_for(@name)
+
 
     # Load discussion posts for this species
     @posts = @dex_species ? Post.for_species(@dex_species.id).includes(:user, :comments).order(created_at: :desc) : []

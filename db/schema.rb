@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_07_000001) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.integer "post_id", null: false
@@ -123,6 +123,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
+  create_table "species_follows", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "dex_species_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dex_species_id"], name: "index_species_follows_on_dex_species_id"
+    t.index ["user_id", "dex_species_id"], name: "index_species_follows_on_user_id_and_dex_species_id", unique: true
+    t.index ["user_id"], name: "index_species_follows_on_user_id"
+  end
+
   create_table "team_slots", force: :cascade do |t|
     t.integer "team_id", null: false
     t.integer "slot_index", null: false
@@ -208,6 +218,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
   add_foreign_key "posts", "users"
   add_foreign_key "reviews", "teams"
   add_foreign_key "reviews", "users"
+  add_foreign_key "species_follows", "dex_species", column: "dex_species_id"
+  add_foreign_key "species_follows", "users"
   add_foreign_key "team_slots", "teams"
   add_foreign_key "teams", "users"
 end

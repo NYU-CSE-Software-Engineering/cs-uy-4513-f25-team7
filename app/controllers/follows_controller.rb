@@ -1,47 +1,52 @@
+# app/controllers/follows_controller.rb
 class FollowsController < ApplicationController
-  @@state  = Hash.new(false)
-  @@counts = Hash.new(0)
+  before_action :authenticate_user!
 
   def create
     name = params[:name]
-    unless @@state[name]
-      @@state[name] = true
-      @@counts[name] += 1
+    species = DexSpecies.find_by("LOWER(name) = ?", name.downcase)
+
+    if species
+      SpeciesFollow.find_or_create_by!(user: current_user, dex_species: species)
     end
+
     redirect_to species_path(name: name)
   end
 
   def destroy
     name = params[:name]
-    if @@state[name]
-      @@state[name] = false
-      @@counts[name] -= 1 if @@counts[name] > 0
+    species = DexSpecies.find_by("LOWER(name) = ?", name.downcase)
+
+    if species
+      SpeciesFollow.where(user: current_user, dex_species: species).delete_all
     end
+
     redirect_to species_path(name: name)
   end
 
-  # ===== helpers used by views/steps/specs =====
-  def self.following_for(name) = @@state[name]
-  def self.count_for(name)     = @@counts[name]
+  # ----- helpers used by controllers/views -----
 
-  # >>> add this method <<<
-  def self.followed_species
-    @@state.select { |_, v| v }.keys
+  def self.following_for(name, user)
+    return false unless user
+    species = DexSpecies.find_by("LOWER(name) = ?", name.downcase)
+    return false unless species
+
+    SpeciesFollow.exists?(user: user, dex_species: species)
   end
 
-  # ===== test seed helpers =====
-  def self.reset!
-    @@state  = Hash.new(false)
-    @@counts = Hash.new(0)
+  def self.count_for(name)
+    species = DexSpecies.find_by("LOWER(name) = ?", name.downcase)
+    return 0 unless species
+
+    SpeciesFollow.where(dex_species: species).count
   end
 
-  def self.seed_follow(name, count: 1)
-    @@state[name]  = true
-    @@counts[name] = count
-  end
+  def self.followed_species(user)
+    return [] unless user
 
-  def self.seed_followers(name, count)
-    @@counts[name] = count
+    SpeciesFollow
+      .joins(:dex_species)
+      .where(user: user)
+      .pluck("dex_species.name")
   end
-
 end

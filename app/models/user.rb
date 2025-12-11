@@ -7,7 +7,8 @@ class User < ApplicationRecord
   has_many :followee_relationships, class_name: "Follow", foreign_key: :follower_id, dependent: :destroy
   has_many :followers, through: :follower_relationships, source: :follower
   has_many :followees, through: :followee_relationships, source: :followee
-
+  has_many :species_follows, dependent: :destroy
+  has_many :followed_species, through: :species_follows, source: :dex_species
   has_many :favorites, dependent: :destroy
   has_many :notifications, dependent: :destroy
   has_many :posts, dependent: :destroy
