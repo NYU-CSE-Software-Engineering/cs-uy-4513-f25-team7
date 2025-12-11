@@ -19,7 +19,6 @@ class PostsController < ApplicationController
         @posts = @posts.where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?)",
                               search_term, search_term)
                        .distinct
-        @posts = @posts.order('posts.created_at ASC').limit(1)
       else
         @posts = @posts.left_joins(:tags)
                        .where("LOWER(posts.title) LIKE LOWER(?) OR LOWER(posts.body) LIKE LOWER(?) OR LOWER(tags.name) LIKE LOWER(?)",
