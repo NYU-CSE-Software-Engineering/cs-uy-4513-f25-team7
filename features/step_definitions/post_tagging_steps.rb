@@ -178,11 +178,6 @@ When('I click on the {string} tag') do |tag_name|
   link.click
 end
 
-# Removed duplicate - using common_steps.rb "I press" instead
-# When('I click {string}') do |link_text|
-#   click_link link_text
-# end
-
 Then('I should be on the post\'s show page') do
   # Check that we're on a post show page by looking for post content
   expect(page).to have_css('.post-content, .post-title, [class*="post"]')
