@@ -42,7 +42,7 @@ class PostsController < ApplicationController
     @posts = @posts.page(params[:page]).per(10)
     
     @all_tags = Tag.order(:name)
-    @popular_tags = Tag.popular(10) rescue Tag.limit(10)
+    @popular_tags = Tag.popular(10)
   end
   
   def show
@@ -99,7 +99,7 @@ class PostsController < ApplicationController
   end
   
   def post_params
-    params.require(:post).permit(:title, :body, :post_type, :tag_names)
+    params.require(:post).permit(:title, :content, :body, :post_type, :tag_names)
   end
   
   def vote(value)
