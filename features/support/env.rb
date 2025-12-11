@@ -35,8 +35,9 @@ rescue NameError
 end
 
 # Ensure database is migrated before running tests
+# Note: db:prepare in CI should handle this, but we ensure it here as well
 # For in-memory SQLite databases, migrations will run in Before hook (hooks.rb)
-# For file-based databases, run migrations here
+# For file-based databases, db:prepare should have already run migrations
 begin
   # Establish connection first
   ActiveRecord::Base.connection
@@ -44,12 +45,20 @@ begin
   # Check if we're using an in-memory database
   db_config = ActiveRecord::Base.connection_db_config.configuration_hash rescue nil
   if db_config && db_config[:database] != ':memory:'
-    ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
+    # For file-based databases, db:prepare should have already run migrations
+    # Just verify that critical tables exist
+    unless ActiveRecord::Base.connection.table_exists?('users')
+      # If users table doesn't exist, try to run migrations
+      migration_context = ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
+      migration_context.migrate
+    end
   end
   # For in-memory databases, migrations run in Before hook in hooks.rb
 rescue => e
   # For in-memory databases, migrations will run in Before hook
   # This is expected and not an error
+  # For file-based databases, db:prepare should have handled migrations
+  # Don't fail here - let the Before hook handle it
 end
 
 # You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
