@@ -1,5 +1,7 @@
-<div style="max-width: 700px; margin: 0 auto;">
-  <h1>📝 New Post</h1>
+<div class="forum-container">
+  <div class="forum-header">
+    <h1>📝 New Post</h1>
+  </div>
   <p class="text-muted" style="margin-bottom: 2rem;">Share your thoughts with the community</p>
 
   <div class="card">
@@ -17,7 +19,7 @@
 
       <div class="form-group">
         <%= form.label :title, "Title" %>
-        <%= form.text_field :title, placeholder: "Give your post a descriptive title" %>
+        <%= form.text_field :title, placeholder: "Give your post a descriptive title", class: 'form-input' %>
       </div>
 
       <div class="form-group">
@@ -27,15 +29,23 @@
           ['📊 Meta - Site/Community Discussion', 'Meta'],
           ['⚔️ Strategy - Competitive Tips', 'Strategy'],
           ['📢 Announcement - Important News', 'Announcement']
-        ] %>
+        ], {}, { class: 'form-select' } %>
       </div>
 
       <div class="form-group">
         <%= form.label :body, "Body" %>
-        <%= form.text_area :body, rows: 10, placeholder: "Write your post here..." %>
+        <%= form.text_area :body, rows: 10, placeholder: "Write your post here...", class: 'form-textarea' %>
       </div>
 
-      <div class="flex gap-2" style="margin-top: 1.5rem;">
+      <div class="form-group">
+        <%= form.label :tag_names, "Tags (comma-separated)" %>
+        <%= form.text_field :tag_names, placeholder: "e.g., ruby, rails, database", class: 'form-input' %>
+        <small class="form-help" style="display: block; margin-top: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+          Separate multiple tags with commas. Tags help others find your post.
+        </small>
+      </div>
+
+      <div class="form-actions" style="margin-top: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
         <%= form.submit 'Create Post', class: 'btn btn-primary' %>
         <%= link_to 'Cancel', posts_path, class: 'btn btn-secondary' %>
       </div>

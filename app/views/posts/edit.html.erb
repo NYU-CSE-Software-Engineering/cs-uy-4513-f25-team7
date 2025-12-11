@@ -1,0 +1,53 @@
+<div class="forum-container">
+  <div class="forum-header">
+    <h1>Edit Post</h1>
+  </div>
+
+  <div class="card">
+    <%= form_with model: @post, local: true, class: 'post-form', id: 'edit_post' do |form| %>
+      <% if @post.errors.any? %>
+        <div class="flash alert" style="margin-bottom: 1.5rem;">
+          <strong><%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:</strong>
+          <ul style="margin: 0.5rem 0 0 1.5rem;">
+            <% @post.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= form.label :title, class: 'form-label' %>
+        <%= form.text_field :title, class: 'form-input' %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :post_type, 'Post Type', class: 'form-label' %>
+        <%= form.select :post_type, options_for_select([
+          ['💬 Thread - General Discussion', 'Thread'],
+          ['📊 Meta - Site/Community Discussion', 'Meta'],
+          ['⚔️ Strategy - Competitive Tips', 'Strategy'],
+          ['📢 Announcement - Important News', 'Announcement']
+        ], @post.post_type || 'Thread'),
+                        { prompt: 'Select post type...' }, { class: 'form-select' } %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :body, 'Body', class: 'form-label' %>
+        <%= form.text_area :body, class: 'form-textarea', rows: 10 %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :tag_names, 'Tags (comma-separated)', class: 'form-label' %>
+        <%= form.text_field :tag_names, value: @post.tag_names, class: 'form-input', placeholder: 'e.g., ruby, rails, database' %>
+        <small class="form-help">Separate multiple tags with commas. Tags help others find your post.</small>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit 'Update Post', class: 'btn btn-primary' %>
+        <%= link_to 'Cancel', @post, class: 'btn btn-outline' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+

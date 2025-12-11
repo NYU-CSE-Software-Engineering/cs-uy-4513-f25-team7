@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.3.8"
+ruby "3.4.6"
 
 # --- Core app gems ---
 gem "rails", "~> 7.1.5", ">= 7.1.5.2"
@@ -16,6 +16,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 gem "tzinfo-data", platforms: %i[windows mingw mswin x64_mingw jruby]
 gem "bootsnap", require: false
+gem "kaminari", "~> 1.2"
 
 # Auth/2FA and OAuth
 gem "bcrypt", "~> 3.1"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_08_000000) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.integer "post_id", null: false
@@ -109,6 +109,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
+  create_table "post_tags", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id", "tag_id"], name: "index_post_tags_on_post_id_and_tag_id", unique: true
+    t.index ["post_id"], name: "index_post_tags_on_post_id"
+    t.index ["tag_id"], name: "index_post_tags_on_tag_id"
+  end
+
   create_table "reviews", force: :cascade do |t|
     t.integer "team_id", null: false
     t.integer "user_id", null: false
@@ -161,6 +171,13 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
     t.index ["team_id"], name: "index_team_slots_on_team_id"
   end
 
+  create_table "tags", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "LOWER(name)", name: "index_tags_on_lower_name", unique: true
+  end
+
   create_table "teams", force: :cascade do |t|
     t.string "name", null: false
     t.integer "user_id"
@@ -193,6 +210,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  create_table "votes", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "value", null: false
+    t.string "ip_address", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id", "ip_address"], name: "index_votes_on_post_id_and_ip_address", unique: true
+    t.index ["post_id"], name: "index_votes_on_post_id"
+  end
+
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
   add_foreign_key "dex_learnsets", "dex_moves"
@@ -204,8 +231,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
   add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "notifications", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
+  add_foreign_key "post_tags", "posts"
+  add_foreign_key "post_tags", "tags"
   add_foreign_key "posts", "dex_species", column: "dex_species_id"
   add_foreign_key "posts", "users"
+  add_foreign_key "votes", "posts"
   add_foreign_key "reviews", "teams"
   add_foreign_key "reviews", "users"
   add_foreign_key "team_slots", "teams"

@@ -1,81 +1,89 @@
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-  <div>
-    <h1>💬 Forum</h1>
-    <p class="text-muted">Join the conversation with fellow trainers</p>
-  </div>
-  <% if user_signed_in? %>
+<div class="forum-container">
+  <div class="forum-header">
+    <h1>Forum</h1>
     <%= link_to 'New Post', new_post_path, class: 'btn btn-primary' %>
-  <% end %>
-</div>
+  </div>
 
-<% if @posts.any? %>
-  <!-- Category Navigation -->
-  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
-    <% @post_types.each do |cat| %>
-      <% count = @posts_by_type[cat[:type]]&.count || 0 %>
-      <a href="#section-<%= cat[:type].downcase %>" 
-         class="btn btn-secondary btn-small" 
-         style="<%= count == 0 ? 'opacity: 0.5;' : '' %>">
-        <%= cat[:icon] %> <%= cat[:type] %> (<%= count %>)
-      </a>
+  <div class="search-filters">
+    <%= form_with url: posts_path, method: :get, local: true, class: 'search-form' do |form| %>
+      <div class="search-row">
+        <%= form.text_field :search, placeholder: 'Search posts...', value: @search, class: 'search-input', id: 'search' %>
+        <% if @all_tags.present? %>
+          <%= form.select :tag, options_from_collection_for_select(@all_tags, :name, :name, @tag_filter),
+                          { prompt: 'Filter by tag...', include_blank: true }, { class: 'tag-filter', id: 'tag' } %>
+        <% end %>
+        <%= form.submit 'Search', class: 'btn btn-secondary' %>
+        <%= link_to 'Clear', posts_path, class: 'btn btn-outline' %>
+      </div>
     <% end %>
   </div>
 
-  <!-- Posts by Category -->
-  <% @post_types.each do |cat| %>
-    <% posts_in_category = @posts_by_type[cat[:type]] || [] %>
-    
-    <div id="section-<%= cat[:type].downcase %>" class="forum-section" style="margin-bottom: 2.5rem;">
-      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
-        <span style="font-size: 1.5rem;"><%= cat[:icon] %></span>
-        <div>
-          <h2 style="margin: 0; font-size: 1.25rem;"><%= cat[:type] %></h2>
-          <p class="text-muted text-small" style="margin: 0;"><%= cat[:description] %></p>
-        </div>
-        <span class="badge" style="margin-left: auto; background: var(--bg-input);"><%= posts_in_category.count %> posts</span>
+  <% if @popular_tags.present? %>
+    <div class="popular-tags">
+      <h3>Popular Tags</h3>
+      <div class="tag-list">
+        <% @popular_tags.each do |tag| %>
+          <div class="tag-item">
+            <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+            <span class="tag-stats">(<%= tag.posts.count %> posts)</span>
+          </div>
+        <% end %>
       </div>
-
-      <% if posts_in_category.any? %>
-        <div class="posts-list">
-          <% posts_in_category.each do |post| %>
-            <div class="post-card">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div style="flex: 1;">
-                  <h4 style="margin-bottom: 0.5rem;">
-                    <%= link_to post.title, post %>
-                  </h4>
-                  <p class="text-muted text-small" style="margin-bottom: 0.75rem;">
-                    Posted by <strong><%= post.user.display_name %></strong>
-                    · <%= time_ago_in_words(post.created_at) %> ago
-                    · <%= post.comments.count %> <%= "comment".pluralize(post.comments.count) %>
-                    <% if post.dex_species %>
-                      · in <%= link_to post.dex_species.name, species_path(name: post.dex_species.name) %>
-                    <% end %>
-                  </p>
-                  <p class="text-secondary" style="margin: 0;"><%= truncate(post.body, length: 150) %></p>
-                </div>
-                <%= link_to "View →", post, class: "btn btn-secondary btn-small", style: "margin-left: 1rem;" %>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      <% else %>
-        <div class="card" style="padding: 1.5rem; text-align: center; opacity: 0.7;">
-          <p class="text-muted" style="margin: 0;">No <%= cat[:type].downcase %> posts yet. Be the first to start one!</p>
-        </div>
-      <% end %>
     </div>
   <% end %>
 
-<% else %>
-  <div class="card text-center" style="padding: 3rem;">
-    <p style="font-size: 3rem; margin-bottom: 1rem;">📝</p>
-    <h3>No posts yet</h3>
-    <p class="text-muted">Be the first to start a discussion!</p>
-    <% if user_signed_in? %>
-      <%= link_to "Create First Post", new_post_path, class: "btn btn-primary" %>
+  <div class="posts-list">
+    <% if @posts.present? %>
+      <% @posts.each do |post| %>
+        <div class="post-card">
+          <% if ActiveRecord::Base.connection.table_exists?('votes') && defined?(upvote_post_path) %>
+            <div class="post-voting" data-controller="voting" data-voting-post-id-value="<%= post.id %>">
+              <%= form_with url: upvote_post_path(post), method: :post, local: Rails.env.test?, class: 'vote-form' do |form| %>
+                <%= form.submit '▲', class: 'vote-btn upvote-btn', data: { action: 'click->voting#upvote' } %>
+              <% end %>
+              
+              <span class="vote-score" data-voting-target="score" data-post-id="<%= post.id %>">
+                <%= post.vote_score rescue 0 %>
+              </span>
+              
+              <%= form_with url: downvote_post_path(post), method: :post, local: Rails.env.test?, class: 'vote-form' do |form| %>
+                <%= form.submit '▼', class: 'vote-btn downvote-btn', data: { action: 'click->voting#downvote' } %>
+              <% end %>
+            </div>
+          <% end %>
+          
+          <div class="post-content">
+            <h3><%= link_to post.title, post_path(post), class: 'post-title' %></h3>
+            <p class="post-preview"><%= truncate(post.body, length: 200) %></p>
+            <div class="post-meta">
+              <% if ActiveRecord::Base.connection.table_exists?('tags') && post.respond_to?(:tags) && post.tags.any? %>
+                <div class="post-tags">
+                  <% post.tags.each do |tag| %>
+                    <%= link_to tag.name, posts_path(tag: tag.name), class: 'tag' %>
+                  <% end %>
+                </div>
+              <% end %>
+              <div class="post-info">
+                <span class="post-date"><%= post.created_at&.strftime('%B %d, %Y at %I:%M %p') || 'Date not available' %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      
+      <% if @posts.respond_to?(:total_pages) && @posts.total_pages > 1 %>
+        <div class="pagination">
+          <% begin %>
+            <%= paginate @posts %>
+          <% rescue NoMethodError, NameError %>
+            <!-- Pagination not available -->
+          <% end %>
+        </div>
+      <% end %>
     <% else %>
-      <%= link_to "Sign in to Post", new_user_session_path, class: "btn btn-primary" %>
+      <div class="no-posts">
+        <p>No posts found. <%= link_to 'Create the first post!', new_post_path %></p>
+      </div>
     <% end %>
   </div>
-<% end %>
+</div>
