@@ -452,8 +452,10 @@ This skips coverage tracking and report generation, which can significantly spee
 Coverage reports are automatically generated and published on every push to `main` or `ci/**` branches. The published reports are available at:
 
 ```
-https://<your-github-username>.github.io/<repo-name>/docs/
+https://nyu-cse-software-engineering.github.io/cs-uy-4513-f25-team7/docs/
 ```
+
+If GitHub Pages is configured differently for your fork or deployment, adjust the URL accordingly.
 
 Refer to your course or project instructions for the exact testing setup and expectations.
 
