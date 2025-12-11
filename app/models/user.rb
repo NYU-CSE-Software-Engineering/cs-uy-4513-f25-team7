@@ -13,6 +13,9 @@ class User < ApplicationRecord
   # Roles used by the moderation feature:
   #   user (default)
   #   moderator
+  # Explicit attribute declaration for Ruby 3.4.6 enum compatibility
+  attribute :role, :integer, default: 0
+
   enum role: {
     user: 0,
     moderator: 1,

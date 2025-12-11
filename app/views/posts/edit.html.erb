@@ -19,8 +19,15 @@
     </div>
     
     <div class="form-group">
-      <%= form.label :content, class: 'form-label' %>
-      <%= form.text_area :content, class: 'form-textarea', rows: 10 %>
+      <%= form.label :post_type, 'Post Type', class: 'form-label' %>
+      <% post_type_value = @post.respond_to?(:post_type) ? @post.post_type : 'Thread' %>
+      <%= form.select :post_type, options_for_select([['Thread', 'Thread'], ['Meta', 'Meta']], post_type_value), 
+                      { prompt: 'Select post type...' }, { class: 'form-select' } %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :body, 'Body', class: 'form-label' %>
+      <%= form.text_area :body, class: 'form-textarea', rows: 10 %>
     </div>
     
     <div class="form-group">

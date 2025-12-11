@@ -1,4 +1,4 @@
-<%= form_with(model: [post, comment], local: true) do |form| %>
+<%= form_with(model: [post, comment], local: true, id: 'new_comment') do |form| %>
   <% if comment.errors.any? %>
     <div class="alert alert-danger">
       <ul>
@@ -10,8 +10,8 @@
   <% end %>
 
   <div class="mb-3">
-    <%= form.label :body, 'Add a comment', class: 'form-label visually-hidden' %>
-    <%= form.text_area :body, rows: 3, class: 'form-control', placeholder: 'Add a comment...' %>
+    <%= form.label :body, 'Add a comment', class: 'form-label' %>
+    <%= form.text_area :body, rows: 3, class: 'form-control', placeholder: 'Add a comment...', id: 'comment_body' %>
   </div>
 
   <%= form.submit 'Post Comment', class: 'btn btn-primary' %>

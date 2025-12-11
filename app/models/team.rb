@@ -5,6 +5,10 @@ class Team < ApplicationRecord
 
   accepts_nested_attributes_for :team_slots, allow_destroy: true
 
+  # Explicit attribute declarations for Ruby 3.4.6 enum compatibility
+  attribute :status, :integer, default: 0
+  attribute :visibility, :integer, default: 0
+
   enum status: { draft: 0, published: 1 }
 
   # Avoid `private`/`public` enum values to prevent conflicts
