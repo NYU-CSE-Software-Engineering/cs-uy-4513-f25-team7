@@ -397,12 +397,65 @@ Create a test user account (or log in with seeded credentials) to explore My Fee
 
 The project uses both automated tests and Cucumber feature tests (as indicated by `FakePostStore` and the in-memory `FollowsController`).
 
+### Running Tests
+
 Typical commands may look like:
 
 ```bash
 bundle exec rspec     # model and controller specs (if configured)
 bundle exec cucumber  # feature tests (if configured)
 ```
+
+### Test Coverage
+
+The project uses SimpleCov to track test coverage. Coverage is enabled by default when running tests.
+
+#### Running Tests with Coverage
+
+Coverage is automatically generated when you run tests:
+
+```bash
+bundle exec rspec     # generates coverage for RSpec tests
+bundle exec cucumber  # generates coverage for Cucumber tests
+```
+
+Both test suites contribute to the same coverage report, which is merged automatically.
+
+#### Viewing Coverage Reports
+
+After running tests, open the coverage report in your browser:
+
+```bash
+open coverage/index.html    # macOS
+xdg-open coverage/index.html  # Linux
+start coverage/index.html   # Windows
+```
+
+The coverage report shows:
+- Overall line and branch coverage percentages
+- Coverage breakdown by file and directory
+- Highlighted source code showing which lines are covered
+
+#### Disabling Coverage for Faster Test Runs
+
+If you need faster test runs during development, you can disable coverage:
+
+```bash
+COVERAGE=false bundle exec rspec
+COVERAGE=false bundle exec cucumber
+```
+
+This skips coverage tracking and report generation, which can significantly speed up test execution.
+
+#### Continuous Integration
+
+Coverage reports are automatically generated and published on every push to `main` or `ci/**` branches. The published reports are available at:
+
+```
+https://nyu-cse-software-engineering.github.io/cs-uy-4513-f25-team7/docs/
+```
+
+If GitHub Pages is configured differently for your fork or deployment, adjust the URL accordingly.
 
 Refer to your course or project instructions for the exact testing setup and expectations.
 
