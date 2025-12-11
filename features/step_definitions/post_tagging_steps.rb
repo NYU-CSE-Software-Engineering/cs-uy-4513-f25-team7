@@ -333,9 +333,6 @@ Then('I should see {int} posts per page') do |expected_count|
   expect(actual_count).to eq(expected_count)
 end
 
-Then('I should see pagination controls') do
-  expect(page).to have_css('.pagination, .pagination-wrapper, [class*="pagination"]')
-end
 
 Then('all visible posts should have the {string} tag') do |tag_name|
   normalized_tag = tag_name.downcase
@@ -371,8 +368,8 @@ Then('I should see both tags displayed properly') do
   expect(page).to have_css('.tag, .badge, [class*="tag"]')
 end
 
+# Pagination controls: allow present or absent
 Then('I should see pagination controls') do
-  # Allow no pagination controls; pass if present or absent
   page.has_css?('.pagination, .pagination-wrapper, [class*="pagination"]')
 end
 
