@@ -57,7 +57,7 @@ When(/^I fill in "(?!Add a comment)([^"]*)" with "([^"]*)" \* (\d+)(?:\s*#.*)?$/
 end
 
 # Generic step for filling in form fields, but NOT for "Add a comment" (handled by forum_steps.rb)
-When(/^I fill in "(?!Add a comment)([^"]*)" with "([^"]*)"$/) do |field, value|
+When(/^I fill in "(?!Add a comment|Subject)([^"]*)" with "([^"]*)"$/) do |field, value|
   # Map field names to actual form field names
   field_name = case field
                when 'Tags'
