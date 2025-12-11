@@ -5,6 +5,7 @@
 <% end %>
 
 <p>Enter authentication code</p>
+<p class="text-muted" style="margin-top: -0.5rem;">You can enter a code from your authenticator app or a one-time backup code.</p>
 
 <%= form_with url: two_factor_verify_path, method: :post, local: true, data: { turbo: false } do %>
   <div>

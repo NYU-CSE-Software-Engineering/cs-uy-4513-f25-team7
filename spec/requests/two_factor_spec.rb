@@ -25,8 +25,10 @@ RSpec.describe "Two-factor enrollment", type: :request do
     post two_factor_path, params: { code: code }
     follow_redirect!
     expect(response.body).to include("Two-factor authentication enabled")
+    expect(response.body).to match(/\d{4}-\d{4}/)
 
     user.reload
     expect(user.otp_enabled).to be true
+    expect(user.backup_code_digests&.size).to eq(10)
   end
 end

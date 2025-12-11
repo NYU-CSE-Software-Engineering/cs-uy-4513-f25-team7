@@ -1,7 +1,11 @@
 class User < ApplicationRecord
+  require "securerandom"
+  require "bcrypt"
+
   has_secure_password
   encrypts :google_token, deterministic: false
   encrypts :google_refresh_token, deterministic: false
+  serialize :backup_code_digests, type: Array, coder: JSON
 
   has_many :follower_relationships, class_name: "Follow", foreign_key: :followee_id, dependent: :destroy
   has_many :followee_relationships, class_name: "Follow", foreign_key: :follower_id, dependent: :destroy
@@ -55,6 +59,34 @@ class User < ApplicationRecord
 
   def otp_enabled?
     !!self[:otp_enabled]
+  end
+
+  def issue_backup_codes!(count: 10)
+    codes = []
+    while codes.size < count
+      code = format("%04d-%04d", SecureRandom.random_number(10_000), SecureRandom.random_number(10_000))
+      codes << code unless codes.include?(code)
+    end
+    digests = codes.map { |code| BCrypt::Password.create(code).to_s }
+    update!(backup_code_digests: digests)
+    codes
+  end
+
+  def use_backup_code!(code)
+    return false if backup_code_digests.blank?
+
+    code = code.to_s.strip
+    matched_digest = backup_code_digests.find do |digest|
+      BCrypt::Password.new(digest) == code
+    rescue BCrypt::Errors::InvalidHash
+      false
+    end
+
+    return false unless matched_digest
+
+    remaining = backup_code_digests - [matched_digest]
+    update!(backup_code_digests: remaining)
+    true
   end
 
   private

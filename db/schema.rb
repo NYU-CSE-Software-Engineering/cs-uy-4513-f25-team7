@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_01_000000) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.integer "post_id", null: false
@@ -188,6 +188,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
     t.text "google_refresh_token"
     t.datetime "google_token_expires_at"
     t.string "username"
+    t.text "backup_code_digests"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["google_uid"], name: "index_users_on_google_uid", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true

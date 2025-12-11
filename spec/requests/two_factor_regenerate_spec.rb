@@ -34,11 +34,12 @@ RSpec.describe "Regenerating two-factor authentication", type: :request do
     expect(user.otp_enabled).to be(false)
     expect(user.otp_secret).to be_present
     expect(user.otp_secret).not_to eq(old_secret)
+    expect(user.backup_code_digests).to eq([])
 
     # Re-enable with the new secret
     new_code = ROTP::TOTP.new(user.otp_secret).now
     post two_factor_path, params: { code: new_code }
-    expect(response).to redirect_to(edit_user_registration_path)
+    expect(response).to redirect_to(two_factor_recovery_codes_path)
     follow_redirect!
 
     user.reload

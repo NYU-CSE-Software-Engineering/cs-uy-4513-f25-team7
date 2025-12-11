@@ -40,10 +40,11 @@
 
 ### E. 2FA Recovery Codes
 
-- **Issue codes (happy):** After enabling 2FA, when I finish setup, then I see exactly 10 one-time recovery codes and a warning to save them; the system stores only hashed codes.
+- **Issue codes (happy):** After enabling (or re-enabling) 2FA, when I finish setup, then I see exactly 10 one-time recovery codes and a warning to save them; the system stores only hashed codes.
 - **Login with backup code (happy):** Given I’m at the 2FA prompt, when I enter a valid unused backup code, then I’m logged in and that code is invalidated.
 - **Reuse blocked (sad):** Given a backup code was used, when I try it again, then I see “Invalid authentication code” and I’m not logged in.
-- **Regenerate codes (happy):** Given I’m logged in with 2FA, when I regenerate recovery codes, then I see a new set and all old codes are invalid.
+- **Regenerate codes (happy):** When I reset and re-enable 2FA, I’m shown a new set of backup codes and all old codes are invalid. Backup codes are only issued during 2FA setup/reset, not on-demand.
+  - Implemented via `/two_factor/recovery_codes` display immediately after enabling/re-enabling; hashes stored in `backup_code_digests`.
 
 ### F. Admin Role Management
 
