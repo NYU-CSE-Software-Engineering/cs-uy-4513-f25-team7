@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_07_000003) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.integer "post_id", null: false
@@ -150,43 +150,52 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
     t.string "move_4"
     t.boolean "illegal", default: false, null: false
     t.string "illegality_reason"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "move1"
     t.string "move2"
     t.string "move3"
     t.string "move4"
     t.text "illegal_reasons"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["team_id", "slot_index"], name: "index_team_slots_on_team_id_and_slot_index", unique: true
     t.index ["team_id"], name: "index_team_slots_on_team_id"
   end
 
   create_table "teams", force: :cascade do |t|
     t.string "name", null: false
-    t.integer "user_id"
-    t.integer "status", default: 0, null: false
-    t.integer "visibility", default: 0, null: false
-    t.boolean "legal", default: false, null: false
-    t.datetime "last_saved_at"
+    t.text "description"
+    t.boolean "public", default: true, null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "average_rating", precision: 3, scale: 2, default: "0.0"
     t.integer "reviews_count", default: 0
+    t.integer "status", default: 0, null: false
+    t.integer "visibility", default: 0, null: false
+    t.boolean "legal", default: true, null: false
+    t.datetime "last_saved_at"
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
-    t.integer "role", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "name"
+    t.string "role", default: "user", null: false
+    t.boolean "active", default: true, null: false
     t.string "otp_secret"
-    t.boolean "otp_enabled"
+    t.boolean "otp_enabled", default: false, null: false
+    t.text "backup_code_digests"
+    t.string "reset_digest"
+    t.datetime "reset_sent_at"
     t.string "google_uid"
     t.text "google_token"
     t.text "google_refresh_token"
     t.datetime "google_token_expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "failed_login_attempts", default: 0, null: false
+    t.datetime "locked_until"
     t.string "username"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["google_uid"], name: "index_users_on_google_uid", unique: true
@@ -208,6 +217,5 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_07_000000) do
   add_foreign_key "posts", "users"
   add_foreign_key "reviews", "teams"
   add_foreign_key "reviews", "users"
-  add_foreign_key "team_slots", "teams"
   add_foreign_key "teams", "users"
 end
